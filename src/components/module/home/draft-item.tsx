@@ -19,7 +19,7 @@ export function DraftItem({ post }: DraftItemProps) {
             {post.metadata.title}
             <Underline />
           </h2>
-          <NormalTime date={post.metadata.publishedAt} className="text-slate-500" />
+          <NormalTime date={post.metadata.publishedAt} className="text-muted-foreground" />
         </article>
       </Link>
     </ScrollToShow>

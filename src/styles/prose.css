@@ -1,5 +1,5 @@
 .prose {
-  @apply max-w-none;
+  @apply max-w-none text-foreground;
 }
 
 /* heading with a */
@@ -75,7 +75,7 @@
 }
 
 .prose :not(pre) > code {
-  @apply px-2 py-1 border rounded-xl bg-card;
+  @apply px-2 py-1 bg-card rounded-md;
 }
 
 /* code block */
@@ -92,25 +92,27 @@ code[data-line-numbers] > [data-line]::before {
 }
 
 /* shiki code highlight */
-[data-theme='light'] code[data-theme*=' '],
-[data-theme='light'] code[data-theme*=' '] span {
+
+[data-theme='light'] code[data-theme],
+[data-theme='light'] code[data-theme] span {
   color: var(--shiki-light);
   background-color: var(--shiki-light-bg);
 }
 
-[data-theme='light'] pre[data-theme*=' '],
-[data-theme='light'] pre[data-theme*=' '] span {
+[data-theme='light'] pre[data-theme],
+[data-theme='light'] pre[data-theme] span {
   background-color: var(--shiki-light-bg);
 }
 
 /* 深色主题样式 */
-[data-theme='dark'] code[data-theme*=' '],
-[data-theme='dark'] code[data-theme*=' '] span {
+
+[data-theme='dark'] code[data-theme],
+[data-theme='dark'] code[data-theme] span {
   color: var(--shiki-dark);
   background-color: var(--shiki-dark-bg);
 }
 
-[data-theme='dark'] pre[data-theme*=' '],
-[data-theme='dark'] pre[data-theme*=' '] span {
+[data-theme='dark'] pre[data-theme],
+[data-theme='dark'] pre[data-theme] span {
   background-color: var(--shiki-dark-bg);
 }

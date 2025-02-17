@@ -1,12 +1,17 @@
+import { LoadingIcon } from '@/components/common/loading/loading-icon'
 import { IMG_PADDING } from '@/constants/page-config'
+import { useMounted } from '@/hooks/useMounted'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useTheme } from 'next-themes'
 import Image from 'next/image'
 import { useRef } from 'react'
 
 export function CenterImg() {
-  const { theme } = useTheme()
-  const isDarkMode = theme === 'dark'
+  const mounted = useMounted()
+
+  const { resolvedTheme } = useTheme()
+
+  const isDarkMode = resolvedTheme === 'dark'
 
   const targetRef = useRef(null)
 
@@ -35,6 +40,9 @@ export function CenterImg() {
       />
     )
   }
+
+  if (!mounted)
+    return <LoadingIcon />
 
   return (
     <motion.div

@@ -1,5 +1,6 @@
 export const posts = [
   {
+    id: 1,
     src: '/imgs/cover.png',
     alt: 'img',
     title: 'test1',
@@ -7,6 +8,7 @@ export const posts = [
     date: '2024-12-30',
   },
   {
+    id: 2,
     src: '/imgs/cover.png',
     alt: 'img',
     title: '探索Web3.0的未来',
@@ -14,6 +16,7 @@ export const posts = [
     date: '2024-11-15',
   },
   {
+    id: 3,
     src: '/imgs/cover.png',
     alt: 'img',
     title: '人工智能在医疗领域的应用',
@@ -21,6 +24,7 @@ export const posts = [
     date: '2024-10-20',
   },
   {
+    id: 4,
     src: '/imgs/cover.png',
     alt: 'img',
     title: '可持续发展与绿色科技',
@@ -28,6 +32,7 @@ export const posts = [
     date: '2024-09-05',
   },
   {
+    id: 5,
     src: '/imgs/cover.png',
     alt: 'img',
     title: '5G时代的物联网革命',
@@ -35,6 +40,7 @@ export const posts = [
     date: '2024-08-18',
   },
   {
+    id: 6,
     src: '/imgs/cover.png',
     alt: 'img',
     title: '量子计算：下一代计算革命',
@@ -42,6 +48,7 @@ export const posts = [
     date: '2024-07-22',
   },
   {
+    id: 7,
     src: '/imgs/cover.png',
     alt: 'img',
     title: '元宇宙与虚拟现实',
@@ -49,6 +56,7 @@ export const posts = [
     date: '2024-06-30',
   },
   {
+    id: 8,
     src: '/imgs/cover.png',
     alt: 'img',
     title: '区块链与金融创新',

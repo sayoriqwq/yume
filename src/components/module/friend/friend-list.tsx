@@ -9,8 +9,8 @@ export function FriendList() {
       </p>
       <div className="grid grid-cols-1 gap-x-4 gap-y-10 px-20 md:grid-cols-2">
         {
-          friends.map((friend, index) => (
-            <FriendCard key={index} friend={friend} />
+          friends.map(friend => (
+            <FriendCard key={friend.id} friend={friend} />
           ))
         }
       </div>

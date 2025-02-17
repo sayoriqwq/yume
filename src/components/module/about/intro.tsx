@@ -5,16 +5,16 @@ export function Intro() {
   return (
     <section className="flex-center mt-10 flex-col gap-2 text-center font-sans font-bold">
       <Link href="/about">
-        <Avatar className="size-28 ring-2 transition duration-300 hover:ring-green-200">
+        <Avatar className="size-28 transition duration-300 ring ring-muted hover:ring-2 hover:ring-ring">
           <AvatarImage src="/imgs/avatar.png" />
           <AvatarFallback>Ciallo~</AvatarFallback>
         </Avatar>
       </Link>
       <p className="break-words text-2xl">
         <span className=""> sayori</span>
-        <span className="text-green-200">qwq</span>
+        <span className="text-accent">qwq</span>
       </p>
-      <p className="text-md break-words text-slate-300">
+      <p className="text-md break-words text-muted-foreground">
         Student | Front-end Developer
       </p>
     </section>

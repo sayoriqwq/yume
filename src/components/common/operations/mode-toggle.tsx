@@ -1,23 +1,19 @@
 'use client'
 
+import { useMounted } from '@/hooks/useMounted'
 import { Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
-import { useEffect, useState } from 'react'
 import { LoadingIcon } from '../loading/loading-icon'
 
 export function ModeToggle() {
   const { theme, setTheme } = useTheme()
 
-  const [mounted, setMounted] = useState(false)
+  const mounted = useMounted()
 
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark'
     setTheme(newTheme)
   }
-
-  useEffect(() => {
-    setMounted(true)
-  }, [theme])
 
   if (!mounted) {
     return <LoadingIcon />

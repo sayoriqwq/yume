@@ -22,10 +22,10 @@ export function PostCard({ post, className }: PostCardProps) {
       )}
     >
       <div className="flex flex-col gap-2 px-2">
-        <h3 className="text-foreground/90 group-hover:text-foreground line-clamp-2 text-xl font-semibold transition-colors">
+        <h3 className="text-foreground group-hover:text-accent-foreground line-clamp-2 text-xl font-semibold transition-colors">
           {post.metadata.title}
         </h3>
-        <p className="text-muted-foreground text-md mt-1">
+        <p className="text-muted-foreground mt-1 group-hover:text-accent-foreground/90 transition-colors">
           {post.metadata.publishedAt}
         </p>
       </div>
