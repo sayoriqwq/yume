@@ -5,7 +5,7 @@ export function ReadMore({ link }: { link: string }) {
   return (
     <Link
       href={link}
-      className="text-foreground/80 hover:text-foreground group relative w-fit"
+      className="text-foreground hover:text-primary group relative w-fit"
     >
       <span>Read More ?</span>
       <Underline />

@@ -43,3 +43,8 @@ export function getLatestPosts(num = 4): Post[] {
     })
   return sortPosts(posts).slice(0, num)
 }
+
+export function getAllPostsByCategory(category: string): Post[] {
+  // console.log(getAllPosts().filter(post => post.metadata.category === category))
+  return getAllPosts().filter(post => post.metadata.category === category)
+}

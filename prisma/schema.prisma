@@ -17,7 +17,7 @@ model Article {
   category     Category @relation(fields: [categoryId], references: [id])
   categoryId   Int
 
-  content      String
+  content      String?
 
   description  String?
   cover        String?

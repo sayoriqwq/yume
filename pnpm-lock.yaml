@@ -57,7 +57,7 @@ importers:
         version: 1.1.8(@types/react-dom@19.0.3(@types/react@19.0.8))(@types/react@19.0.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@tailwindcss/typography':
         specifier: ^0.5.16
-        version: 0.5.16(tailwindcss@4.0.6)
+        version: 0.5.16(tailwindcss@0.0.0-insiders.1c905f2)
       '@types/js-cookie':
         specifier: ^3.0.6
         version: 3.0.6
@@ -165,7 +165,7 @@ importers:
         version: 3.0.1
       tailwindcss-animate:
         specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@4.0.6)
+        version: 1.0.7(tailwindcss@0.0.0-insiders.1c905f2)
       taze:
         specifier: ^18.5.0
         version: 18.5.0
@@ -226,10 +226,13 @@ importers:
         version: 6.3.1(typescript@5.7.3)
       tailwind-scrollbar:
         specifier: ^4.0.0
-        version: 4.0.0(react@19.0.0)(tailwindcss@4.0.6)
+        version: 4.0.0(react@19.0.0)(tailwindcss@0.0.0-insiders.1c905f2)
       tailwindcss:
-        specifier: ^4.0.6
-        version: 4.0.6
+        specifier: 0.0.0-insiders.1c905f2
+        version: 0.0.0-insiders.1c905f2
+      tailwindcss-motion:
+        specifier: ^1.1.0
+        version: 1.1.0(tailwindcss@0.0.0-insiders.1c905f2)
       typescript:
         specifier: ^5.7.3
         version: 5.7.3
@@ -3984,6 +3987,14 @@ packages:
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders'
 
+  tailwindcss-motion@1.1.0:
+    resolution: {integrity: sha512-0lK6rA4+367ffJdi1TtB72GlMCxJi2TP/xRiHc6An5pZSlU6WfIHhSvLxpcGilGZfBrOqc2q4woH1DEP/lCNbQ==}
+    peerDependencies:
+      tailwindcss: '>=3.0.0 || insiders'
+
+  tailwindcss@0.0.0-insiders.1c905f2:
+    resolution: {integrity: sha512-UaG/HXcQhPwuMwngZ7pjFhMRyqQ/2JE2pdIunFayuj1oAnhFvs2HB9DxPdJehjDT414q3ebko9+myX+nJKyz6w==}
+
   tailwindcss@4.0.6:
     resolution: {integrity: sha512-mysewHYJKaXgNOW6pp5xon/emCsfAMnO8WMaGKZZ35fomnR/T5gYnRg2/yRTTrtXiEl1tiVkeRt0eMO6HxEZqw==}
 
@@ -5560,13 +5571,13 @@ snapshots:
       postcss: 8.5.2
       tailwindcss: 4.0.6
 
-  '@tailwindcss/typography@0.5.16(tailwindcss@4.0.6)':
+  '@tailwindcss/typography@0.5.16(tailwindcss@0.0.0-insiders.1c905f2)':
     dependencies:
       lodash.castarray: 4.4.0
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       postcss-selector-parser: 6.0.10
-      tailwindcss: 4.0.6
+      tailwindcss: 0.0.0-insiders.1c905f2
 
   '@types/acorn@4.0.6':
     dependencies:
@@ -8513,16 +8524,22 @@ snapshots:
 
   tailwind-merge@3.0.1: {}
 
-  tailwind-scrollbar@4.0.0(react@19.0.0)(tailwindcss@4.0.6):
+  tailwind-scrollbar@4.0.0(react@19.0.0)(tailwindcss@0.0.0-insiders.1c905f2):
     dependencies:
       prism-react-renderer: 2.4.1(react@19.0.0)
-      tailwindcss: 4.0.6
+      tailwindcss: 0.0.0-insiders.1c905f2
     transitivePeerDependencies:
       - react
 
-  tailwindcss-animate@1.0.7(tailwindcss@4.0.6):
+  tailwindcss-animate@1.0.7(tailwindcss@0.0.0-insiders.1c905f2):
     dependencies:
-      tailwindcss: 4.0.6
+      tailwindcss: 0.0.0-insiders.1c905f2
+
+  tailwindcss-motion@1.1.0(tailwindcss@0.0.0-insiders.1c905f2):
+    dependencies:
+      tailwindcss: 0.0.0-insiders.1c905f2
+
+  tailwindcss@0.0.0-insiders.1c905f2: {}
 
   tailwindcss@4.0.6: {}
 
