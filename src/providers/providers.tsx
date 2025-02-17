@@ -11,7 +11,7 @@ import { ThemeProvider } from './theme-provider'
 export function Providers({ children }: PropsWithChildren) {
   return (
     <ThemeProvider
-      attribute="class"
+      attribute={['class', 'data-theme']}
       defaultTheme="system"
       enableSystem
     >

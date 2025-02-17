@@ -17,7 +17,10 @@ const components = {
 }
 
 const rehypePrettyCodeOptions: RehypePrettyCodeOptions = {
-  theme: 'ayu-dark',
+  theme: {
+    light: 'github-light',
+    dark: 'github-dark',
+  },
 }
 
 export function CustomMDX(props: MDXRemoteProps) {

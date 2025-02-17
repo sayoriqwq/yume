@@ -3,6 +3,7 @@
 'use client'
 
 import type { DetailedHTMLProps, HTMLAttributes } from 'react'
+import { cn } from '@/lib/utils'
 import { Check, Clipboard } from 'lucide-react'
 import {
 
@@ -31,11 +32,11 @@ export default function Pre({
   }
 
   return (
-    <pre ref={preRef} {...props} className="relative">
+    <pre ref={preRef} {...props} className="relative group">
       <button
         disabled={isCopied}
         onClick={handleClickCopy}
-        className="absolute right-4 size-6"
+        className={cn('absolute right-4 size-6 cursor-pointer text-muted-foreground', 'group-hover:opacity-100 opacity-0 transition-opacity duration-300 ease-in-out')}
       >
         {isCopied ? <Check /> : <Clipboard />}
       </button>

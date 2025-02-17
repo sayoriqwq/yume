@@ -7,8 +7,9 @@ import {
   UserButton,
 } from '@clerk/nextjs'
 import { useAtom } from 'jotai'
-import { Loader2, LogIn } from 'lucide-react'
+import { LogIn } from 'lucide-react'
 import { useEffect } from 'react'
+import { LoadingIcon } from '../loading/loading-icon'
 
 export function ClerkSign() {
   const [_isModalOpen, setIsModalOpen] = useAtom(clerkModalAtom)
@@ -29,7 +30,7 @@ export function ClerkSign() {
   }, [setIsModalOpen])
 
   if (!loaded) {
-    return <Loader2 className="size-5 animate-spin" />
+    return <LoadingIcon />
   }
 
   return (
