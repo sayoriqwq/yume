@@ -1,4 +1,4 @@
-import { clerkModalAtom } from '@/atoms/clerk'
+import { useModalStatus } from '@/atoms/hooks/use-modal-status'
 import {
   SignedIn,
   SignedOut,
@@ -6,28 +6,13 @@ import {
   useClerk,
   UserButton,
 } from '@clerk/nextjs'
-import { useAtom } from 'jotai'
 import { LogIn } from 'lucide-react'
-import { useEffect } from 'react'
 import { LoadingIcon } from '../loading/loading-icon'
 
 export function ClerkSign() {
-  const [_isModalOpen, setIsModalOpen] = useAtom(clerkModalAtom)
   const { loaded } = useClerk()
 
-  useEffect(() => {
-    const checkModalStatus = () => {
-      const modalBackdrop = document.querySelector('.cl-modalBackdrop')
-      setIsModalOpen(!!modalBackdrop)
-    }
-
-    checkModalStatus()
-
-    const observer = new MutationObserver(checkModalStatus)
-    observer.observe(document.body, { childList: true, subtree: true })
-
-    return () => observer.disconnect()
-  }, [setIsModalOpen])
+  useModalStatus()
 
   if (!loaded) {
     return <LoadingIcon />

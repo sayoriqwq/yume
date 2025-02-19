@@ -8,8 +8,7 @@ reference: https://github.com/Innei/Shiro/blob/8481a63718c4aee2a850e4ebd1148ee5b
 
 */
 
-import { clerkModalAtom } from '@/atoms/clerk'
-import { headerAtom } from '@/atoms/header'
+import { headerAtom, modalAtom } from '@/atoms/header'
 import { cn } from '@/lib/utils'
 import {
   AnimatePresence,
@@ -27,7 +26,7 @@ import { Operations } from './operations'
 
 export function Header() {
   const [header, setHeader] = useAtom(headerAtom)
-  const [isModalOpen] = useAtom(clerkModalAtom)
+  const [isModalOpen] = useAtom(modalAtom)
   const { scrollY } = useScroll()
 
   useMotionValueEvent(scrollY, 'change', (latest) => {

@@ -1,7 +1,8 @@
+import { cn } from '@/lib/utils'
 import { Loader2 } from 'lucide-react'
 
-export function LoadingIcon() {
+export function LoadingIcon({ className }: { className?: string }) {
   return (
-    <Loader2 className="size-5 animate-spin" />
+    <Loader2 className={cn('size-5 animate-spin', className)} />
   )
 }

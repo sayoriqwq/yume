@@ -1,3 +1,4 @@
+import { SearchModal } from '@/components/common/operations/meilisearch/search-modal'
 import { Footer } from '@/layout/footer'
 import { Header } from '@/layout/header'
 import { Providers } from '@/providers/providers'
@@ -18,6 +19,7 @@ export default function RootLayout({
           <Footer />
         </Providers>
         <Toaster position="top-center" />
+        <SearchModal />
       </body>
     </html>
   )
