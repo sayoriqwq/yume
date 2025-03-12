@@ -31,7 +31,7 @@ export function CenterImg() {
   const renderImage = () => {
     return (
       <Image
-        src={isDarkMode ? '/imgs/cover.png' : '/imgs/bg.jpg'}
+        src={isDarkMode ? 'https://s3-yume.s3.ap-northeast-1.amazonaws.com/bg-dark.webp' : 'https://s3-yume.s3.ap-northeast-1.amazonaws.com/bg-light.webp'}
         alt="Background Image"
         fill
         priority

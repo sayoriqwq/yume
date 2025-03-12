@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
   },
   transpilePackages: ['next-mdx-remote'],
   images: {
-    remotePatterns: [{ hostname: 'img.clerk.com' }],
+    remotePatterns: [{ hostname: 'img.clerk.com' }, { protocol: 'https', hostname: 's3-yume.s3.ap-northeast-1.amazonaws.com', port: '', pathname: '/**' }],
   },
 }
 
