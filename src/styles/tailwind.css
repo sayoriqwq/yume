@@ -3,6 +3,10 @@
 @plugin 'tailwindcss-animate';
 @plugin '@tailwindcss/typography';
 @plugin 'tailwindcss-motion';
+@plugin 'tailwind-scrollbar';
+@plugin '@egoist/tailwindcss-icons';
+
+@config '../../tailwind.config.ts';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -73,8 +77,7 @@
   --color-yume-accent-darker: var(--color-yume-green-500);
 
   /* destructive color */
-  --color-yume-destructive-lighter: oklch(70% 0.18 25);
-  --color-yume-destructive-darker: oklch(55% 0.18 25);
+  /* use color-red */
 }
 
 :root {
@@ -91,8 +94,8 @@
   --secondary-foreground: var(--color-yume-gray-900);
   --accent: var(--color-yume-accent-darker);
   --accent-foreground: var(--color-yume-green-900);
-  --destructive: var(--color-yume-destructive-darker);
-  --destructive-foreground: var(--color-yume-gray-50);
+  --destructive: var(--color-red-300);
+  --destructive-foreground: var(--color-red-600);
 
   --popover: var(--color-yume-white);
   --popover-foreground: var(--color-yume-black);
@@ -125,8 +128,8 @@
   --secondary-foreground: var(--color-yume-gray-50);
   --accent: var(--color-yume-accent-lighter);
   --accent-foreground: var(--color-yume-green-800);
-  --destructive: var(--color-yume-destructive-lighter);
-  --destructive-foreground: var(--color-yume-gray-50);
+  --destructive: var(--color-red-300);
+  --destructive-foreground: var(--color-red-500);
 
   --popover: var(--color-yume-black);
   --popover-foreground: var(--color-yume-white);

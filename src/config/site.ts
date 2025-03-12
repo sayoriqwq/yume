@@ -3,6 +3,7 @@ export const siteConfig = {
   url: 'https://sayoriqwq.com',
   description: 'bittersweet life',
   author: 'sayoriqwq',
+  avatar: 'https://s3-yume.s3.ap-northeast-1.amazonaws.com/avatar.webp',
   links: {
     github: 'https://github.com/qianmengqwq',
     twitter: 'https://sayoriqwq.site',

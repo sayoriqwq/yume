@@ -3,7 +3,6 @@
 import type { Message } from '@prisma/client'
 import { Textarea } from '@/components/ui/textarea'
 import { useUser } from '@clerk/nextjs'
-import { Send } from 'lucide-react'
 import { useActionState, useState } from 'react'
 import toast from 'react-hot-toast'
 import { createMessage } from './actions'
@@ -54,23 +53,34 @@ export function MessageForm({ setOptimisticMessages }: Props) {
     }
   }
 
+  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === 'Enter' && e.metaKey) {
+      e.preventDefault()
+      const form = e.currentTarget.form
+      if (form) {
+        form.requestSubmit()
+      }
+    }
+  }
+
   return (
     <form action={handleSubmit}>
       <div className="relative">
         <Textarea
           name="message"
-          placeholder="有什么想说的呢？"
+          placeholder="有什么想说的呢？( cmd + Enter 发送 )"
           value={message}
           onChange={e => setMessage(e.target.value)}
+          onKeyDown={handleKeyDown}
           maxLength={500}
-          className="field-sizing-content max-h-96 min-h-[none] resize-none rounded-xl pr-8"
+          className="field-sizing-content max-h-96 min-h-[none] resize-none rounded-xl pr-10"
         />
         <button
           disabled={isPending}
           type="submit"
-          className="absolute right-1 top-1 p-2"
+          className="absolute right-1 top-1/2 transform -translate-y-1/2 p-1 flex-center"
         >
-          <Send className="size-5" />
+          <span className="i-mingcute-send-line size-6 text-muted-foreground cursor-pointer hover:text-accent hover:scale-105 transition-all duration-300" />
         </button>
       </div>
     </form>

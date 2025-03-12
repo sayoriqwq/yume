@@ -1,4 +1,3 @@
-import { useModalStatus } from '@/atoms/hooks/use-modal-status'
 import {
   SignedIn,
   SignedOut,
@@ -11,8 +10,6 @@ import { LoadingIcon } from '../loading/loading-icon'
 
 export function ClerkSign() {
   const { loaded } = useClerk()
-
-  useModalStatus()
 
   if (!loaded) {
     return <LoadingIcon />

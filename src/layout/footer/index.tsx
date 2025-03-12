@@ -37,7 +37,7 @@ export function Footer() {
             <Link
               key={href}
               href={href}
-              className="text-muted-foreground hover:text-foreground"
+              className="text-muted-foreground hover:text-accent transition-colors duration-300"
               target="_blank"
             >
               <Icon className="size-6" />

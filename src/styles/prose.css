@@ -4,14 +4,12 @@
 
 /* heading with a */
 .prose .link-anchor {
-  @apply text-primary relative no-underline;
+  @apply text-primary hover:text-primary relative no-underline;
 }
 
 .prose .link-anchor::before {
-  content: '#';
-  position: absolute;
-  left: -0.8em;
-  opacity: 0;
+  content: '# ';
+  opacity: 0.5;
   transition: opacity 0.2s ease;
 }
 
@@ -23,7 +21,7 @@
   width: 0;
   height: 2px;
   background-color: currentColor;
-  transition: width 0.3s ease-in-out;
+  transition: width 0.2s ease-in-out;
 }
 
 .prose .link-anchor:hover::before {
@@ -37,20 +35,9 @@
 /* https://ui.shadcn.com/docs/components/typography */
 
 /* headings */
+
 .prose h1 {
-  @apply scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl;
-}
-
-.prose h2 {
-  @apply scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-0;
-}
-
-.prose h3 {
-  @apply scroll-m-20 text-2xl font-semibold tracking-tight;
-}
-
-.prose h4 {
-  @apply scroll-m-20 text-xl font-semibold tracking-tight;
+  @apply text-4xl;
 }
 
 /* other element */

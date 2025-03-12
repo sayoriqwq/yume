@@ -8,7 +8,8 @@ reference: https://github.com/Innei/Shiro/blob/8481a63718c4aee2a850e4ebd1148ee5b
 
 */
 
-import { headerAtom, modalAtom } from '@/atoms/header'
+import { headerAtom } from '@/atoms/header'
+import { useScrollbarPresence } from '@/hooks/useScrollBarPresence'
 import { cn } from '@/lib/utils'
 import {
   AnimatePresence,
@@ -26,8 +27,8 @@ import { Operations } from './operations'
 
 export function Header() {
   const [header, setHeader] = useAtom(headerAtom)
-  const [isModalOpen] = useAtom(modalAtom)
   const { scrollY } = useScroll()
+  const { scrollbarWidth, hasScrollbar } = useScrollbarPresence()
 
   useMotionValueEvent(scrollY, 'change', (latest) => {
     const previous = scrollY.getPrevious() ?? 0
@@ -55,7 +56,7 @@ export function Header() {
       <header
         className="fixed inset-1 top-0 z-50 h-14"
         style={{
-          paddingRight: isModalOpen ? 15 : 0,
+          paddingRight: !hasScrollbar ? scrollbarWidth : 0,
         }}
       >
         <motion.div

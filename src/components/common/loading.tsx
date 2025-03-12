@@ -35,9 +35,6 @@ export function Loading() {
           }}
         />
       </motion.div>
-      <div className="absolute w-full text-center mt-20 text-lg font-serif">
-        请稍后
-      </div>
     </div>
   )
 }

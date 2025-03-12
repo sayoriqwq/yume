@@ -10,7 +10,7 @@
 
 /*
 解决滚动条隐藏后页面抖动的问题
-clerk弹出modal时会给body加上15px的右边距以防止页面抖动
+clerk弹出modal时会给body加上15px（滚动条宽度）的右边距以防止页面抖动
 但是header是fixed定位，并不会受到body的padding影响
 
 overflow: overlay 属性已被废弃
