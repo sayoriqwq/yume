@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,30 +7,83 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum ArticleType {
+  BLOG      // MDX
+  NOTE      // 随记
+  DRAFT     // 未成文的博客
+}
+
+enum LikeableType {
+  ARTICLE     // 文章
+  COMMENT     // 评论
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String
+  email         String    @unique
+  emailVerified DateTime?  
+  avatar         String?
+  password      String?   // 散列后的密码
+  
+  role          UserRole  @default(USER)
+  
+  // 关联数据
+  comments      Comment[] // 用户发表的评论
+  likes         Like[] // 用户点赞
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
 model Article {
-  id           Int      @id @default(autoincrement())
-  slug         String   @unique
-  title        String   @unique
-  category     Category @relation(fields: [categoryId], references: [id])
-  categoryId   Int
-
-  content      String?
-
+  id           Int       @id @default(autoincrement())
+  slug         String    @unique
+  title        String    
   description  String?
   cover        String?
-
-  wordCount    Int     @default(0)
-  published    Boolean @default(true)
-  likes        Int     @default(0)
-
-  tags         Tag[] @relation("ArticleTags")
-
+  
+  // 文章类型
+  type         ArticleType
+  
+  // 统计数据
+  viewCount    Int       @default(0)
+  
+  // MDX文章
+  mdxPath      String?
+  
+  // 草稿
+  content      String?
+  
+  // 随记特有
   mood         String?
   weather      String?
   location     String?
-
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  
+  // 分类与标签
+  category     Category?  @relation(fields: [categoryId], references: [id])
+  categoryId   Int?
+  tags         Tag[]      @relation("ArticleTags")
+  
+  // 发布状态
+  published    Boolean    @default(true)
+  
+  // 关联数据
+  comments     Comment[]  // 评论
+  
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 }
 
 model Category {
@@ -51,17 +101,67 @@ model Tag {
   articles     Article[] @relation("ArticleTags")
 }
 
-model Message {
-  id        Int   @id @default(autoincrement())
-  message   String
 
-  createdAt DateTime @default(now())
-  userId    String
-  userName  String
-  userImg   String
+model Comment {
+  id           Int       @id @default(autoincrement())
+  content      String
+  
+  // 关联到用户
+  author       User      @relation(fields: [authorId], references: [id])
+  authorId     String
+  
+  // 关联到文章
+  article      Article?   @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  articleId    Int?
+  
+  // 嵌套
+  parentId     Int?
+  parent       Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: SetNull)
+  replies      Comment[] @relation("CommentReplies")
+
+  status      ApprovalStatus @default(PENDING)
+  
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
-model Subscriber {
-  id              Int     @id @default(autoincrement())
-  email           String  @unique
+// 点赞关联表
+model Like {
+  id        Int      @id @default(autoincrement())
+  
+  // 关联到用户
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  
+  // 点赞对象类型
+  type      LikeableType
+  
+  // 点赞对象ID (可以是文章ID或评论ID)
+  targetId  Int
+  
+  createdAt DateTime @default(now())
+  
+  // 复合唯一索引确保一个用户只能对一个内容点赞一次
+  @@unique([userId, type, targetId])
+}
+
+model FriendLink {
+  id          Int      @id @default(autoincrement())
+  name        String
+  url         String
+  description String?
+  avatar      String?
+  
+  status      ApprovalStatus @default(PENDING)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+
+model SiteConfig {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique
+  value       String
+  updatedAt   DateTime @updatedAt
 }
