@@ -1,5 +1,6 @@
 'use server'
 
+import { MESSAGE_FAKE_ARTICLE_ID } from '@/constants/message'
 import { db } from '@/db'
 import { currentUser } from '@clerk/nextjs/server'
 import { revalidatePath } from 'next/cache'
@@ -12,6 +13,15 @@ const MessageSchema = z.object({
 interface MessageState {
   success: boolean
   message: string
+}
+
+export async function getMessageAuthor(authorId: string) {
+  const author = await db.user.findUnique({
+    where: {
+      id: authorId,
+    },
+  })
+  return author
 }
 
 export async function createMessage(_currentState: MessageState, formData: FormData): Promise<MessageState> {
@@ -35,12 +45,11 @@ export async function createMessage(_currentState: MessageState, formData: FormD
     }
   }
 
-  await db.message.create({
+  await db.comment.create({
     data: {
-      message: validationResult.data.message ?? '',
-      userId: user.id,
-      userName: (user.username || user.firstName) ?? '神秘',
-      userImg: user.imageUrl,
+      content: validationResult.data.message ?? '',
+      authorId: user.id,
+      articleId: MESSAGE_FAKE_ARTICLE_ID,
     },
   })
 
@@ -62,7 +71,7 @@ export async function deleteMessage(messageId: number): Promise<{ success: boole
   }
 
   try {
-    const message = await db.message.findUnique({
+    const message = await db.comment.findUnique({
       where: { id: messageId },
     })
 
@@ -73,14 +82,14 @@ export async function deleteMessage(messageId: number): Promise<{ success: boole
       }
     }
 
-    if (message.userId !== user.id) {
+    if (message.authorId !== user.id) {
       return {
         success: false,
         message: '您没有权限删除这条留言',
       }
     }
 
-    await db.message.delete({
+    await db.comment.delete({
       where: { id: messageId },
     })
 

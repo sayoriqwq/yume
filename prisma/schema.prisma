@@ -30,12 +30,13 @@ enum ApprovalStatus {
 }
 
 model User {
-  id            String    @id @default(uuid())
-  name          String
+  id            String    @id @unique // clerk id
+  username          String
   email         String    @unique
   emailVerified DateTime?  
-  avatar         String?
-  password      String?   // 散列后的密码
+  image_url         String?
+  
+  clerkData     Json?   
   
   role          UserRole  @default(USER)
   
@@ -163,5 +164,12 @@ model SiteConfig {
   id          Int      @id @default(autoincrement())
   key         String   @unique
   value       String
+  updatedAt   DateTime @updatedAt
+}
+
+model Subscriber {
+  id          Int      @id @default(autoincrement())
+  email       String   @unique
+  createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

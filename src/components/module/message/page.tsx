@@ -1,8 +1,12 @@
 import MessageContainer from '@/components/module/message/container'
+import { MESSAGE_FAKE_ARTICLE_ID } from '@/constants/message'
 import { db } from '@/db'
 
 async function getMessages() {
-  const messages = await db.message.findMany({
+  const messages = await db.comment.findMany({
+    where: {
+      articleId: MESSAGE_FAKE_ARTICLE_ID,
+    },
     orderBy: {
       createdAt: 'desc',
     },

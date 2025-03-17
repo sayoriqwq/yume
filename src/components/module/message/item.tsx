@@ -1,6 +1,6 @@
 'use client'
 
-import type { Message } from '@prisma/client'
+import type { Comment } from '@prisma/client'
 import { RelativeTime } from '@/components/common/time'
 import { Button } from '@/components/ui/button'
 import {
@@ -11,21 +11,23 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { siteConfig } from '@/config/site'
 import { useUser } from '@clerk/nextjs'
 import { Loader2, Trash2 } from 'lucide-react'
 import Image from 'next/image'
-import { useState, useTransition } from 'react'
+import { use, useState, useTransition } from 'react'
 import toast from 'react-hot-toast'
-import { deleteMessage } from './actions'
+import { deleteMessage, getMessageAuthor } from './actions'
 
 interface Props {
-  message: Message & { isSending?: boolean }
+  message: Comment & { isSending?: boolean }
   onDelete: (id: number) => void
 }
 
 export function MessageItem({ message, onDelete }: Props) {
   const [isPending, startTransition] = useTransition()
   const { user } = useUser()
+  const author = use(getMessageAuthor(message.authorId))
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const confirmDelete = () => {
@@ -48,7 +50,7 @@ export function MessageItem({ message, onDelete }: Props) {
         <div className="flex gap-3">
           <div className="flex shrink-0 flex-col items-center gap-2">
             <Image
-              src={message.userImg}
+              src={author?.image_url ?? siteConfig.avatar}
               width={40}
               height={40}
               alt="user image"
@@ -58,14 +60,14 @@ export function MessageItem({ message, onDelete }: Props) {
 
           <div className="flex w-full flex-col gap-1">
             <div className="flex items-center gap-3">
-              <p>{message.userName}</p>
+              <p>{author?.username}</p>
               <RelativeTime date={message.createdAt} className="text-muted-foreground text-xs" />
             </div>
 
             <div className="flex items-center gap-3 relative">
               <p className="shadow-2xs bg-card relative w-fit break-words rounded-xl px-4 py-2">
-                {message.message}
-                {user?.id === message.userId && (
+                {message.content}
+                {user?.id === message.authorId && (
                   <button
                     onClick={() => setIsDialogOpen(true)}
                     disabled={isPending}
