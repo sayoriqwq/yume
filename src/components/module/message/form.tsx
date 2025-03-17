@@ -1,6 +1,6 @@
 'use client'
 
-import type { Comment } from '@prisma/client'
+import type { Message } from '@/components/module/message/type'
 import { Textarea } from '@/components/ui/textarea'
 import { MESSAGE_FAKE_ARTICLE_ID } from '@/constants/message'
 import { useUser } from '@clerk/nextjs'
@@ -9,7 +9,7 @@ import toast from 'react-hot-toast'
 import { createMessage } from './actions'
 
 interface Props {
-  setOptimisticMessages: (updateFn: (messages: Comment[]) => Comment[]) => void
+  setOptimisticMessages: (updateFn: (messages: Message[]) => Message[]) => void
 }
 
 export function MessageForm({ setOptimisticMessages }: Props) {
@@ -33,7 +33,7 @@ export function MessageForm({ setOptimisticMessages }: Props) {
     if (!newMessage)
       return
 
-    const optimisticMessage: Comment & { isSending?: boolean } = {
+    const optimisticMessage: Message & { isSending?: boolean } = {
       // fake id
       id: Math.random(),
       content: newMessage,
@@ -44,6 +44,12 @@ export function MessageForm({ setOptimisticMessages }: Props) {
       isSending: true,
       createdAt: new Date(),
       updatedAt: new Date(),
+      author: {
+        id: user.id,
+        username: user.username!,
+        email: user.emailAddresses[0].emailAddress,
+        image_url: user.imageUrl,
+      },
     }
 
     setOptimisticMessages(prevMessages => [optimisticMessage, ...prevMessages])

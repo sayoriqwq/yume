@@ -120,7 +120,7 @@ model Comment {
   parent       Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: SetNull)
   replies      Comment[] @relation("CommentReplies")
 
-  status      ApprovalStatus @default(PENDING)
+  status      ApprovalStatus @default(APPROVED)
   
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt

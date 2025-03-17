@@ -1,6 +1,6 @@
 'use client'
 
-import type { Comment } from '@prisma/client'
+import type { Message } from '@/components/module/message/type'
 import { RelativeTime } from '@/components/common/time'
 import { Button } from '@/components/ui/button'
 import {
@@ -15,20 +15,20 @@ import { siteConfig } from '@/config/site'
 import { useUser } from '@clerk/nextjs'
 import { Loader2, Trash2 } from 'lucide-react'
 import Image from 'next/image'
-import { use, useState, useTransition } from 'react'
+import { useState, useTransition } from 'react'
 import toast from 'react-hot-toast'
-import { deleteMessage, getMessageAuthor } from './actions'
+import { deleteMessage } from './actions'
 
 interface Props {
-  message: Comment & { isSending?: boolean }
+  message: Message & { isSending?: boolean }
   onDelete: (id: number) => void
 }
 
 export function MessageItem({ message, onDelete }: Props) {
   const [isPending, startTransition] = useTransition()
-  const { user } = useUser()
-  const author = use(getMessageAuthor(message.authorId))
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const { user } = useUser()
+  const author = message.author
 
   const confirmDelete = () => {
     startTransition(async () => {

@@ -15,15 +15,6 @@ interface MessageState {
   message: string
 }
 
-export async function getMessageAuthor(authorId: string) {
-  const author = await db.user.findUnique({
-    where: {
-      id: authorId,
-    },
-  })
-  return author
-}
-
 export async function createMessage(_currentState: MessageState, formData: FormData): Promise<MessageState> {
   const user = await currentUser()
 
@@ -50,6 +41,7 @@ export async function createMessage(_currentState: MessageState, formData: FormD
       content: validationResult.data.message ?? '',
       authorId: user.id,
       articleId: MESSAGE_FAKE_ARTICLE_ID,
+      updatedAt: new Date(),
     },
   })
 
@@ -106,4 +98,19 @@ export async function deleteMessage(messageId: number): Promise<{ success: boole
       message: '删除留言时出错',
     }
   }
+}
+
+export async function getMessages() {
+  const messages = await db.comment.findMany({
+    where: {
+      articleId: MESSAGE_FAKE_ARTICLE_ID,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+    include: {
+      author: true,
+    },
+  })
+  return messages
 }
