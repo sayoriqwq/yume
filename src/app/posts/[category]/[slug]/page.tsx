@@ -1,6 +1,7 @@
 import { CustomMDX } from '@/components/mdx/mdx'
 import { PostHeader } from '@/components/mdx/post-header'
 import { getAllPosts } from '@/components/mdx/utils'
+import { CommentContainer } from '@/components/module/comment/comment-container'
 import { TableOfContents } from '@/components/toc/toc'
 import { WiderContainer } from '@/layout/container/Normal'
 import { notFound } from 'next/navigation'
@@ -34,6 +35,7 @@ export default async function Page({ params }: Props) {
       <div className="lg:block hidden">
         <TableOfContents />
       </div>
+      <CommentContainer articleId={post.metadata.id} />
     </WiderContainer>
   )
 }

@@ -17,7 +17,7 @@ export function TableOfContents() {
   const lenis = useLenis()
 
   useEffect(() => {
-    const elements = Array.from(document.querySelectorAll('h2, h3, h4'))
+    const elements = Array.from(document.querySelectorAll('.prose h2, .prose h3, .prose h4'))
     const items: TocItem[] = elements.map(element => ({
       id: element.id,
       text: element.textContent || '',

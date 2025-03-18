@@ -5,6 +5,7 @@ export interface Post {
 }
 
 export interface IPostMetaData {
+  id: number
   title: string
   category: string
   cover: string
