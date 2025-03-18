@@ -1,6 +1,6 @@
 'use client'
 
-import type { Message } from '@/components/module/message/type'
+import type { OptimisticMessage } from '@/components/module/message/type'
 import { RelativeTime } from '@/components/common/time'
 import { Button } from '@/components/ui/button'
 import {
@@ -15,32 +15,20 @@ import { siteConfig } from '@/config/site'
 import { useUser } from '@clerk/nextjs'
 import { Loader2, Trash2 } from 'lucide-react'
 import Image from 'next/image'
-import { useState, useTransition } from 'react'
-import toast from 'react-hot-toast'
-import { deleteMessage } from './actions'
+import { useState } from 'react'
 
 interface Props {
-  message: Message & { isSending?: boolean }
+  message: OptimisticMessage
   onDelete: (id: number) => void
 }
 
 export function MessageItem({ message, onDelete }: Props) {
-  const [isPending, startTransition] = useTransition()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const { user } = useUser()
   const author = message.author
 
   const confirmDelete = () => {
-    startTransition(async () => {
-      const result = await deleteMessage(message.id)
-      if (result.success) {
-        onDelete(message.id)
-        toast.success(result.message)
-      }
-      else {
-        toast.error(result.message)
-      }
-    })
+    onDelete(message.id)
     setIsDialogOpen(false)
   }
 
@@ -70,7 +58,6 @@ export function MessageItem({ message, onDelete }: Props) {
                 {user?.id === message.authorId && (
                   <button
                     onClick={() => setIsDialogOpen(true)}
-                    disabled={isPending}
                     className="absolute inset-0 flex-center backdrop-blur-[1px] bg-background/10 rounded-xl opacity-0 transition-opacity hover:opacity-100"
                     aria-label="删除消息"
                   >
@@ -94,8 +81,7 @@ export function MessageItem({ message, onDelete }: Props) {
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>取消</Button>
-            <Button variant="destructive" onClick={confirmDelete} disabled={isPending}>
-              {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+            <Button variant="destructive" onClick={confirmDelete}>
               删除
             </Button>
           </DialogFooter>

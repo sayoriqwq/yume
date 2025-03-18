@@ -1,5 +1,6 @@
 'use server'
 
+import type { MessageState } from './type'
 import { MESSAGE_FAKE_ARTICLE_ID } from '@/constants/message'
 import { db } from '@/db'
 import { currentUser } from '@clerk/nextjs/server'
@@ -10,12 +11,7 @@ const MessageSchema = z.object({
   message: z.string().min(1, '消息不能为空').max(500, '消息长度不能超过500字符'),
 })
 
-interface MessageState {
-  success: boolean
-  message: string
-}
-
-export async function createMessage(_currentState: MessageState, formData: FormData): Promise<MessageState> {
+export async function createMessage(formData: FormData): Promise<MessageState> {
   const user = await currentUser()
 
   if (!user) {
@@ -36,23 +32,31 @@ export async function createMessage(_currentState: MessageState, formData: FormD
     }
   }
 
-  await db.comment.create({
-    data: {
-      content: validationResult.data.message ?? '',
-      authorId: user.id,
-      articleId: MESSAGE_FAKE_ARTICLE_ID,
-      updatedAt: new Date(),
-    },
-  })
+  try {
+    await db.comment.create({
+      data: {
+        content: validationResult.data.message ?? '',
+        authorId: user.id,
+        articleId: MESSAGE_FAKE_ARTICLE_ID,
+        updatedAt: new Date(),
+      },
+    })
 
-  revalidatePath('/message')
-  return {
-    success: true,
-    message: '留言发送成功',
+    revalidatePath('/message')
+    return {
+      success: true,
+      message: '留言发送成功',
+    }
+  }
+  catch (error) {
+    console.error(`出错了！原因是${error}`)
+    return {
+      success: false,
+      message: '留言发送失败',
+    }
   }
 }
-
-export async function deleteMessage(messageId: number): Promise<{ success: boolean, message: string }> {
+export async function deleteMessage(messageId: number): Promise<MessageState> {
   const user = await currentUser()
 
   if (!user) {
@@ -101,16 +105,22 @@ export async function deleteMessage(messageId: number): Promise<{ success: boole
 }
 
 export async function getMessages() {
-  const messages = await db.comment.findMany({
-    where: {
-      articleId: MESSAGE_FAKE_ARTICLE_ID,
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-    include: {
-      author: true,
-    },
-  })
-  return messages
+  try {
+    const messages = await db.comment.findMany({
+      where: {
+        articleId: MESSAGE_FAKE_ARTICLE_ID,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        author: true,
+      },
+    })
+    return messages
+  }
+  catch (error) {
+    console.error(`出错了！原因是${error}`)
+    return []
+  }
 }

@@ -54,7 +54,8 @@
   --color-yume-blue-300: oklch(87.313% 0.09079 187.8);
   --color-yume-blue-400: oklch(82.561% 0.10326 201.59);
   --color-yume-blue-500: oklch(73.552% 0.11253 221.97);
-  --color-yume-blue-600: oklch(62.227% 0.13628 243.47);
+  /* --color-yume-blue-600: oklch(62.227% 0.13628 243.47); */
+  --color-yume-blue-600: oklch(65% 0.17 243.47); /* 增加了亮度和色度 */
   --color-yume-blue-700: oklch(49.125% 0.14354 256.8);
   --color-yume-blue-800: oklch(37.834% 0.14415 265.1);
   --color-yume-blue-900: oklch(33.948% 0.14474 267.42);
