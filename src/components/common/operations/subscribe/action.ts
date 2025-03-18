@@ -7,7 +7,6 @@ import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 
 const FormSchema = z.object({
-  id: z.number(),
   email: z.string().email({
     message: '邮箱格式不正确',
   }).refine(validateEmailAddress, {
@@ -21,8 +20,7 @@ export interface SubscribeState {
 }
 
 export async function createSubscriber(_currentState: SubscribeState, formData: FormData) {
-  const CreateSubscriber = FormSchema.omit({ id: true })
-  const validatedField = await CreateSubscriber.safeParseAsync({
+  const validatedField = await FormSchema.safeParseAsync({
     email: formData.get('email'),
   })
 
