@@ -1,4 +1,4 @@
-import process from 'node:process'
+import process from 'process'
 import { PrismaClient } from '@prisma/client'
 
 declare const globalThis: {
