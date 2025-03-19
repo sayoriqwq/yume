@@ -1,4 +1,4 @@
-import { LoadingIcon } from '@/components/common/loading/loading-icon'
+import { Loading } from '@/components/common/loading'
 import { IMG_PADDING } from '@/constants/page-config'
 import { useMounted } from '@/hooks/useMounted'
 import { motion, useScroll, useTransform } from 'framer-motion'
@@ -42,7 +42,7 @@ export function CenterImg() {
   }
 
   if (!mounted)
-    return <LoadingIcon />
+    return <Loading />
 
   return (
     <motion.div

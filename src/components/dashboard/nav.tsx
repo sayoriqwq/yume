@@ -61,11 +61,11 @@ export function DashboardNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="hidden w-64 flex-col border-r bg-background md:flex">
+    <nav className="hidden w-64 h-full flex-col border-r bg-background md:flex">
       <div className="flex h-16 items-center border-b px-4">
         <span className="text-xl font-bold">yume-space</span>
       </div>
-      <div className="flex-1 space-y-1 p-2">
+      <div className="space-y-1 p-2">
         {items.map((item) => {
           const Icon = item.icon
           return (
