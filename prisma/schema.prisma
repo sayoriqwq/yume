@@ -7,11 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  ADMIN
-  USER
-}
-
 enum ArticleType {
   BLOG      // MDX
   NOTE      // 随记
@@ -32,20 +27,13 @@ enum ApprovalStatus {
 model User {
   id            String    @id @unique // clerk id
   username          String
-  email         String    @unique
-  emailVerified DateTime?  
+  email         String?    @unique
   image_url         String?
-  
   clerkData     Json?   
-  
-  role          UserRole  @default(USER)
-  
+    
   // 关联数据
   comments      Comment[] // 用户发表的评论
   likes         Like[] // 用户点赞
-  
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
 }
 
 model Article {

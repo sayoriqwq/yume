@@ -1,8 +1,31 @@
-import { clerkMiddleware } from '@clerk/nextjs/server'
+import type { UserRoleType } from '@/types/user'
+import { UserRole } from '@/types/user'
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { NextResponse } from 'next/server'
 
-// const isPublicRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)'])
+const isProtectedRoute = createRouteMatcher(['/dashboard(.*)'])
 
-export default clerkMiddleware()
+export default clerkMiddleware(
+  async (auth, req) => {
+    const { userId, redirectToSignIn, sessionClaims } = await auth()
+    if (!userId && isProtectedRoute(req)) {
+      return redirectToSignIn({ returnBackUrl: req.url })
+    }
+
+    // 再鉴权
+    const userRole = sessionClaims?.role as UserRoleType
+    const isAdmin = userRole === UserRole.ADMIN
+
+    if (isProtectedRoute(req) && !isAdmin) {
+      return NextResponse.json({
+        code: 403,
+        message: '权限不足',
+      }, { status: 403 })
+    }
+
+    return NextResponse.next()
+  },
+)
 
 export const config = {
   matcher: [

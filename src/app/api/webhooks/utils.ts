@@ -1,8 +1,5 @@
 import type { UserJSON, WebhookEvent } from '@clerk/nextjs/server'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
-
+import { db } from '@/db'
 /**
  * 同步Clerk用户数据到数据库
  */
@@ -20,12 +17,11 @@ export async function syncWithDatabase(evt: WebhookEvent) {
           email => email.id === userData.primary_email_address_id,
         )
 
-        await prisma.user.create({
+        await db.user.create({
           data: {
             id: userData.id,
             username: userData.username || '神秘',
-            email: primaryEmail?.email_address || '',
-            emailVerified: primaryEmail?.verification?.status === 'verified' ? new Date() : null,
+            email: primaryEmail?.email_address,
             image_url: userData.image_url || null,
             clerkData: JSON.parse(JSON.stringify(userData)),
           },
@@ -41,12 +37,11 @@ export async function syncWithDatabase(evt: WebhookEvent) {
           email => email.id === userData.primary_email_address_id,
         )
 
-        await prisma.user.update({
+        await db.user.update({
           where: { id: userData.id },
           data: {
             username: userData.username || '神秘',
-            email: primaryEmail?.email_address || '',
-            emailVerified: primaryEmail?.verification?.status === 'verified' ? new Date() : null,
+            email: primaryEmail?.email_address,
             image_url: userData.image_url || null,
             clerkData: JSON.parse(JSON.stringify(userData)),
           },
@@ -58,7 +53,7 @@ export async function syncWithDatabase(evt: WebhookEvent) {
 
       // 用户删除事件
       case 'user.deleted': {
-        await prisma.user.delete({
+        await db.user.delete({
           where: { id: userData.id },
         })
 
