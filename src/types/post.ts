@@ -1,21 +1,17 @@
 export interface Post {
+  id?: number
   metadata: IPostMetaData
   slug: string
   content: string
 }
 
 export interface IPostMetaData {
-  id: number
   title: string
   category: string
   cover: string
-  publishedAt: string
+  createdAt: string
+  updatedAt?: string
   published?: boolean
   tags?: string[]
-  summary?: string
-}
-
-export interface ITag {
-  name: string
-  count: number
+  description?: string
 }

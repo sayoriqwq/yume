@@ -1,13 +1,13 @@
 import { getAllPosts } from '@/components/mdx/utils'
-import { PostList } from '@/components/module/post/post-list'
+import { PostCardList } from '@/components/module/post/post-card-list'
 import { NormalContainer } from '@/layout/container/Normal'
 
-export default async function BlogPage() {
+export default async function Page() {
   const posts = getAllPosts()
 
   return (
     <NormalContainer className="mt-10 grid grid-cols-1">
-      <PostList posts={posts} />
+      <PostCardList posts={posts} />
     </NormalContainer>
   )
 }

@@ -1,23 +1,15 @@
-import fs from 'fs'
-import path from 'path'
 import { db } from '@/db'
-import matter from 'gray-matter'
+import { getMDXData } from './utils'
 
 interface ImportOptions {
   sourceDir: string
-  categoryId?: number
-  tags?: string[]
 }
 
-export async function importMDXFiles({ sourceDir, categoryId, tags }: ImportOptions) {
-  const files = fs.readdirSync(sourceDir)
-  const mdxFiles = files.filter(file => file.endsWith('.mdx'))
+export async function importMDXFiles({ sourceDir }: ImportOptions) {
+  const posts = getMDXData(sourceDir)
 
-  for (const file of mdxFiles) {
-    const filePath = path.join(sourceDir, file)
-    const fileContent = fs.readFileSync(filePath, 'utf-8')
-    const { data } = matter(fileContent)
-    const slug = file.replace('.mdx', '')
+  for (const post of posts) {
+    const { slug, metadata } = post
 
     // 检查是否已存在
     const existing = await db.article.findUnique({
@@ -29,19 +21,22 @@ export async function importMDXFiles({ sourceDir, categoryId, tags }: ImportOpti
       continue
     }
 
-    // 创建或更新文章
     await db.article.create({
       data: {
         slug,
-        title: data.title,
-        description: data.description,
-        cover: data.cover,
+        title: metadata.title,
+        description: metadata.description,
+        cover: metadata.cover,
         type: 'BLOG',
-        mdxPath: filePath,
-        published: data.published ?? true,
-        categoryId,
+        published: metadata.published ?? true,
+        category: {
+          connectOrCreate: {
+            where: { name: metadata.category },
+            create: { name: metadata.category },
+          },
+        },
         tags: {
-          connectOrCreate: tags?.map(tag => ({
+          connectOrCreate: metadata.tags?.map(tag => ({
             where: { name: tag },
             create: { name: tag },
           })) ?? [],

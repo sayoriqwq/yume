@@ -15,14 +15,14 @@ const pattern = 'YYYY-MM-DD'
 
 export function RelativeTime({ date, className }: TimeProps) {
   return (
-    <time className={cn('time', className)} dateTime={date.toString()}>
+    <time className={cn('time', className)} dateTime={date?.toString()}>
       {dayjs().to(dayjs(date))}
     </time>
   )
 }
 export function NormalTime({ date, className }: TimeProps) {
   return (
-    <time className={cn('time', className)} dateTime={date.toString()}>
+    <time className={cn('time', className)} dateTime={date?.toString()}>
       {dayjs(date).format(pattern)}
     </time>
   )

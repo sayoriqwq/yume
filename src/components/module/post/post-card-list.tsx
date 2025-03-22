@@ -9,7 +9,11 @@ import { PostCard } from '../home/post-card'
 
 const POSTS_PER_PAGE = 5
 
-export function PostList({ posts }: { posts: Post[] }) {
+interface PostCardListProps {
+  posts: Post[]
+}
+
+export function PostCardList({ posts }: PostCardListProps) {
   const [currentPage, setCurrentPage] = useState(1)
   const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE)
 

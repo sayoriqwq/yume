@@ -1,35 +1,40 @@
-import { Badge } from '@/components/ui/badge'
-import { cn } from '@/lib/utils'
-import Link from 'next/link'
+'use client'
+
+import { Button } from '@/components/ui/button'
+import { useModalStack } from 'rc-modal-sheet'
+import { useCallback } from 'react'
 
 interface TagProps {
   name: string
-  count?: number
-  current?: boolean
-  size?: 'sm' | 'md' | 'lg'
 }
 
-export function Tag({ name, current, count, size = 'sm' }: TagProps) {
-  return (
-    <Link href={`/tags/${name}`}>
-      <Badge
-        variant="secondary"
-        className={cn(
-          'cursor-pointer hover:bg-accent hover:text-accent-foreground',
-          current && 'bg-accent text-accent-foreground',
-          size === 'sm' && 'text-xs px-3 py-0.5',
-          size === 'md' && 'text-sm px-5 py-1',
-          size === 'lg' && 'text-md px-7 py-1.5',
-        )}
+function useModal(name: string) {
+  const { present } = useModalStack()
 
-      >
-        {name}
-        {count !== undefined && (
-          <span className="text-muted-foreground ml-1">
-            {count}
-          </span>
-        )}
-      </Badge>
-    </Link>
+  return useCallback(() => {
+    // 打开modal时直接展示一个加载中的状态
+    present({
+      title: `标签: ${name}`,
+      content: () => {
+        return (
+          <div className="min-h-[200px] w-full flex justify-center items-center">
+            <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
+          </div>
+        )
+      },
+    })
+  }, [present, name])
+}
+
+export function Tag({ name }: TagProps) {
+  const showModal = useModal(name)
+  return (
+    <Button
+      variant="link"
+      className="p-1 text-md"
+      onClick={showModal}
+    >
+      {name}
+    </Button>
   )
 }

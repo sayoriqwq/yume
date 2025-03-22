@@ -1,6 +1,10 @@
 import path from 'path'
 import process from 'process'
 import { importMDXFiles } from '@/components/mdx/import'
+import * as dotenv from 'dotenv'
+
+// 显示加载环境变量
+dotenv.config()
 
 async function main() {
   const sourceDir = path.join(process.cwd(), 'contents')
@@ -8,8 +12,6 @@ async function main() {
   try {
     await importMDXFiles({
       sourceDir,
-      // categoryId: 1,
-      // tags: ['默认标签'],
     })
     console.log('MDX 文件导入完成')
   }

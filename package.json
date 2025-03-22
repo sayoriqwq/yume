@@ -1,5 +1,6 @@
 {
   "name": "yume",
+  "type": "module",
   "version": "0.0.0",
   "private": true,
   "packageManager": "pnpm@10.6.3",
@@ -49,6 +50,7 @@
     "cmdk": "1.0.0",
     "code-inspector-plugin": "^0.20.0",
     "dayjs": "^1.11.13",
+    "dotenv": "^16.4.7",
     "framer-motion": "12.4.2",
     "gray-matter": "^4.0.3",
     "jotai": "^2.12.0",

@@ -1,4 +1,5 @@
 import type { IPostMetaData } from '@/types/post'
+import { Tag } from '../module/tag/tag'
 
 export function PostHeader({ metadata }: { metadata: IPostMetaData }) {
   return (
@@ -7,15 +8,33 @@ export function PostHeader({ metadata }: { metadata: IPostMetaData }) {
         {metadata.title}
       </h1>
 
-      <p className="text-muted-foreground">
-        发布于
-        {' '}
-        {metadata.publishedAt}
-      </p>
+      <div className="text-muted-foreground flex-center gap-3 mb-2">
+        <span>
+          发布于
+          {' '}
+          {metadata.createdAt}
+        </span>
+        { metadata?.updatedAt && (
+          <span>
+            更新于
+            {' '}
+            {metadata.updatedAt}
+          </span>
+        )}
+        <span>
+          #
+          {metadata.category}
+        </span>
+        <span>
+          {metadata.tags?.map(tag => (
+            <Tag key={tag} name={tag} />
+          ))}
+        </span>
+      </div>
 
-      <p className="text-muted-foreground bg-muted max-w-2xl mx-auto p-4 leading-relaxed border-l-4 border-primary/90 rounded-xl">
-        {metadata.summary}
-      </p>
+      <div className="text-muted-foreground bg-muted max-w-2xl mx-auto p-4 leading-relaxed border-l-4 border-primary/90 rounded-xl">
+        {metadata.description}
+      </div>
     </div>
   )
 }
