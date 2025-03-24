@@ -26,12 +26,12 @@ export function PostCard({ post, className }: PostCardProps) {
           {post.metadata.title}
         </h3>
         <p className="text-muted-foreground mt-1 group-hover:text-accent-foreground/90 transition-colors">
-          {post.metadata.publishedAt}
+          {post.metadata.createdAt}
         </p>
       </div>
       <div className="relative aspect-4/3 w-48 shrink-0 overflow-hidden rounded-lg transition-transform group-hover:shadow-lg">
         <Image
-          src={post.metadata.cover.replace('http://localhost:3000', '')}
+          src={post.metadata.cover}
           alt={post.metadata.title}
           fill
           className="object-cover transition-all duration-300 group-hover:scale-105"

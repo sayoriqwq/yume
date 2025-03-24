@@ -1,21 +1,37 @@
 'use client'
 
 import type { CommentWithAuthor } from './types'
+import { useNormalizeResponse } from '@/atoms/appData/normalize'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { useUser } from '@clerk/nextjs'
 import { useRef, useState } from 'react'
+import useSWR from 'swr'
 import { CommentItem } from './comment-item'
 import { useComments } from './hooks'
 
 interface Props {
-  articleId: number
+  articleSlug: string
 }
 
-export function CommentContainer({ articleId }: Props) {
+export function CommentContainer({ articleSlug }: Props) {
   const { user } = useUser()
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [content, setContent] = useState('')
+  const normalizeResponse = useNormalizeResponse()
+
+  // 通过slug获取文章ID
+  const { data, isLoading } = useSWR(
+    `/api/articles/by-slug/${articleSlug}`,
+    async (url: string) => {
+      const res = await fetch(url)
+      const data = await res.json()
+      normalizeResponse(data)
+      return data.data
+    },
+  )
+
+  const articleId = data?.articleId
   const { comments, createComment, deleteComment } = useComments(articleId)
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -26,7 +42,7 @@ export function CommentContainer({ articleId }: Props) {
   }
 
   function handleSubmit() {
-    if (!content.trim() || !user)
+    if (!content.trim() || !user || !articleId)
       return
 
     createComment(content)
@@ -82,7 +98,15 @@ export function CommentContainer({ articleId }: Props) {
     return rootComments
   }
 
-  const commentTree = buildCommentTree(comments)
+  const commentTree = buildCommentTree(comments || [])
+
+  if (isLoading) {
+    return <div className="mt-10 py-8 text-center">加载评论...</div>
+  }
+
+  if (!articleId) {
+    return <div className="mt-10 py-8 text-center">无法加载评论，找不到文章</div>
+  }
 
   return (
     <div className="space-y-8 mt-10">
@@ -90,7 +114,7 @@ export function CommentContainer({ articleId }: Props) {
         <h2 className="text-2xl font-bold">评论</h2>
         <span className="text-muted-foreground">
           (
-          {comments.length}
+          {comments?.length || 0}
           )
         </span>
       </div>

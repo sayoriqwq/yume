@@ -13,10 +13,10 @@ async function fetcher(url: string): Promise<CommentWithAuthor[]> {
   return response.json()
 }
 
-export function useComments(articleId: number) {
+export function useComments(articleId?: number) {
   const { user } = useUser()
   const { data: comments = [], mutate } = useSWR<CommentWithAuthor[]>(
-    `/api/comments/${articleId}`,
+    articleId ? `/api/comments/${articleId}` : null,
     fetcher,
     {
       revalidateOnFocus: false,
@@ -25,23 +25,22 @@ export function useComments(articleId: number) {
   )
 
   const handleCreateComment = useCallback(async (content: string, parentId: number | null = null) => {
-    if (!user)
+    if (!user || !articleId)
       return
 
     try {
       const optimisticData: CommentWithAuthor = {
-        id: Date.now(),
+        id: Math.floor(Math.random() * -1000), // 临时负ID
         content,
-        authorId: user.id,
         articleId,
-        parentId,
+        parentId: parentId || null,
         status: 'APPROVED',
         createdAt: new Date(),
         updatedAt: new Date(),
+        authorId: user.id,
         author: {
           id: user.id,
-          username: user.username || user.firstName || '未知用户',
-          email: user.emailAddresses[0]?.emailAddress || '',
+          username: user.username || user.firstName || '用户',
           image_url: user.imageUrl,
         },
         replies: [],

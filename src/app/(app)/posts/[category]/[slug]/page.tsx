@@ -35,7 +35,7 @@ export default async function Page({ params }: Props) {
       <div className="lg:block hidden">
         <TableOfContents />
       </div>
-      <CommentContainer articleId={post.metadata.id} />
+      <CommentContainer articleSlug={post.slug} />
     </WiderContainer>
   )
 }

@@ -1,11 +1,11 @@
 export interface Post {
-  id?: number
   metadata: IPostMetaData
   slug: string
   content: string
 }
 
 export interface IPostMetaData {
+  id?: number
   title: string
   category: string
   cover: string

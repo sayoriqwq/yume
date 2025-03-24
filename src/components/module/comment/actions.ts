@@ -32,6 +32,30 @@ export async function createComment(data: CreateCommentData): Promise<CommentSta
   }
 
   try {
+    // 只会在开发的时候有可能会出现，测试的时候没有开webhook针对本地地址的代理因此没有同步user数据到数据库
+
+    // 检查用户是否存在于数据库中
+    const dbUser = await db.user.findUnique({
+      where: { id: user.id },
+    })
+
+    // 如果用户不存在，则创建用户
+    if (!dbUser) {
+      const primaryEmail = user.emailAddresses?.find(
+        email => email.id === user.primaryEmailAddressId,
+      )?.emailAddress
+
+      await db.user.create({
+        data: {
+          id: user.id,
+          username: user.username || user.firstName || '未知用户',
+          email: primaryEmail || null,
+          image_url: user.imageUrl,
+          clerkData: JSON.parse(JSON.stringify(user)),
+        },
+      })
+    }
+
     await db.comment.create({
       data: {
         content: validationResult.data.content,

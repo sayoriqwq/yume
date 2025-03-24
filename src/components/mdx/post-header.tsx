@@ -1,4 +1,5 @@
 import type { IPostMetaData } from '@/types/post'
+import { Category } from '../module/category/category'
 import { Tag } from '../module/tag/tag'
 
 export function PostHeader({ metadata }: { metadata: IPostMetaData }) {
@@ -22,8 +23,9 @@ export function PostHeader({ metadata }: { metadata: IPostMetaData }) {
           </span>
         )}
         <span>
-          #
-          {metadata.category}
+          {metadata.category && (
+            <Category name={metadata.category} />
+          )}
         </span>
         <span>
           {metadata.tags?.map(tag => (

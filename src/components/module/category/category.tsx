@@ -1,9 +1,9 @@
 'use client'
 
-import type { Article, Category } from '@/atoms/appData/store'
-import { useTags } from '@/atoms/appData/hooks/useTags'
+import type { Article } from '@/atoms/appData/store'
+import { useCategoryByName } from '@/atoms/appData/hooks/useCategories'
 import { useNormalizeResponse } from '@/atoms/appData/normalize'
-import { articlesAtom, categoriesAtom, tagsAtom } from '@/atoms/appData/store'
+import { articlesAtom, categoriesAtom } from '@/atoms/appData/store'
 
 import { Button } from '@/components/ui/button'
 import { useAtomValue } from 'jotai'
@@ -11,34 +11,32 @@ import { useModalStack } from 'rc-modal-sheet'
 import { useCallback } from 'react'
 import useSWR from 'swr'
 
-interface TagProps {
+interface CategoryProps {
   name: string
 }
 
-interface TagContentProps {
-  tagId: number
+interface CategoryContentProps {
+  categoryId: number
 }
 
-interface TagArticlesResponse {
+interface CategoryArticlesResponse {
   data: {
-    tagId: number
+    categoryId: number
     articleIds: number[]
   }
   objects: {
     articles: Record<number, Article>
-    categories: Record<number, Category>
   }
 }
 
-function TagContent({ tagId }: TagContentProps) {
+function CategoryContent({ categoryId }: CategoryContentProps) {
   const articles = useAtomValue(articlesAtom)
   const categories = useAtomValue(categoriesAtom)
-  const tags = useAtomValue(tagsAtom)
   const normalizeResponse = useNormalizeResponse()
 
-  // 获取标签相关文章
-  const { data, isLoading } = useSWR<TagArticlesResponse['data']>(
-    `/api/tags/${tagId}/articles`,
+  // 获取分类相关文章
+  const { data, isLoading } = useSWR<CategoryArticlesResponse['data']>(
+    `/api/categories/${categoryId}/articles`,
     async (url: string) => {
       const res = await fetch(url)
       const data = await res.json()
@@ -49,10 +47,9 @@ function TagContent({ tagId }: TagContentProps) {
     },
   )
 
-  // 从集中存储中获取该标签的文章
-  const tagArticles = Object.values(articles).filter((article) => {
-    // 假设articleTags关系已正确存储
-    return data?.articleIds?.includes(article.id)
+  // 从集中存储中获取该分类的文章
+  const categoryArticles = Object.values(articles).filter((article) => {
+    return article.categoryId === categoryId || data?.articleIds?.includes(article.id)
   })
 
   if (isLoading) {
@@ -66,27 +63,23 @@ function TagContent({ tagId }: TagContentProps) {
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-medium">
-        标签"
-        {tags[tagId]?.name}
+        分类"
+        {categories[categoryId]?.name}
         "的文章
       </h3>
-      {tagArticles.length === 0
+      {categoryArticles.length === 0
         ? (
             <p>没有找到相关文章</p>
           )
         : (
             <div className="space-y-2">
-              {tagArticles.map(article => (
+              {categoryArticles.map(article => (
                 <div key={article.id} className="p-3 border rounded">
                   <a href={`/posts/${article.category || categories[article.categoryId]?.name}/${article.slug}`} className="font-medium hover:underline">
                     {article.title}
                   </a>
                   <div className="mt-1 flex items-center gap-2">
-                    {article.categoryId && categories[article.categoryId] && (
-                      <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
-                        {categories[article.categoryId].name}
-                      </span>
-                    )}
+                    {/* 文章描述 */}
                     {article.description && (
                       <p className="text-sm text-gray-500">{article.description}</p>
                     )}
@@ -99,36 +92,32 @@ function TagContent({ tagId }: TagContentProps) {
   )
 }
 
-export function Tag({ name }: TagProps) {
+export function Category({ name }: CategoryProps) {
   const { present } = useModalStack()
-  const tags = useAtomValue(tagsAtom)
+  const categories = useAtomValue(categoriesAtom)
 
-  // 预加载所有标签数据
-  const { data: tagData, isLoading } = useTags()
+  // 预加载并查找分类ID
+  const { data: categoryData, isLoading } = useCategoryByName(name)
+  const categoryId = categoryData?.data?.categoryId
 
-  // 根据名称查找标签ID (使用Array.find从对象值中查找)
-  const tagEntry = Object.entries(tags).find(([_, tag]) => tag.name === name)
-  const tagId = tagEntry ? Number(tagEntry[0]) : undefined
-
-  // 开发调试用
-  console.log('Tag Component Debug:', {
+  // 调试用
+  console.log('Category Component Debug:', {
     name,
-    tagsAtomValue: tags,
-    tagDataFromHook: tagData,
-    foundTagId: tagId,
+    categoriesAtomValue: categories,
+    categoryIdFromAPI: categoryId,
   })
 
   const showModal = useCallback(() => {
-    if (!tagId) {
-      console.error(`找不到名为 "${name}" 的标签ID`)
+    if (!categoryId) {
+      console.error(`找不到名为 "${name}" 的分类ID`)
       return
     }
 
     present({
-      title: `标签: ${name}`,
-      content: () => <TagContent tagId={tagId} />,
+      title: `分类: ${name}`,
+      content: () => <CategoryContent categoryId={categoryId} />,
     })
-  }, [present, name, tagId])
+  }, [present, name, categoryId])
 
   if (isLoading) {
     return (
@@ -147,7 +136,7 @@ export function Tag({ name }: TagProps) {
       variant="link"
       className="p-1 text-md"
       onClick={showModal}
-      disabled={!tagId}
+      disabled={!categoryId}
     >
       {name}
     </Button>
