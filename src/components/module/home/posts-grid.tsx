@@ -9,7 +9,7 @@ export function PostsGrid({ posts }: { posts: Post[] }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2">
       {posts.map(post => (
-        <HoverBg key={post.slug}>
+        <HoverBg key={post.metadata.slug}>
           <ScrollToShow y={40}>
             <PostCard post={post} />
           </ScrollToShow>

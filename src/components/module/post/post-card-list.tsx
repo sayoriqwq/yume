@@ -25,7 +25,7 @@ export function PostCardList({ posts }: PostCardListProps) {
     <div className="space-y-8">
       <div className="relative grid">
         {currentPosts.map(post => (
-          <HoverBg key={post.slug}>
+          <HoverBg key={post.metadata.slug}>
             <PostCard post={post} />
           </HoverBg>
         ))}

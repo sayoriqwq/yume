@@ -1,11 +1,13 @@
+// 博客文章类型，from .mdx
+
 export interface Post {
   metadata: IPostMetaData
-  slug: string
   content: string
 }
 
+// from matter
 export interface IPostMetaData {
-  id?: number
+  slug: string
   title: string
   category: string
   cover: string

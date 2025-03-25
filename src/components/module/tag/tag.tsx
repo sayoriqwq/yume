@@ -33,25 +33,20 @@ interface TagArticlesResponse {
 function TagContent({ tagId }: TagContentProps) {
   const articles = useAtomValue(articlesAtom)
   const categories = useAtomValue(categoriesAtom)
-  const tags = useAtomValue(tagsAtom)
   const normalizeResponse = useNormalizeResponse()
 
-  // 获取标签相关文章
   const { data, isLoading } = useSWR<TagArticlesResponse['data']>(
     `/api/tags/${tagId}/articles`,
     async (url: string) => {
       const res = await fetch(url)
       const data = await res.json()
 
-      // 规范化并存储数据
       normalizeResponse(data)
       return data.data
     },
   )
 
-  // 从集中存储中获取该标签的文章
   const tagArticles = Object.values(articles).filter((article) => {
-    // 假设articleTags关系已正确存储
     return data?.articleIds?.includes(article.id)
   })
 
@@ -65,11 +60,6 @@ function TagContent({ tagId }: TagContentProps) {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium">
-        标签"
-        {tags[tagId]?.name}
-        "的文章
-      </h3>
       {tagArticles.length === 0
         ? (
             <p>没有找到相关文章</p>
@@ -88,7 +78,7 @@ function TagContent({ tagId }: TagContentProps) {
                       </span>
                     )}
                     {article.description && (
-                      <p className="text-sm text-gray-500">{article.description}</p>
+                      <p className="text-sm text-muted-foreground">{article.description}</p>
                     )}
                   </div>
                 </div>
@@ -103,20 +93,10 @@ export function Tag({ name }: TagProps) {
   const { present } = useModalStack()
   const tags = useAtomValue(tagsAtom)
 
-  // 预加载所有标签数据
-  const { data: tagData, isLoading } = useTags()
+  const { isLoading } = useTags()
 
-  // 根据名称查找标签ID (使用Array.find从对象值中查找)
   const tagEntry = Object.entries(tags).find(([_, tag]) => tag.name === name)
   const tagId = tagEntry ? Number(tagEntry[0]) : undefined
-
-  // 开发调试用
-  console.log('Tag Component Debug:', {
-    name,
-    tagsAtomValue: tags,
-    tagDataFromHook: tagData,
-    foundTagId: tagId,
-  })
 
   const showModal = useCallback(() => {
     if (!tagId) {

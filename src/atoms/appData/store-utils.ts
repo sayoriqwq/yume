@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai'
-import { articlesAtom, categoriesAtom, commentsAtom, tagsAtom, usersAtom } from './store'
+import { articlesAtom, categoriesAtom, commentsAtom, tagsAtom } from './store'
 
 export function createEntityHelpers<T extends { id: string | number }>(
   useEntityAtom: () => [Record<string | number, T>, (update: Partial<Record<string | number, T>>) => void],
@@ -56,7 +56,6 @@ export function createEntityHelpers<T extends { id: string | number }>(
 }
 
 // 为每种实体类型创建助手
-export const userHelpers = createEntityHelpers<any>(() => useAtom(usersAtom))
 export const articleHelpers = createEntityHelpers<any>(() => useAtom(articlesAtom))
 export const categoryHelpers = createEntityHelpers<any>(() => useAtom(categoriesAtom))
 export const tagHelpers = createEntityHelpers<any>(() => useAtom(tagsAtom))

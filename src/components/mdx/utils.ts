@@ -20,8 +20,7 @@ export function getMDXData(dir: string): Post[] {
     const { data: metadata, content } = readMDXFile(path.join(dir, file))
     const slug = path.basename(file, path.extname(file))
     return {
-      metadata: metadata as IPostMetaData,
-      slug,
+      metadata: { ...metadata, slug } as IPostMetaData,
       content,
     }
   })
@@ -44,6 +43,6 @@ export function getLatestPosts(num = 4): Post[] {
   return sortPosts(posts).slice(0, num)
 }
 
-export function getAllPostsByCategory(category: string): Post[] {
+export function getPostsByCategory(category: string): Post[] {
   return getAllPosts().filter(post => post.metadata.category === category)
 }

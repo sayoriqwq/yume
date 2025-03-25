@@ -34,20 +34,17 @@ function CategoryContent({ categoryId }: CategoryContentProps) {
   const categories = useAtomValue(categoriesAtom)
   const normalizeResponse = useNormalizeResponse()
 
-  // 获取分类相关文章
   const { data, isLoading } = useSWR<CategoryArticlesResponse['data']>(
     `/api/categories/${categoryId}/articles`,
     async (url: string) => {
       const res = await fetch(url)
       const data = await res.json()
 
-      // 规范化并存储数据
       normalizeResponse(data)
       return data.data
     },
   )
 
-  // 从集中存储中获取该分类的文章
   const categoryArticles = Object.values(articles).filter((article) => {
     return article.categoryId === categoryId || data?.articleIds?.includes(article.id)
   })
@@ -62,11 +59,6 @@ function CategoryContent({ categoryId }: CategoryContentProps) {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium">
-        分类"
-        {categories[categoryId]?.name}
-        "的文章
-      </h3>
       {categoryArticles.length === 0
         ? (
             <p>没有找到相关文章</p>
@@ -79,9 +71,8 @@ function CategoryContent({ categoryId }: CategoryContentProps) {
                     {article.title}
                   </a>
                   <div className="mt-1 flex items-center gap-2">
-                    {/* 文章描述 */}
                     {article.description && (
-                      <p className="text-sm text-gray-500">{article.description}</p>
+                      <p className="text-sm text-muted-foreground">{article.description}</p>
                     )}
                   </div>
                 </div>
@@ -96,11 +87,9 @@ export function Category({ name }: CategoryProps) {
   const { present } = useModalStack()
   const categories = useAtomValue(categoriesAtom)
 
-  // 预加载并查找分类ID
   const { data: categoryData, isLoading } = useCategoryByName(name)
   const categoryId = categoryData?.data?.categoryId
 
-  // 调试用
   console.log('Category Component Debug:', {
     name,
     categoriesAtomValue: categories,
@@ -126,6 +115,7 @@ export function Category({ name }: CategoryProps) {
         className="p-1 text-md opacity-70"
         disabled
       >
+        #
         {name}
       </Button>
     )
@@ -138,6 +128,7 @@ export function Category({ name }: CategoryProps) {
       onClick={showModal}
       disabled={!categoryId}
     >
+      #
       {name}
     </Button>
   )

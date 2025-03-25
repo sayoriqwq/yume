@@ -56,7 +56,6 @@ export type Collection<T> = Record<string | number, T>
 
 // 根状态结构
 export interface RootState {
-  users: Collection<User>
   articles: Collection<Article>
   categories: Collection<Category>
   tags: Collection<Tag>
@@ -66,7 +65,6 @@ export interface RootState {
 
 // 初始化空集合
 const initialState: RootState = {
-  users: {},
   articles: {},
   categories: {},
   tags: {},
@@ -93,10 +91,6 @@ function createFilteredSetter(key: keyof RootState) {
   }
 }
 // 为每种实体类型创建选择器atom
-export const usersAtom = atom(
-  get => get(storeAtom).users,
-  createFilteredSetter('users'),
-)
 
 export const articlesAtom = atom(
   get => get(storeAtom).articles,

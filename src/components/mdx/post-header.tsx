@@ -1,8 +1,11 @@
 import type { IPostMetaData } from '@/types/post'
-import { Category } from '../module/category/category'
-import { Tag } from '../module/tag/tag'
+import { PostDynamicMetadata } from '../module/post/post-dynamic-metadata'
 
-export function PostHeader({ metadata }: { metadata: IPostMetaData }) {
+interface PostHeaderProps {
+  metadata: IPostMetaData
+}
+
+export function PostHeader({ metadata }: PostHeaderProps) {
   return (
     <div className="flex-center flex-col text-center">
       <h1 className="text-2xl font-extrabold tracking-tight xl:text-3xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">
@@ -22,16 +25,7 @@ export function PostHeader({ metadata }: { metadata: IPostMetaData }) {
             {metadata.updatedAt}
           </span>
         )}
-        <span>
-          {metadata.category && (
-            <Category name={metadata.category} />
-          )}
-        </span>
-        <span>
-          {metadata.tags?.map(tag => (
-            <Tag key={tag} name={tag} />
-          ))}
-        </span>
+        <PostDynamicMetadata metadata={metadata} />
       </div>
 
       <div className="text-muted-foreground bg-muted max-w-2xl mx-auto p-4 leading-relaxed border-l-4 border-primary/90 rounded-xl">

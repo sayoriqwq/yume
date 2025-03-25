@@ -1,0 +1,86 @@
+import { db } from '@/db'
+
+export async function getBlogs() {
+  return await db.article.findMany({
+    where: {
+      published: true,
+      type: 'BLOG',
+    },
+    orderBy: { createdAt: 'desc' },
+    include: {
+      category: true,
+      tags: true,
+    },
+  })
+}
+
+export async function getBlogBySlug(slug: string) {
+  return db.article.findUnique({
+    where: { slug, published: true, type: 'BLOG' },
+    include: {
+      category: true,
+      tags: true,
+    },
+  })
+}
+
+export async function getBlogsByCategory(categoryId: number) {
+  return await db.article.findMany({
+    where: {
+      categoryId,
+      published: true,
+      type: 'BLOG',
+    },
+    orderBy: { createdAt: 'desc' },
+    include: {
+      category: true,
+      tags: true,
+    },
+  })
+}
+
+export async function getBlogsByTag(tagId: number) {
+  return await db.article.findMany({
+    where: {
+      tags: { some: { id: tagId } },
+      published: true,
+      type: 'BLOG',
+    },
+    orderBy: { createdAt: 'desc' },
+    include: {
+      category: true,
+      tags: true,
+    },
+  })
+}
+
+export async function getCategories() {
+  return await db.category.findMany({
+    include: {
+      _count: {
+        select: { articles: true },
+      },
+    },
+  })
+}
+
+export async function getTags() {
+  return await db.tag.findMany({
+    include: {
+      _count: {
+        select: { articles: true },
+      },
+    },
+  })
+}
+
+export async function incrementViewCount(id: number) {
+  return await db.article.update({
+    where: { id },
+    data: {
+      viewCount: {
+        increment: 1,
+      },
+    },
+  })
+}

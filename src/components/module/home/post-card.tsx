@@ -11,7 +11,8 @@ interface PostCardProps extends PropsWithCC {
 }
 
 export function PostCard({ post, className }: PostCardProps) {
-  const href = `posts/${post.metadata.category}/${post.slug}`
+  const href = `posts/${post.metadata.category}/${post.metadata.slug}`
+
   return (
     <Link
       href={href}
@@ -28,6 +29,20 @@ export function PostCard({ post, className }: PostCardProps) {
         <p className="text-muted-foreground mt-1 group-hover:text-accent-foreground/90 transition-colors">
           {post.metadata.createdAt}
         </p>
+        <div className="flex flex-wrap items-center gap-2 mt-2">
+          <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-md group-hover:bg-muted transition-colors">
+            #
+            {post.metadata.category}
+          </span>
+
+          {post.metadata.tags?.map((tag) => {
+            return (
+              <span key={tag} className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-md">
+                {tag}
+              </span>
+            )
+          })}
+        </div>
       </div>
       <div className="relative aspect-4/3 w-48 shrink-0 overflow-hidden rounded-lg transition-transform group-hover:shadow-lg">
         <Image
