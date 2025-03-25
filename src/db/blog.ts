@@ -1,6 +1,35 @@
 import { db } from '@/db'
 
-export async function getBlogs() {
+interface BlogResponse {
+  id: number
+  title: string
+  slug: string
+  description: string | null
+  cover: string | null
+  type: string
+  viewCount: number
+  content: string | null
+  mood: string | null
+  weather: string | null
+  location: string | null
+  categoryId: number | null
+  published: boolean
+  createdAt: Date
+  updatedAt: Date
+  category: {
+    id: number
+    name: string
+    cover: string | null
+    count: number
+  } | null
+  tags: Array<{
+    id: number
+    name: string
+    count: number
+  }>
+}
+
+export async function getBlogs(): Promise<BlogResponse[]> {
   return await db.article.findMany({
     where: {
       published: true,

@@ -15,9 +15,10 @@ interface TagArticlesResponse {
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<TagArticlesResponse | { error: string }>> {
-  const tagId = Number(params.id)
+  const { id } = await params
+  const tagId = Number(id)
 
   try {
     const tag = await db.tag.findUnique({

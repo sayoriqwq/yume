@@ -21,7 +21,7 @@ export async function GET(): Promise<NextResponse<CategoriesResponse | { error: 
 
     // 规范化响应结构
     const categoriesData = categories.reduce<Record<number, Category>>((acc, category) => {
-      acc[category.id] = category
+      acc[category.id] = category as Category
       return acc
     }, {})
 

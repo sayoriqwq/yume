@@ -9,21 +9,21 @@ export async function importMDXFiles({ sourceDir }: ImportOptions) {
   const posts = getMDXData(sourceDir)
 
   for (const post of posts) {
-    const { slug, metadata } = post
+    const { metadata } = post
 
     // 检查是否已存在
     const existing = await db.article.findUnique({
-      where: { slug },
+      where: { slug: metadata.slug },
     })
 
     if (existing) {
-      console.log(`文章 ${slug} 已存在，跳过`)
+      console.log(`文章 ${metadata.slug} 已存在，跳过`)
       continue
     }
 
     await db.article.create({
       data: {
-        slug,
+        slug: metadata.slug,
         title: metadata.title,
         description: metadata.description,
         cover: metadata.cover,
@@ -44,6 +44,6 @@ export async function importMDXFiles({ sourceDir }: ImportOptions) {
       },
     })
 
-    console.log(`成功导入文章: ${slug}`)
+    console.log(`成功导入文章: ${metadata.slug}`)
   }
 }

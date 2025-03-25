@@ -1,21 +1,21 @@
-import type { Category } from '@/atoms/appData/store'
+// import type { Category } from '@/atoms/appData/store'
 import { db } from '@/db'
 import { NextResponse } from 'next/server'
 
-interface CategoryResponse {
-  data: {
-    categoryId: number
-  }
-  objects: {
-    categories: Record<number, Category>
-  }
-}
+// interface CategoryResponse {
+//   data: {
+//     categoryId: number
+//   }
+//   objects: {
+//     categories: Record<number, Category>
+//   }
+// }
 
 export async function GET(
   request: Request,
-  { params }: { params: { name: string } },
-): Promise<NextResponse<CategoryResponse | { error: string }>> {
-  const { name } = params
+  { params }: { params: Promise<{ name: string }> },
+) {
+  const { name } = await params
 
   try {
     const category = await db.category.findUnique({

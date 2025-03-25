@@ -4,9 +4,9 @@ export function useZIndex(initialIndex: number) {
   const [zIndex, setZIndex] = useState(initialIndex)
 
   const updateZIndex = () => {
-    const els = document.querySelectorAll('.elements')
+    const els = document.querySelectorAll('.drag-elements')
 
-    let maxZIndex = Number.NEGATIVE_INFINITY
+    let maxZIndex = 999
 
     els.forEach((el) => {
       const zIndex = Number.parseInt(

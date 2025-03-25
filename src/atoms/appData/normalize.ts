@@ -27,10 +27,6 @@ export function useNormalizeResponse() {
     setStore((prev: RootState) => {
       const newState = { ...prev }
 
-      if (objects?.users) {
-        newState.users = { ...newState.users, ...objects.users }
-      }
-
       if (objects?.categories) {
         newState.categories = { ...newState.categories, ...objects.categories }
       }
