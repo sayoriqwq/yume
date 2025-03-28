@@ -37,8 +37,6 @@ interface BaseDataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   filterKey?: string
-  onDelete?: (row: TData) => void
-  onEdit?: (row: TData) => void
 }
 
 const tableCellBaseStyles = 'bg-background'
@@ -51,8 +49,6 @@ export function BaseDataTable<TData, TValue>({
   columns,
   data,
   filterKey,
-  onDelete,
-  onEdit,
 }: BaseDataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -79,10 +75,6 @@ export function BaseDataTable<TData, TValue>({
       columnVisibility,
       rowSelection,
       columnPinning,
-    },
-    meta: {
-      onDelete,
-      onEdit,
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,

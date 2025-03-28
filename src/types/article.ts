@@ -10,6 +10,8 @@ export interface BaseArticle {
   createdAt: string
   updatedAt: string
   categoryId: number
+  category: Category
+  tags: Tag[]
 }
 
 export interface Draft extends BaseArticle {

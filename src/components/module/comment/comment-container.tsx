@@ -1,7 +1,6 @@
 'use client'
 
 import type { CommentWithAuthor } from './types'
-import { useNormalizeResponse } from '@/atoms/appData/normalize'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { useUser } from '@clerk/nextjs'
@@ -18,7 +17,6 @@ export function CommentContainer({ articleSlug }: Props) {
   const { user } = useUser()
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [content, setContent] = useState('')
-  const normalizeResponse = useNormalizeResponse()
 
   // 通过slug获取文章ID
   const { data, isLoading } = useSWR(
@@ -26,7 +24,6 @@ export function CommentContainer({ articleSlug }: Props) {
     async (url: string) => {
       const res = await fetch(url)
       const data = await res.json()
-      normalizeResponse(data)
       return data.data
     },
   )

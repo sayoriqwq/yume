@@ -1,3 +1,4 @@
+import { CommandSheet } from '@/components/common/command-sheet'
 import { Providers } from '@/providers/providers'
 import { Toaster } from 'react-hot-toast'
 import '@/styles/index.css'
@@ -18,6 +19,7 @@ export default function RootLayout({
           {children}
         </Providers>
         <Toaster position="top-center" />
+        <CommandSheet />
       </body>
     </html>
   )

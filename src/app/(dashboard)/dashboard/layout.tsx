@@ -1,4 +1,6 @@
 import type { ReactNode } from 'react'
+import { CommandDialog } from '@/components/common/command-dialog'
+import { CommandSheet } from '@/components/common/command-sheet'
 import { DashboardNav } from '@/components/dashboard/nav'
 
 interface DashboardLayoutProps {
@@ -14,6 +16,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           {children}
         </main>
       </div>
+      <CommandSheet />
+      <CommandDialog />
     </div>
   )
 }

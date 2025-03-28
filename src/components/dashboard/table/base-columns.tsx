@@ -1,15 +1,16 @@
-import type { ColumnDef } from '@tanstack/react-table'
+import type { ColumnDef, Row } from '@tanstack/react-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { DataTableRowActions } from './DataTableRowActions'
 
-export interface TableMeta<TData extends object> {
-  onDelete?: (row: TData) => void
-  onEdit?: (row: TData) => void
+interface Action<T extends { id: number }> {
+  onDelete?: (id: number) => void
+  onEdit?: (row: T) => void
 }
 
 export function baseSelector<T extends object>(): ColumnDef<T> {
   return {
     id: 'select',
+    size: 20,
     header: ({ table }) => (
       <Checkbox
         checked={
@@ -32,22 +33,19 @@ export function baseSelector<T extends object>(): ColumnDef<T> {
   }
 }
 
-export function baseActions<T extends object>(): ColumnDef<T> {
+export function baseActions<T extends { id: number }>(
+  actions: Action<T>,
+): ColumnDef<T> {
   return {
     id: 'actions',
     header: '操作',
-    cell: ({ row, table }) => (
-      <DataTableRowActions
-        row={row}
-        onDelete={(row) => {
-          const meta = table.options.meta as TableMeta<T>
-          meta.onDelete?.(row)
-        }}
-        onEdit={(row) => {
-          const meta = table.options.meta as TableMeta<T>
-          meta?.onEdit?.(row)
-        }}
-      />
-    ),
+    cell: ({ row }) => {
+      return (
+        <DataTableRowActions<T>
+          row={row as Row<T>}
+          actions={actions}
+        />
+      )
+    },
   }
 }

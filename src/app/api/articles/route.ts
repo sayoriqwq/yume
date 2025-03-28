@@ -17,9 +17,13 @@ export async function GET(request: NextRequest) {
       },
       include: {
         category: true,
+        tags: true,
+        comments: true,
       },
       take,
     })
+
+    console.log('articles', articles)
 
     if (!articles || articles.length === 0) {
       console.log(`Warning: No articles found with type: ${type}`)
