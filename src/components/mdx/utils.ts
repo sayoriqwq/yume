@@ -4,6 +4,16 @@ import path from 'node:path'
 import process from 'node:process'
 import matter from 'gray-matter'
 
+export function slugify(title: string) {
+  return title
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/&/g, '-and-')
+    .replace(/-{2,}/g, '-')
+}
+
 export function getMDXFiles(dir: string): string[] {
   return fs.readdirSync(dir).filter(file => path.extname(file) === '.mdx')
 }

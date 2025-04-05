@@ -3,10 +3,12 @@
 import type { Draft } from '@/types/article'
 import { useArticlesData } from '@/atoms/dashboard/hooks/useArticle'
 import { BaseDataTable } from '@/components/dashboard/table/base-data-table'
+import { useRouter } from 'next/navigation'
 import { getColumns } from './columns'
 
 export default function ArticlesPage() {
-  const { isLoading, error, articleIds, articleMap, updateArticle, removeArticle } = useArticlesData('DRAFT')
+  const router = useRouter()
+  const { isLoading, error, articleIds, articleMap, removeArticle } = useArticlesData('DRAFT')
 
   if (isLoading)
     return <div>Loading...</div>
@@ -24,7 +26,7 @@ export default function ArticlesPage() {
       removeArticle(id)
     },
     onEdit: (row: Draft) => {
-      updateArticle(row.id, row)
+      router.push(`/dashboard/drafts/${row.id}`)
     },
   }
 

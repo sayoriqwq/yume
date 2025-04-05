@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react'
 import { useLenis } from 'lenis/react'
 import React from 'react'
-import { slugify } from './heading'
+import { slugify } from '../../utils'
 
 export function LinkToHeading({ children }: { children: ReactNode }) {
   const lenis = useLenis()

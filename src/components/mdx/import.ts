@@ -29,6 +29,7 @@ export async function importMDXFiles({ sourceDir }: ImportOptions) {
         cover: metadata.cover,
         type: 'BLOG',
         published: metadata.published ?? true,
+        content: JSON.stringify(post.content),
         category: {
           connectOrCreate: {
             where: { name: metadata.category },

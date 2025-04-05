@@ -2,7 +2,6 @@ import type { Article, Category, Comment, Tag } from './types'
 import { produce } from 'immer'
 import { atom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
-import { updateEntities, updateIds, updateRelations } from './helpers'
 
 export interface DashboardStore {
   // 实体集合，映射关系
@@ -27,6 +26,11 @@ export interface DashboardStore {
     tagIdToArticleIds: Record<number, number[]>
   }
 }
+
+export type IdsUpdate =
+  | { type: 'add', ids: number[] }
+  | { type: 'remove', ids: number[] }
+  | { type: 'set', ids: number[] }
 
 const initialStore: DashboardStore = {
   entities: {
@@ -55,74 +59,64 @@ export const dashboardStoreAtom = atomWithStorage<DashboardStore>(
   initialStore,
 )
 
+function handleIdsUpdate(currentIds: number[], update: IdsUpdate): number[] {
+  const idsToUpdate = Array.isArray(update.ids) ? update.ids : [update.ids]
+
+  switch (update.type) {
+    case 'add':
+      return [...new Set([...currentIds, ...idsToUpdate])]
+    case 'remove':
+      return currentIds.filter((id: number) => !idsToUpdate.includes(id))
+    case 'set':
+      return idsToUpdate
+    default:
+      return currentIds
+  }
+}
+
+// ids
 export const articleIdsAtom = atom(
   get => get(dashboardStoreAtom).ids.articleIds,
-  (get, set, update: number[]) => {
-    set(dashboardStoreAtom, produce((draft) => {
-      draft.ids.articleIds = updateIds(draft.ids.articleIds, update)
+  (get, set, update: IdsUpdate) => {
+    set(dashboardStoreAtom, produce((store) => {
+      store.ids.articleIds = handleIdsUpdate(store.ids.articleIds, update)
     }))
   },
 )
 
 export const categoryIdsAtom = atom(
   get => get(dashboardStoreAtom).ids.categoryIds,
-  (get, set, update: number[]) => {
-    set(dashboardStoreAtom, produce((draft) => {
-      draft.ids.categoryIds = update
+  (get, set, update: IdsUpdate) => {
+    set(dashboardStoreAtom, produce((store) => {
+      store.ids.categoryIds = handleIdsUpdate(store.ids.categoryIds, update)
     }))
   },
 )
 
 export const tagIdsAtom = atom(
   get => get(dashboardStoreAtom).ids.tagIds,
-  (get, set, update: number[]) => {
-    set(dashboardStoreAtom, produce((draft) => {
-      draft.ids.tagIds = updateIds(draft.ids.tagIds, update)
+  (get, set, update: IdsUpdate) => {
+    set(dashboardStoreAtom, produce((store) => {
+      store.ids.tagIds = handleIdsUpdate(store.ids.tagIds, update)
     }))
   },
 )
 
-export const articleMapAtom = atom(
-  get => get(dashboardStoreAtom).entities.articleMap,
-  (get, set, update: Record<number, Article>) => {
-    set(dashboardStoreAtom, produce((draft) => {
-      draft.entities.articleMap = updateEntities(draft.entities.articleMap, update)
+export const commentIdsAtom = atom(
+  get => get(dashboardStoreAtom).ids.commentIds,
+  (get, set, update: IdsUpdate) => {
+    set(dashboardStoreAtom, produce((store) => {
+      store.ids.commentIds = handleIdsUpdate(store.ids.commentIds, update)
     }))
   },
 )
 
-export const categoryMapAtom = atom(
-  get => get(dashboardStoreAtom).entities.categoryMap,
-  (get, set, update: Record<number, Category>) => {
-    set(dashboardStoreAtom, produce((draft) => {
-      draft.entities.categoryMap = updateEntities(draft.entities.categoryMap, update)
-    }))
-  },
-)
-
-export const tagMapAtom = atom(
-  get => get(dashboardStoreAtom).entities.tagMap,
-  (get, set, update: Record<number, Tag>) => {
-    set(dashboardStoreAtom, produce((draft) => {
-      draft.entities.tagMap = updateEntities(draft.entities.tagMap, update)
-    }))
-  },
-)
-
-export const commentMapAtom = atom(
-  get => get(dashboardStoreAtom).entities.commentMap,
-  (get, set, update: Record<number, Comment>) => {
-    set(dashboardStoreAtom, produce((draft) => {
-      draft.entities.commentMap = updateEntities(draft.entities.commentMap, update)
-    }))
-  },
-)
-
+// relations
 export const categoryIdToArticleIdsAtom = atom(
   get => get(dashboardStoreAtom).relations.categoryIdToArticleIds,
   (get, set, update: Record<number, number[]>) => {
-    set(dashboardStoreAtom, produce((draft) => {
-      draft.relations.categoryIdToArticleIds = updateRelations(draft.relations.categoryIdToArticleIds, update)
+    set(dashboardStoreAtom, produce((store) => {
+      Object.assign(store.relations.categoryIdToArticleIds, update)
     }))
   },
 )
@@ -130,8 +124,8 @@ export const categoryIdToArticleIdsAtom = atom(
 export const articleIdToTagIdsAtom = atom(
   get => get(dashboardStoreAtom).relations.articleIdToTagIds,
   (get, set, update: Record<number, number[]>) => {
-    set(dashboardStoreAtom, produce((draft) => {
-      draft.relations.articleIdToTagIds = updateRelations(draft.relations.articleIdToTagIds, update)
+    set(dashboardStoreAtom, produce((store) => {
+      Object.assign(store.relations.articleIdToTagIds, update)
     }))
   },
 )
@@ -139,8 +133,8 @@ export const articleIdToTagIdsAtom = atom(
 export const tagIdToArticleIdsAtom = atom(
   get => get(dashboardStoreAtom).relations.tagIdToArticleIds,
   (get, set, update: Record<number, number[]>) => {
-    set(dashboardStoreAtom, produce((draft) => {
-      draft.relations.tagIdToArticleIds = updateRelations(draft.relations.tagIdToArticleIds, update)
+    set(dashboardStoreAtom, produce((store) => {
+      Object.assign(store.relations.tagIdToArticleIds, update)
     }))
   },
 )
@@ -148,8 +142,44 @@ export const tagIdToArticleIdsAtom = atom(
 export const articleIdToCategoryIdAtom = atom(
   get => get(dashboardStoreAtom).relations.articleIdToCategoryId,
   (get, set, update: Record<number, number>) => {
-    set(dashboardStoreAtom, produce((draft) => {
-      draft.relations.articleIdToCategoryId = update
+    set(dashboardStoreAtom, produce((store) => {
+      Object.assign(store.relations.articleIdToCategoryId, update)
+    }))
+  },
+)
+
+export const articleMapAtom = atom(
+  get => get(dashboardStoreAtom).entities.articleMap,
+  (get, set, update: Record<number, Article>) => {
+    set(dashboardStoreAtom, produce((store) => {
+      Object.assign(store.entities.articleMap, update)
+    }))
+  },
+)
+
+export const categoryMapAtom = atom(
+  get => get(dashboardStoreAtom).entities.categoryMap,
+  (get, set, update: Record<number, Category>) => {
+    set(dashboardStoreAtom, produce((store) => {
+      Object.assign(store.entities.categoryMap, update)
+    }))
+  },
+)
+
+export const tagMapAtom = atom(
+  get => get(dashboardStoreAtom).entities.tagMap,
+  (get, set, update: Record<number, Tag>) => {
+    set(dashboardStoreAtom, produce((store) => {
+      Object.assign(store.entities.tagMap, update)
+    }))
+  },
+)
+
+export const commentMapAtom = atom(
+  get => get(dashboardStoreAtom).entities.commentMap,
+  (get, set, update: Record<number, Comment>) => {
+    set(dashboardStoreAtom, produce((store) => {
+      Object.assign(store.entities.commentMap, update)
     }))
   },
 )

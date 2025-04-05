@@ -1,5 +1,7 @@
 'use client'
 
+import type * as z from 'zod'
+import { createCategorySchema } from '@/app/api/admin/categories/schema'
 import { useCategoriesData } from '@/atoms/dashboard/hooks/useCategory'
 import { useCommandSheet } from '@/components/common/command-sheet'
 import { Button } from '@/components/ui/button'
@@ -13,18 +15,12 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import toast from 'react-hot-toast'
-import * as z from 'zod'
 
-const formSchema = z.object({
-  name: z.string().min(1, '请输入分类名称'),
-  cover: z.string().optional(),
-})
-
-type FormValues = z.infer<typeof formSchema>
+type FormValues = z.infer<typeof createCategorySchema>
 
 export function CreateCategoryForm() {
   const { createCategory } = useCategoriesData()
@@ -32,30 +28,19 @@ export function CreateCategoryForm() {
   const [isLoading, setIsLoading] = useState(false)
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(createCategorySchema),
     defaultValues: {
       name: '',
       cover: '',
     },
   })
 
-  const onSubmit = async (values: FormValues) => {
+  async function onSubmit(data: FormValues) {
     setIsLoading(true)
-    try {
-      await createCategory({
-        name: values.name,
-        cover: values.cover || undefined,
-      })
-      toast.success('创建成功')
-      close()
-    }
-    catch (error) {
-      toast.error('创建失败')
-      console.error('创建失败:', error)
-    }
-    finally {
-      setIsLoading(false)
-    }
+    await createCategory(data)
+    form.reset()
+    close()
+    setIsLoading(false)
   }
 
   return (
@@ -91,11 +76,12 @@ export function CreateCategoryForm() {
                     <Input
                       placeholder="请输入图片链接"
                       {...field}
+                      value={field.value ?? ''}
                     />
                   </TabsContent>
                   <TabsContent value="upload">
                     <div className="border-2 border-dashed rounded-lg p-4 text-center">
-                      <p className="text-sm text-gray-500">暂不支持本地上传</p>
+                      <p className="text-sm text-muted-foreground">暂不支持本地上传</p>
                     </div>
                   </TabsContent>
                 </Tabs>

@@ -6,12 +6,14 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { siteConfig } from '@/config/site'
 import { BookOpen } from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 
 export function CategoryDetail({ id }: { id: number }) {
+  console.log('CategoryDetail', id)
   const { category, articleIds, isLoading, error } = useCategoryDetail(id)
   const { articleMap } = useArticlesData()
   const { updateCategory } = useCategoriesData()
@@ -55,7 +57,7 @@ export function CategoryDetail({ id }: { id: number }) {
       <div className="flex items-start gap-6">
         <div className="relative w-32 h-32 rounded-lg overflow-hidden">
           <Image
-            src={category.cover || '/placeholder.png'}
+            src={category.cover || siteConfig.avatar}
             alt={category.name}
             fill
             className="object-cover"

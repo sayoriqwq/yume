@@ -3,11 +3,11 @@
 import { useCategoriesData } from '@/atoms/dashboard/hooks/useCategory'
 import { useCommandDialog } from '@/components/common/command-dialog'
 import { useCommandSheet } from '@/components/common/command-sheet'
+import { siteConfig } from '@/config/site'
 import { Plus, Trash2 } from 'lucide-react'
 import Image from 'next/image'
 import { useModalStack } from 'rc-modal-sheet'
 import { useCallback } from 'react'
-import toast from 'react-hot-toast'
 import { CategoryDetail } from './category-detail'
 import { CreateCategoryForm } from './create-category-form'
 
@@ -18,6 +18,7 @@ export function CategoryList() {
   const { open: openCommandDialog, close: closeCommandDialog } = useCommandDialog()
 
   const showModal = useCallback((id: number) => {
+    console.log(id, 'showModal')
     present({
       title: `分类详情: ${categoryMap[id].name}`,
       content: () => <CategoryDetail id={id} />,
@@ -33,15 +34,8 @@ export function CategoryList() {
 
   const handleDelete = useCallback(async (id: number) => {
     closeCommandDialog()
-    try {
-      await removeCategory(id)
-      toast.success('删除成功')
-    }
-    catch (error) {
-      toast.error('删除失败')
-      console.error('删除失败:', error)
-    }
-  }, [removeCategory])
+    await removeCategory(id)
+  }, [removeCategory, closeCommandDialog])
 
   const showDeleteDialog = useCallback((id: number) => {
     openCommandDialog({
@@ -91,18 +85,18 @@ export function CategoryList() {
             <div className="flex items-start gap-4">
               <div className="relative w-20 h-20 rounded-lg overflow-hidden">
                 <Image
-                  src={categoryMap[id].cover || '/placeholder.png'}
-                  alt={categoryMap[id].name}
+                  src={categoryMap[id]?.cover || siteConfig.avatar}
+                  alt={categoryMap[id]?.name}
                   fill
                   className="object-cover"
                 />
               </div>
               <div className="flex-1">
                 <h3 className="font-medium text-lg group-hover:text-primary transition-colors">
-                  {categoryMap[id].name}
+                  {categoryMap[id]?.name}
                 </h3>
                 <p className="text-gray-500 text-sm mt-1">
-                  {categoryMap[id].count}
+                  {categoryMap[id]?.count}
                   {' '}
                   篇文章
                 </p>

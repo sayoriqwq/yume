@@ -6,7 +6,7 @@ export interface Entity {
 // 分类实体
 export interface Category extends Entity {
   name: string
-  cover?: string
+  cover?: string | null
   count: number
 }
 
@@ -30,12 +30,12 @@ export interface Comment extends Entity {
 // 文章实体
 export interface Article extends Entity {
   title: string
-  content: string
+  content: string | null
   categoryId: number
   createdAt: Date
   slug: string
-  description?: string
-  cover?: string
+  description?: string | null
+  cover?: string | null
   type: ArticleType
   viewCount: number
   published: boolean
@@ -47,9 +47,9 @@ export interface Article extends Entity {
 export type ArticleType = 'BLOG' | 'NOTE' | 'DRAFT'
 
 // API响应接口
-export interface ApiResponse<T> {
+export interface NormalizedResponse<T = Entity> {
   data: {
-    [key: string]: any
+    [key: string]: number[]
   }
   objects: {
     [key: string]: Record<number, T>

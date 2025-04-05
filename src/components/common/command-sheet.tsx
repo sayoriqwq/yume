@@ -3,6 +3,7 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { atom, useAtom } from 'jotai'
 
+// TODO: 用context做keepalive
 interface CommandSheetState {
   isOpen: boolean
   title: string

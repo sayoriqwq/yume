@@ -12,7 +12,11 @@ export function useArticlesData(type?: ArticleType) {
   const updateArticle = useSetAtom(optimisticUpdateArticleAtom)
   const removeArticle = useSetAtom(optimisticRemoveArticleAtom)
 
-  const { error, isLoading, mutate } = useSWRImmutable('articles', fetchArticles)
+  const fetchTypedArticles = () => {
+    fetchArticles({ type })
+  }
+
+  const { error, isLoading, mutate } = useSWRImmutable('articles', fetchTypedArticles)
 
   const getAllFilteredArticleIds = () => {
     return type ? articleIds.filter(id => articleMap[id].type === type) : articleIds
@@ -30,7 +34,7 @@ export function useArticlesData(type?: ArticleType) {
   }
 }
 
-export function useArticle(id: number) {
+export function useArticleDetail(id: number) {
   const articleMap = useAtomValue(articleMapAtom)
-  return articleMap[id]
+  return { article: articleMap[id] }
 }

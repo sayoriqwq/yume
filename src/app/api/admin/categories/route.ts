@@ -1,75 +1,61 @@
 import type { Category } from '@/atoms/dashboard/types'
+import type { SingleData } from '@/lib/api'
 import type { NextRequest } from 'next/server'
-import { db } from '@/db'
+import { createSingleEntityResponse } from '@/lib/api'
+import { parseGetQuery, parsePostBody } from '@/lib/parser'
+import { YumeError } from '@/lib/YumeError'
 import { NextResponse } from 'next/server'
+import { getCategories } from './get'
+import { createCategory } from './post'
+import { categoryPaginationSchema, createCategorySchema } from './schema'
 
-interface CategoriesResponse {
+export interface CategoriesApiResponse {
   data: {
     categoryIds: number[]
   }
   objects: {
     categories: Record<number, Category>
+    categoryIdToArticleIds: Record<number, number[]>
   }
 }
 
-export async function GET(): Promise<NextResponse<CategoriesResponse | { error: string }>> {
-  try {
-    const categories = await db.category.findMany()
-
-    if (!categories || categories.length === 0) {
-      throw new Error('没有分类')
-    }
-
-    // 规范化响应结构
-    const categoriesData = categories.reduce<Record<number, Category>>((acc, category) => {
-      acc[category.id] = category as Category
-      return acc
-    }, {})
-
-    return NextResponse.json({
-      data: {
-        categoryIds: categories.map(category => category.id),
-      },
-      objects: {
-        categories: categoriesData,
-      },
-    })
+export async function GET(request: NextRequest): Promise<NextResponse<CategoriesApiResponse | string>> {
+  const input = parseGetQuery(request, categoryPaginationSchema)
+  if (input instanceof YumeError) {
+    return NextResponse.json(input.toJSON())
   }
-  catch (error) {
-    console.error('获取分类失败:', error)
-    return NextResponse.json({ error: '获取分类失败' }, { status: 500 })
-  }
+  const res = await getCategories(input)
+  const { categories } = res
+
+  const categoriesMap = categories.reduce((acc, category) => {
+    acc[category.id] = category
+    return acc
+  }, {} as Record<number, Category>)
+
+  const categoryIdToArticleIds = categories.reduce((acc, category) => {
+    acc[category.id] = category.articles.map(article => article.id)
+    return acc
+  }, {} as Record<number, number[]>)
+
+  return NextResponse.json<CategoriesApiResponse>({
+    data: {
+      categoryIds: categories.map(category => category.id),
+    },
+    objects: {
+      categories: categoriesMap,
+      categoryIdToArticleIds,
+    },
+  })
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    const data = await request.json()
+export async function POST(request: NextRequest): Promise<NextResponse<SingleData<Category> | string>> {
+  const input = await parsePostBody(request, createCategorySchema)
 
-    const newCategory = await db.category.create({
-      data,
-    })
-
-    // 获取所有分类ID
-    const categories = await db.category.findMany({
-      select: { id: true },
-    })
-
-    return NextResponse.json({
-      data: {
-        categoryIds: categories.map(c => c.id),
-      },
-      objects: {
-        categories: {
-          [newCategory.id]: newCategory,
-        },
-      },
-    })
+  if (input instanceof YumeError) {
+    return NextResponse.json(input.toJSON())
   }
-  catch (error) {
-    console.error('创建分类失败:', error)
-    return NextResponse.json(
-      { error: '创建分类失败' },
-      { status: 500 },
-    )
-  }
+
+  const { category } = await createCategory(input)
+
+  return createSingleEntityResponse<Category>(category)
 }
