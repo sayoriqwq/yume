@@ -20,4 +20,4 @@ export const categoryDeleteSchema = z.object({
 
 export const createCategorySchema = categoryBaseSchema
 
-export const updateCategorySchema = categoryBaseSchema.partial() // 所有字段都变为可选
+export const updateCategorySchema = categoryBaseSchema.partial()

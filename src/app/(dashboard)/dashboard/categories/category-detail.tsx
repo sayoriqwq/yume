@@ -10,7 +10,6 @@ import { siteConfig } from '@/config/site'
 import { BookOpen } from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'
-import toast from 'react-hot-toast'
 
 export function CategoryDetail({ id }: { id: number }) {
   console.log('CategoryDetail', id)
@@ -22,14 +21,7 @@ export function CategoryDetail({ id }: { id: number }) {
 
   const handleNameSubmit = async () => {
     setIsEditing(false)
-    try {
-      await updateCategory(id, { name })
-      toast.success('更新成功')
-    }
-    catch (error) {
-      toast.error('更新失败')
-      console.error('更新失败:', error)
-    }
+    await updateCategory(id, { name })
   }
 
   const handleCancel = () => {
