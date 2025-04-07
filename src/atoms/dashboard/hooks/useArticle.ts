@@ -1,30 +1,48 @@
+import type { PageParams } from '@/types/page'
 import type { ArticleType } from '../types'
 import { useAtomValue, useSetAtom } from 'jotai'
 import useSWRImmutable from 'swr/immutable'
 import { createArticleAtom, fetchArticlesAtom, optimisticRemoveArticleAtom, optimisticUpdateArticleAtom } from '../actions/articles'
-import { articleIdsAtom, articleMapAtom } from '../store'
+import { articleIdsAtom, articleIdToTagIdsAtom, articleMapAtom, articlesTotalCountAtom } from '../store'
 
-export function useArticlesData(type?: ArticleType) {
+export interface UseArticlesDataParams {
+  type?: ArticleType
+  pageParams?: PageParams
+}
+
+export function useArticlesData(params?: UseArticlesDataParams) {
   const articleIds = useAtomValue(articleIdsAtom)
   const articleMap = useAtomValue(articleMapAtom)
+  const articlesTotal = useAtomValue(articlesTotalCountAtom)
   const fetchArticles = useSetAtom(fetchArticlesAtom)
   const createArticle = useSetAtom(createArticleAtom)
   const updateArticle = useSetAtom(optimisticUpdateArticleAtom)
   const removeArticle = useSetAtom(optimisticRemoveArticleAtom)
 
-  const fetchTypedArticles = () => {
-    fetchArticles({ type })
+  const fetchArticlesWithParams = () => {
+    if (params) {
+      fetchArticles({
+        type: params.type,
+        pageParams: params.pageParams,
+      })
+    }
+    else {
+      fetchArticles()
+    }
   }
 
-  const { error, isLoading, mutate } = useSWRImmutable('articles', fetchTypedArticles)
-
-  const getAllFilteredArticleIds = () => {
-    return type ? articleIds.filter(id => articleMap[id].type === type) : articleIds
-  }
+  const { error, isLoading, mutate } = useSWRImmutable(
+    // 将分页参数作为缓存键的一部分，确保分页改变时重新获取数据
+    params
+      ? ['articles', params.type, params.pageParams?.page, params.pageParams?.pageSize].filter(Boolean).join('-')
+      : 'articles',
+    fetchArticlesWithParams,
+  )
 
   return {
-    articleIds: getAllFilteredArticleIds(),
+    articleIds,
     articleMap,
+    articlesTotal,
     isLoading,
     error,
     mutate,
@@ -36,5 +54,6 @@ export function useArticlesData(type?: ArticleType) {
 
 export function useArticleDetail(id: number) {
   const articleMap = useAtomValue(articleMapAtom)
-  return { article: articleMap[id] }
+  const articleIdToTagIdsMap = useAtomValue(articleIdToTagIdsAtom)
+  return { article: articleMap[id], articleIdToTagIdsMap }
 }

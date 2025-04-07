@@ -13,7 +13,7 @@ import { articleIdsAtom, categoryIdsAtom, categoryIdToArticleIdsAtom, categoryMa
 export const fetchCategoriesAtom = atom(
   null,
   async (get, set) => {
-    const response = await yumeFetchGet<CategoriesApiResponse>('/admin/categories?page=1&pageSize=10')
+    const response = await yumeFetchGet<CategoriesApiResponse>('/admin/categories')
     if (typeof response === 'string') {
       throw extractYumeError(response)
     }

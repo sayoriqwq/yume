@@ -25,6 +25,9 @@ export interface DashboardStore {
     articleIdToTagIds: Record<number, number[]>
     tagIdToArticleIds: Record<number, number[]>
   }
+  counts: {
+    articlesTotal: number
+  }
 }
 
 export type IdsUpdate =
@@ -50,6 +53,9 @@ const initialStore: DashboardStore = {
     articleIdToCategoryId: {},
     articleIdToTagIds: {},
     tagIdToArticleIds: {},
+  },
+  counts: {
+    articlesTotal: 0,
   },
 }
 
@@ -107,6 +113,16 @@ export const commentIdsAtom = atom(
   (get, set, update: IdsUpdate) => {
     set(dashboardStoreAtom, produce((store) => {
       store.ids.commentIds = handleIdsUpdate(store.ids.commentIds, update)
+    }))
+  },
+)
+
+// 文章总数
+export const articlesTotalCountAtom = atom(
+  get => get(dashboardStoreAtom).counts.articlesTotal,
+  (get, set, count: number) => {
+    set(dashboardStoreAtom, produce((store) => {
+      store.counts.articlesTotal = count
     }))
   },
 )

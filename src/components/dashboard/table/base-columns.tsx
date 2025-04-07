@@ -2,7 +2,7 @@ import type { ColumnDef, Row } from '@tanstack/react-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { DataTableRowActions } from './DataTableRowActions'
 
-interface Action<T extends { id: number }> {
+export interface Action<T extends { id: number }> {
   onDelete?: (id: number) => void
   onEdit?: (row: T) => void
 }
@@ -10,7 +10,7 @@ interface Action<T extends { id: number }> {
 export function baseSelector<T extends object>(): ColumnDef<T> {
   return {
     id: 'select',
-    size: 20,
+    size: 30,
     header: ({ table }) => (
       <Checkbox
         checked={

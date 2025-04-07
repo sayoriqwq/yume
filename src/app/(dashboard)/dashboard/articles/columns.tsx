@@ -1,22 +1,45 @@
 'use client'
 
-import type { Draft } from '@/types/article'
+import type { Article } from '@/atoms/dashboard/types'
 import type { ColumnDef } from '@tanstack/react-table'
+import type { DataTableRowAction } from './page'
+
+import { useArticleDetail } from '@/atoms/dashboard/hooks/useArticle'
+import { useCategoriesData } from '@/atoms/dashboard/hooks/useCategory'
+import { useTagsData } from '@/atoms/dashboard/hooks/useTag'
 import { baseActions, baseSelector } from '@/components/dashboard/table/base-columns'
 import { DataTableCellWithEdit } from '@/components/dashboard/table/DataTableCellWithEdit'
-
-import { DataTableCellWithTooltip } from '@/components/dashboard/table/DataTableCellWithTooltip'
+import { DataTableCellWithSwitch } from '@/components/dashboard/table/DataTableCellWithSwitch'
 import { DataTableColumnHeader } from '@/components/dashboard/table/DataTableColumnHeader'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 
-export function getColumns(actions: {
-  onDelete: (id: number) => void
-  onEdit: (row: Draft) => void
-}): ColumnDef<Draft>[] {
+function CategoryCell({ categoryId }: { categoryId: number }) {
+  const { categoryMap } = useCategoriesData()
+  return <div>{categoryMap[categoryId].name}</div>
+}
+
+function TagCell({ articleId }: { articleId: number }) {
+  const { tagMap } = useTagsData()
+  const { articleIdToTagIdsMap } = useArticleDetail(articleId)
+  const tagIds = articleIdToTagIdsMap[articleId]
+  return <div>{tagIds.map(tagId => tagMap[tagId].name).join(', ')}</div>
+}
+
+interface ColumnsProps {
+  setRowAction: React.Dispatch<React.SetStateAction<DataTableRowAction<Article> | null>>
+}
+
+export function useColumns({ setRowAction }: ColumnsProps): ColumnDef<Article>[] {
+  const router = useRouter()
   return [
-    baseSelector<Draft>(),
+    baseSelector<Article>(),
     {
-      header: 'ID',
+      header: ({ column }) => {
+        return (
+          <DataTableColumnHeader column={column} title="ID" />
+        )
+      },
       accessorKey: 'id',
       size: 80,
     },
@@ -25,34 +48,12 @@ export function getColumns(actions: {
       accessorKey: 'title',
       cell: ({ row }) => {
         const title = row.original.title || ''
-        const id = row.original.id || 0
         return (
           <DataTableCellWithEdit
-            fieldName="title"
-            initialValue={title}
-            id={id}
-            onSave={(id, updates) => {
-              const draft = { id, ...updates } as Draft
-              actions.onEdit(draft)
-            }}
-          />
-        )
-      },
-    },
-    {
-      header: 'Slug',
-      accessorKey: 'slug',
-      cell: ({ row }) => {
-        const slug = row.original.slug || ''
-        const id = row.original.id || 0
-        return (
-          <DataTableCellWithEdit
-            fieldName="slug"
-            initialValue={slug}
-            id={id}
-            onSave={(id, updates) => {
-              const draft = { id, ...updates } as Draft
-              actions.onEdit(draft)
+            getValue={() => title}
+            onSave={(value) => {
+              const article = { ...row.original } as Article
+              setRowAction({ type: 'edit', id: article.id, updates: { title: value } })
             }}
           />
         )
@@ -63,7 +64,23 @@ export function getColumns(actions: {
       accessorKey: 'description',
       size: 200,
       cell: ({ row }) => {
-        return <DataTableCellWithTooltip text={row.original.description} />
+        return (
+          <DataTableCellWithEdit
+            getValue={() => row.original.description || ''}
+            modal={{ fieldName: 'description' }}
+            customValueWrapper={(value) => {
+              return (
+                <div className="max-w-[200px] text-wrap line-clamp-2 text-sm">
+                  {value}
+                </div>
+              )
+            }}
+            onSave={(value) => {
+              const article = { ...row.original } as Article
+              setRowAction({ type: 'edit', id: article.id, updates: { description: value } })
+            }}
+          />
+        )
       },
     },
     {
@@ -82,24 +99,14 @@ export function getColumns(actions: {
       header: '分类',
       accessorKey: 'category',
       cell: ({ row }) => {
-        const category = row.original.category
-        return <div>{category?.name}</div>
+        return <CategoryCell categoryId={row.original.categoryId} />
       },
     },
     {
       header: '标签',
       accessorKey: 'tags',
       cell: ({ row }) => {
-        const tags = row.original.tags
-        return (
-          <div className="flex gap-1">
-            {tags?.map(tag => (
-              <span key={tag.id} className="px-2 py-1 bg-secondary rounded-md text-sm">
-                {tag.name}
-              </span>
-            ))}
-          </div>
-        )
+        return <TagCell articleId={row.original.id} />
       },
     },
     {
@@ -108,9 +115,15 @@ export function getColumns(actions: {
       cell: ({ row }) => {
         const published = row.original.published
         return (
-          <div className={published ? 'text-green-500' : 'text-red-500'}>
-            {published ? '已发布' : '未发布'}
-          </div>
+          <DataTableCellWithSwitch
+            checked={published}
+            onCheckedChange={(checked) => {
+              const article = { ...row.original } as Article
+              setRowAction({ type: 'edit', id: article.id, updates: { published: checked } })
+            }}
+            enabledText="已发布"
+            disabledText="未发布"
+          />
         )
       },
     },
@@ -136,6 +149,13 @@ export function getColumns(actions: {
         return new Date(row.original.updatedAt!).toLocaleString()
       },
     },
-    baseActions<Draft>(actions),
+    baseActions<Article>({
+      onDelete: (id) => {
+        setRowAction({ type: 'delete', id })
+      },
+      onEdit: (row) => {
+        router.push(`/dashboard/articles/${row.id}`)
+      },
+    }),
   ]
 }

@@ -23,8 +23,8 @@ export interface Comment extends Entity {
   articleId?: number
   parentId?: number
   status: 'PENDING' | 'APPROVED' | 'REJECTED'
-  createdAt: string
-  updatedAt: string
+  createdAt: Date
+  updatedAt: Date
 }
 
 // 文章实体
@@ -32,13 +32,14 @@ export interface Article extends Entity {
   title: string
   content: string | null
   categoryId: number
-  createdAt: Date
   slug: string
   description?: string | null
   cover?: string | null
   type: ArticleType
   viewCount: number
   published: boolean
+  updatedAt: Date
+  createdAt: Date
   // 关联数据（可能来自于API响应的附加信息）
   category?: Category
   tags?: Tag[]

@@ -8,7 +8,7 @@ import { yumeFetchDelete, yumeFetchGet, yumeFetchPatch, yumeFetchPost } from '@/
 import { createYumeError, extractYumeError, YumeErrorType } from '@/lib/YumeError'
 import { atom } from 'jotai'
 import toast from 'react-hot-toast'
-import { articleIdsAtom, articleIdToCategoryIdAtom, articleIdToTagIdsAtom, articleMapAtom } from '../store'
+import { articleIdsAtom, articleIdToCategoryIdAtom, articleIdToTagIdsAtom, articleMapAtom, articlesTotalCountAtom } from '../store'
 
 // 获取文章列表
 export interface FetchArticlesParams {
@@ -41,6 +41,7 @@ export const fetchArticlesAtom = atom(
     set(articleMapAtom, objects.articleMap)
     set(articleIdToCategoryIdAtom, objects.articleIdToCategoryId)
     set(articleIdToTagIdsAtom, objects.articleIdToTagIds)
+    set(articlesTotalCountAtom, data.count)
   },
 )
 
@@ -81,6 +82,9 @@ export const optimisticUpdateArticleAtom = atom(
         throw extractYumeError(response)
       }
       const { id: updatedId, data: updatedArticle } = response
+      console.log('response', response)
+      console.log('updatedArticle', updatedArticle)
+      console.log('originalArticle', originalArticle)
 
       // 用真实数据替换本地数据
       set(articleMapAtom, { [updatedId]: updatedArticle })

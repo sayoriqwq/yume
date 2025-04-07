@@ -12,7 +12,7 @@ export function DataTableCellWithTooltip({ text }: DataTableCellWithTooltipProps
   }
   const [textRef, needTooltip] = useOverflowText([text])
   return (
-    <TooltipProvider>
+    <TooltipProvider delayDuration={100}>
       <Tooltip>
         <TooltipTrigger asChild>
           <div className="max-w-[200px] text-wrap line-clamp-2 text-sm" ref={textRef}>

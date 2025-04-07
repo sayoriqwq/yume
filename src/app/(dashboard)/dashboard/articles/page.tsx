@@ -1,14 +1,33 @@
 'use client'
 
-import type { Draft } from '@/types/article'
+import type { Article } from '@/atoms/dashboard/types'
 import { useArticlesData } from '@/atoms/dashboard/hooks/useArticle'
 import { BaseDataTable } from '@/components/dashboard/table/base-data-table'
-import { useRouter } from 'next/navigation'
-import { getColumns } from './columns'
+import { useEffect, useState } from 'react'
+import { useColumns } from './columns'
+
+export interface DataTableRowAction<T> {
+  type: 'edit' | 'delete'
+  id: number
+  updates?: Partial<T>
+}
 
 export default function ArticlesPage() {
-  const router = useRouter()
-  const { isLoading, error, articleIds, articleMap, removeArticle } = useArticlesData('DRAFT')
+  const [rowAction, setRowAction] = useState<DataTableRowAction<Article> | null>(null)
+
+  const { isLoading, error, articleIds, articleMap, updateArticle, removeArticle } = useArticlesData()
+  const columns = useColumns({ setRowAction })
+
+  useEffect(() => {
+    if (!rowAction)
+      return
+    if (rowAction.type === 'edit' && rowAction.updates) {
+      updateArticle(rowAction.id, rowAction.updates)
+    }
+    if (rowAction.type === 'delete') {
+      removeArticle(rowAction.id)
+    }
+  }, [rowAction, updateArticle, removeArticle])
 
   if (isLoading)
     return <div>Loading...</div>
@@ -21,22 +40,11 @@ export default function ArticlesPage() {
     )
   }
 
-  const actions = {
-    onDelete: (id: number) => {
-      removeArticle(id)
-    },
-    onEdit: (row: Draft) => {
-      router.push(`/dashboard/drafts/${row.id}`)
-    },
-  }
-
-  const columns = getColumns(actions)
-
   return (
     <>
       <BaseDataTable
         columns={columns}
-        data={articleIds.map(id => articleMap[id]) as any[]}
+        data={articleIds.map(id => articleMap[id])}
         filterKey="title"
       />
     </>

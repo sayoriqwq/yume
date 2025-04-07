@@ -66,5 +66,5 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
   const article = await updateArticle(input, idNumber)
 
-  return createSingleEntityResponse({ ...article, id: idNumber })
+  return createSingleEntityResponse(article)
 }
