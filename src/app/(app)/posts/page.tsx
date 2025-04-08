@@ -1,4 +1,4 @@
-import { getAllPosts } from '@/components/mdx/utils'
+import { getAllPosts } from '@/components/mdx/server-utils'
 import { PostCardList } from '@/components/module/post/post-card-list'
 import { NormalContainer } from '@/layout/container/Normal'
 

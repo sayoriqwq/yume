@@ -1,6 +1,5 @@
 'use client'
 
-import type { Tag as TagType } from '@/atoms/appData/store'
 import { TagBadge } from '@/components/module/tag/tag-badge'
 import { TagContent } from '@/components/module/tag/tag-content'
 import { motion } from 'framer-motion'
@@ -9,7 +8,7 @@ import { useCallback } from 'react'
 import useSWR from 'swr'
 
 export default function TagsPage() {
-  const { data: tagsList = [], isLoading, error } = useSWR<TagType[]>('/api/tags', async (url: string) => {
+  const { data: tagsList = [], isLoading, error } = useSWR('/api/tags', async (url: string) => {
     const res = await fetch(url)
     if (!res.ok)
       throw new Error('获取标签失败')

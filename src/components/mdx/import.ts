@@ -1,5 +1,5 @@
 import { db } from '@/db'
-import { getMDXData } from './utils'
+import { getMDXData } from './server-utils'
 
 interface ImportOptions {
   sourceDir: string

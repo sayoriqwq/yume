@@ -1,4 +1,4 @@
-import { getAllPosts } from '@/components/mdx/utils'
+import { getAllPosts } from '@/components/mdx/server-utils'
 import { CommentContainer } from '@/components/module/comment/comment-container'
 import { PostDetail } from '@/components/module/post/post-detail'
 import { WiderContainer } from '@/layout/container/Normal'

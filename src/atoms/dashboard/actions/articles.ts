@@ -61,7 +61,7 @@ export const createArticleAtom = atom(
 
 export const optimisticUpdateArticleAtom = atom(
   null,
-  async (get, set, id: number, updates: Partial<Article>) => {
+  async (get, set, id: number, updates: Partial<Article> & { tagIds?: number[] }) => {
     const originalArticleMap = get(articleMapAtom)
     const originalArticle = originalArticleMap[id]
     const rollback = () => {
@@ -69,8 +69,13 @@ export const optimisticUpdateArticleAtom = atom(
       set(articleMapAtom, originalArticleMap)
     }
     // 先乐观更新本地数据
+    const { tagIds, ...rest } = updates
     set(articleIdsAtom, { type: 'add', ids: [id] })
-    set(articleMapAtom, { [id]: { ...originalArticle, ...updates } })
+    set(articleMapAtom, { [id]: { ...rest } as Article })
+
+    // 关联信息
+    if (tagIds)
+      set(articleIdToTagIdsAtom, { [id]: tagIds })
 
     try {
       if (!originalArticle) {
@@ -82,9 +87,6 @@ export const optimisticUpdateArticleAtom = atom(
         throw extractYumeError(response)
       }
       const { id: updatedId, data: updatedArticle } = response
-      console.log('response', response)
-      console.log('updatedArticle', updatedArticle)
-      console.log('originalArticle', originalArticle)
 
       // 用真实数据替换本地数据
       set(articleMapAtom, { [updatedId]: updatedArticle })

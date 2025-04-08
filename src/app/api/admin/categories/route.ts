@@ -2,12 +2,12 @@ import type { Category } from '@/atoms/dashboard/types'
 import type { SingleData } from '@/lib/api'
 import type { NextRequest } from 'next/server'
 import { createSingleEntityResponse } from '@/lib/api'
-import { parseGetQuery, parsePostBody } from '@/lib/parser'
+import { parsePostBody } from '@/lib/parser'
 import { YumeError } from '@/lib/YumeError'
 import { NextResponse } from 'next/server'
 import { getCategories } from './get'
 import { createCategory } from './post'
-import { categoryPaginationSchema, createCategorySchema } from './schema'
+import { createCategorySchema } from './schema'
 
 export interface CategoriesApiResponse {
   data: {
@@ -19,12 +19,8 @@ export interface CategoriesApiResponse {
   }
 }
 
-export async function GET(request: NextRequest): Promise<NextResponse<CategoriesApiResponse | string>> {
-  const input = parseGetQuery(request, categoryPaginationSchema)
-  if (input instanceof YumeError) {
-    return NextResponse.json(input.toJSON())
-  }
-  const res = await getCategories(input)
+export async function GET(_request: NextRequest): Promise<NextResponse<CategoriesApiResponse | string>> {
+  const res = await getCategories()
   const { categories } = res
 
   const categoriesMap = categories.reduce((acc, category) => {

@@ -82,9 +82,9 @@
 }
 
 :root {
-  --background: var(--color-yume-white);
+  --background: var(--color-neutral-50);
   --foreground: var(--color-yume-black);
-  --card: var(--color-yume-white-darker);
+  --card: var(--color-neutral-100);
   --card-foreground: var(--color-yume-black);
   --muted: var(--color-yume-gray-50);
   --muted-foreground: var(--color-yume-gray-600);
@@ -116,9 +116,9 @@
 }
 
 .dark {
-  --background: var(--color-yume-black);
+  --background: var(--color-neutral-950);
   --foreground: var(--color-yume-white);
-  --card: var(--color-yume-black-lighter);
+  --card: var(--color-neutral-900);
   --card-foreground: var(--color-yume-white);
   --muted: var(--color-yume-gray-950);
   --muted-foreground: var(--color-yume-gray-400);

@@ -1,4 +1,4 @@
-import { getLatestPosts } from '@/components/mdx/utils'
+import { getLatestPosts } from '@/components/mdx/server-utils'
 import { H1 } from '@/components/module/home/H1'
 import { NormalContainer } from '@/layout/container/Normal'
 import { PostsGrid } from './posts-grid'
