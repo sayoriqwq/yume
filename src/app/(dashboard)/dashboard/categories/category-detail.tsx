@@ -12,7 +12,6 @@ import Image from 'next/image'
 import { useState } from 'react'
 
 export function CategoryDetail({ id }: { id: number }) {
-  console.log('CategoryDetail', id)
   const { category, articleIds, isLoading, error } = useCategoryDetail(id)
   const { articleMap } = useArticlesData()
   const { updateCategory } = useCategoriesData()

@@ -41,11 +41,13 @@ export const createTagAtom = atom(
 // 乐观更新标签
 export const optimisticUpdateTagAtom = atom(
   null,
-  async (get, set, id: number, updates: Partial<Tag>) => {
+  async (get, set, id: number, updates: Partial<Tag> & { articleIds?: number[] }) => {
     const originalTagMap = get(tagMapAtom)
     const originalTag = originalTagMap[id]
+    const originalTagIdToArticleIds = get(tagIdToArticleIdsAtom)
     const rollback = () => {
       set(tagMapAtom, originalTagMap)
+      set(tagIdToArticleIdsAtom, originalTagIdToArticleIds)
     }
     // 先乐观更新本地数据
     set(tagMapAtom, { ...originalTagMap, [id]: { ...originalTag, ...updates } as Tag })
@@ -63,7 +65,9 @@ export const optimisticUpdateTagAtom = atom(
 
       // 用真实数据替换本地数据
       set(tagMapAtom, { ...get(tagMapAtom), [updatedId]: updatedTag })
-      // Ensure tagIdsAtom is consistent if needed
+      if (updates.articleIds) {
+        set(tagIdToArticleIdsAtom, { [updatedId]: updates.articleIds })
+      }
       toast.success(`更新标签 ${originalTag.name} 成功`)
     }
     catch (error) {

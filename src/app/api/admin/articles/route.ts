@@ -8,7 +8,7 @@ import { ArticleType } from '@prisma/client'
 import { NextResponse } from 'next/server'
 import { getArticles } from './get'
 import { createDraft, createNote } from './post'
-import { articlePaginationSchema, createArticleSchema } from './schema'
+import { articleSchema, createArticleSchema } from './schema'
 
 export interface ArticlesResponse {
   data: {
@@ -23,13 +23,13 @@ export interface ArticlesResponse {
 }
 
 export async function GET(request: NextRequest): Promise<NextResponse<ArticlesResponse | string>> {
-  const input = parseGetQuery(request, articlePaginationSchema)
+  const input = parseGetQuery(request, articleSchema)
   if (input instanceof YumeError) {
     return NextResponse.json(input.toJSON())
   }
-  const { page, pageSize, type } = input
+  const { type } = input
 
-  const { articles, count } = await getArticles({ page, pageSize, type })
+  const { articles, count } = await getArticles(type)
 
   const articleMap = articles.reduce<Record<number, Article>>((acc, article) => {
     acc[article.id] = article

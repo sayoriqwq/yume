@@ -1,16 +1,12 @@
-import type { PageParams } from '@/types/page'
 import type { ArticleType } from '../types'
 import { useAtomValue, useSetAtom } from 'jotai'
+import { useCallback } from 'react'
 import useSWRImmutable from 'swr/immutable'
 import { createArticleAtom, fetchArticlesAtom, optimisticRemoveArticleAtom, optimisticUpdateArticleAtom } from '../actions/articles'
 import { articleIdsAtom, articleIdToTagIdsAtom, articleMapAtom, articlesTotalCountAtom } from '../store'
+import { useCommonSwrConfig } from '../useSwrConfig'
 
-export interface UseArticlesDataParams {
-  type?: ArticleType
-  pageParams?: PageParams
-}
-
-export function useArticlesData(params?: UseArticlesDataParams) {
+export function useArticlesData(type?: ArticleType) {
   const articleIds = useAtomValue(articleIdsAtom)
   const articleMap = useAtomValue(articleMapAtom)
   const articlesTotal = useAtomValue(articlesTotalCountAtom)
@@ -19,24 +15,15 @@ export function useArticlesData(params?: UseArticlesDataParams) {
   const updateArticle = useSetAtom(optimisticUpdateArticleAtom)
   const removeArticle = useSetAtom(optimisticRemoveArticleAtom)
 
-  const fetchArticlesWithParams = () => {
-    if (params) {
-      fetchArticles({
-        type: params.type,
-        pageParams: params.pageParams,
-      })
-    }
-    else {
-      fetchArticles()
-    }
-  }
+  const hasData = articleIds.length > 0
+  const swrConfig = useCommonSwrConfig(hasData)
+
+  const cachedFetcher = useCallback(() => fetchArticles(type), [fetchArticles, type])
 
   const { error, isLoading, mutate } = useSWRImmutable(
-    // 将分页参数作为缓存键的一部分，确保分页改变时重新获取数据
-    params
-      ? ['articles', params.type, params.pageParams?.page, params.pageParams?.pageSize].filter(Boolean).join('-')
-      : 'articles',
-    fetchArticlesWithParams,
+    'articles',
+    cachedFetcher,
+    swrConfig,
   )
 
   return {

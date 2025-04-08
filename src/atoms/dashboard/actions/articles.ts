@@ -1,8 +1,6 @@
 import type { ArticlesResponse } from '@/app/api/admin/articles/route'
 import type { SingleData, SingleDeleteData } from '@/lib/api'
-import type { PageParams } from '@/types/page'
-import type { Article } from '../types'
-import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/constants/page'
+import type { Article, ArticleType } from '../types'
 import { errorLogger, errorToaster } from '@/lib/error-handler'
 import { yumeFetchDelete, yumeFetchGet, yumeFetchPatch, yumeFetchPost } from '@/lib/yume-fetcher'
 import { createYumeError, extractYumeError, YumeErrorType } from '@/lib/YumeError'
@@ -11,27 +9,10 @@ import toast from 'react-hot-toast'
 import { articleIdsAtom, articleIdToCategoryIdAtom, articleIdToTagIdsAtom, articleMapAtom, articlesTotalCountAtom } from '../store'
 
 // 获取文章列表
-export interface FetchArticlesParams {
-  pageParams?: PageParams
-  type?: string
-}
 export const fetchArticlesAtom = atom(
   null,
-  async (get, set, params?: FetchArticlesParams) => {
-    const query: Record<string, string | number> = {}
-
-    if (params) {
-      if (params.type) {
-        query.type = params.type
-      }
-      if (params.pageParams) {
-        const { page, pageSize } = params.pageParams
-        query.page = Number(page) || DEFAULT_PAGE
-        query.pageSize = Number(pageSize) || DEFAULT_PAGE_SIZE
-      }
-    }
-
-    const response = await yumeFetchGet<ArticlesResponse>('/admin/articles', query)
+  async (get, set, type?: ArticleType) => {
+    const response = await yumeFetchGet<ArticlesResponse>('/admin/articles', type ? { type } : undefined)
     if (typeof response === 'string') {
       throw extractYumeError(response)
     }

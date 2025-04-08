@@ -1,8 +1,10 @@
 import { useAtomValue, useSetAtom } from 'jotai'
-import useSWRImmutable from 'swr/immutable'
+import { useCallback } from 'react'
 
+import useSWRImmutable from 'swr/immutable'
 import { createCategoryAtom, fetchCategoriesAtom, fetchCategoryDetailAtom, optimisticRemoveCategoryAtom, optimisticUpdateCategoryAtom } from '../actions/categories'
 import { categoryIdsAtom, categoryIdToArticleIdsAtom, categoryMapAtom } from '../store'
+import { useCommonSwrConfig } from '../useSwrConfig'
 
 export function useCategoriesData() {
   const categoryIds = useAtomValue(categoryIdsAtom)
@@ -12,8 +14,19 @@ export function useCategoriesData() {
   const updateCategory = useSetAtom(optimisticUpdateCategoryAtom)
   const removeCategory = useSetAtom(optimisticRemoveCategoryAtom)
 
-  // 还没有对sheet做keepalive，会导致一直发请求
-  const { error, isLoading, mutate } = useSWRImmutable('categories', fetchCategories)
+  // 检查是否已有数据
+  const hasData = categoryIds.length > 0
+
+  const swrConfig = useCommonSwrConfig(hasData)
+
+  const cachedFetcher = useCallback(() => fetchCategories(), [fetchCategories])
+
+  // 使用条件请求和自动定时刷新
+  const { error, isLoading, mutate } = useSWRImmutable(
+    'categories',
+    cachedFetcher,
+    swrConfig,
+  )
 
   return {
     categoryIds,
@@ -32,7 +45,19 @@ export function useCategoryDetail(id: number) {
   const categoryIdToArticleIds = useAtomValue(categoryIdToArticleIdsAtom)
   const fetchCategoryDetail = useSetAtom(fetchCategoryDetailAtom)
 
-  const { error, isLoading, mutate } = useSWRImmutable(`${id}`, () => fetchCategoryDetail(id))
+  // 检查是否已有数据
+  const hasCategory = !!categoryMap[id]
+  const hasArticleIds = !!categoryIdToArticleIds[id]
+  const hasCompleteData = hasCategory && hasArticleIds
+
+  const swrConfig = useCommonSwrConfig(hasCompleteData)
+
+  // 使用条件请求和自动定时刷新
+  const { error, isLoading, mutate } = useSWRImmutable(
+    `category-${id}`,
+    () => fetchCategoryDetail(id),
+    swrConfig,
+  )
 
   return {
     category: categoryMap[id],

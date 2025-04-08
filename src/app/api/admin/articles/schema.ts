@@ -1,8 +1,6 @@
 import { z } from 'zod'
 
-export const articlePaginationSchema = z.object({
-  page: z.coerce.number().int().positive().default(1),
-  pageSize: z.coerce.number().int().positive().default(10),
+export const articleSchema = z.object({
   type: z.enum(['BLOG', 'DRAFT', 'NOTE']).optional(),
 })
 

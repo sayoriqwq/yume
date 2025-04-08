@@ -6,4 +6,6 @@ const tagBaseSchema = z.object({
 
 export const createTagSchema = tagBaseSchema
 
-export const updateTagSchema = tagBaseSchema.partial()
+export const updateTagSchema = tagBaseSchema.partial().extend({
+  articleIds: z.array(z.number()).optional(),
+})

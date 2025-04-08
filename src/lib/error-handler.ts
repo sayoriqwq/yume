@@ -3,11 +3,11 @@ import { extractYumeError, YumeError } from './YumeError'
 
 export function yumeErrorHandler<T>(res: T | string, successMessage: string, successCb?: () => void) {
   if (res instanceof YumeError) {
-    toast.error(res.message)
+    toast.error(res.toJSON())
   }
   else if (typeof res === 'string') {
     const error = extractYumeError(res)
-    toast.error(error.message)
+    toast.error(error.toJSON())
   }
   else {
     toast.success(successMessage)
@@ -18,7 +18,7 @@ export function yumeErrorHandler<T>(res: T | string, successMessage: string, suc
 export async function yumeErrorHandlerAsync<T>(res: T | YumeError): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     if (res instanceof YumeError) {
-      toast.error(res.message)
+      toast.error(res.toJSON())
       reject(res)
     }
     else {
@@ -44,6 +44,6 @@ export function errorToaster(error: unknown) {
     toast.error(error.message)
   }
   else {
-    toast.error('未知错误')
+    toast.error('出错了！！！你怎么到这的？')
   }
 }

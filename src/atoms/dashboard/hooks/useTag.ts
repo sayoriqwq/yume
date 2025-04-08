@@ -1,9 +1,11 @@
 import { useAtomValue, useSetAtom } from 'jotai'
+import { useCallback } from 'react'
+
 import useSWRImmutable from 'swr/immutable'
 
 import { createTagAtom, fetchTagsAtom, optimisticRemoveTagAtom, optimisticUpdateTagAtom } from '../actions/tags'
-
 import { articleMapAtom, tagIdsAtom, tagIdToArticleIdsAtom, tagMapAtom } from '../store'
+import { useCommonSwrConfig } from '../useSwrConfig'
 
 export function useTagsData() {
   const tagIds = useAtomValue(tagIdsAtom)
@@ -13,7 +15,12 @@ export function useTagsData() {
   const updateTag = useSetAtom(optimisticUpdateTagAtom)
   const removeTag = useSetAtom(optimisticRemoveTagAtom)
 
-  const { data, error, isLoading, mutate } = useSWRImmutable('tags', fetchTags)
+  const hasData = tagIds.length > 0
+  const swrConfig = useCommonSwrConfig(hasData)
+
+  const cachedFetcher = useCallback(() => fetchTags(), [fetchTags])
+
+  const { data, error, isLoading, mutate } = useSWRImmutable('tags', cachedFetcher, swrConfig)
 
   return {
     tagIds,
@@ -33,5 +40,10 @@ export function useTagDetail(id: number) {
   const tagIdToArticleIds = useAtomValue(tagIdToArticleIdsAtom)
   const articleMap = useAtomValue(articleMapAtom)
 
-  return { tag: tagMap[id], articleIds: tagIdToArticleIds[id], articleMap }
+  const articleIds = tagIdToArticleIds[id] || []
+  return {
+    tag: tagMap[id],
+    articleIds,
+    articleMap,
+  }
 }
