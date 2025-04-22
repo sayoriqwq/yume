@@ -21,28 +21,48 @@ export async function importMDXFiles({ sourceDir }: ImportOptions) {
       continue
     }
 
-    await db.article.create({
-      data: {
-        slug: metadata.slug,
-        title: metadata.title,
-        description: metadata.description,
-        cover: metadata.cover,
-        type: 'BLOG',
-        published: metadata.published ?? true,
-        content: JSON.stringify(post.content),
-        category: {
-          connectOrCreate: {
-            where: { name: metadata.category },
-            create: { name: metadata.category },
+    // 使用事务确保数据一致性
+    await db.$transaction(async (tx) => {
+      // 创建文章
+      await tx.article.create({
+        data: {
+          slug: metadata.slug,
+          title: metadata.title,
+          description: metadata.description,
+          cover: metadata.cover,
+          type: 'BLOG',
+          published: metadata.published ?? true,
+          content: JSON.stringify(post.content),
+          category: {
+            connectOrCreate: {
+              where: { name: metadata.category },
+              create: { name: metadata.category },
+            },
+          },
+          tags: {
+            connectOrCreate: metadata.tags?.map(tag => ({
+              where: { name: tag },
+              create: { name: tag },
+            })) ?? [],
           },
         },
-        tags: {
-          connectOrCreate: metadata.tags?.map(tag => ({
-            where: { name: tag },
-            create: { name: tag },
-          })) ?? [],
-        },
-      },
+      })
+
+      // 更新分类的文章计数
+      await tx.category.update({
+        where: { name: metadata.category },
+        data: { count: { increment: 1 } },
+      })
+
+      // 更新所有关联标签的计数
+      if (metadata.tags && metadata.tags.length > 0) {
+        for (const tagName of metadata.tags) {
+          await tx.tag.update({
+            where: { name: tagName },
+            data: { count: { increment: 1 } },
+          })
+        }
+      }
     })
 
     console.log(`成功导入文章: ${metadata.slug}`)

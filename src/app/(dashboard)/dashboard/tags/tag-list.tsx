@@ -28,7 +28,7 @@ export function TagList() {
   const showDetailModal = useCallback((id: number) => {
     const tagName = tagMap[id]?.name || '标签详情'
     present({
-      title: `${tagName}`,
+      title: `${tagName} 关联的文章`,
       content: () => <TagDetail id={id} />,
     })
   }, [present, tagMap])
