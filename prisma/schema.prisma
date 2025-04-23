@@ -8,14 +8,14 @@ datasource db {
 }
 
 enum ArticleType {
-  BLOG      // MDX
-  NOTE      // 随记
-  DRAFT     // 未成文的博客
+  BLOG // MDX
+  NOTE // 随记
+  DRAFT // 未成文的博客
 }
 
 enum LikeableType {
-  ARTICLE     // 文章
-  COMMENT     // 评论
+  ARTICLE // 文章
+  COMMENT // 评论
 }
 
 enum ApprovalStatus {
@@ -25,136 +25,148 @@ enum ApprovalStatus {
 }
 
 model User {
-  id            String    @id @unique // clerk id
-  username          String
-  email         String?    @unique
-  image_url         String?
-  clerkData     Json?   
-    
+  id        String  @id @unique // clerk id
+  username  String
+  email     String? @unique
+  image_url String?
+  clerkData Json?
+
   // 关联数据
-  comments      Comment[] // 用户发表的评论
-  likes         Like[] // 用户点赞
+  comments Comment[] // 用户发表的评论
+  likes    Like[] // 用户点赞
 }
 
 model Article {
-  id           Int       @id @default(autoincrement())
-  slug         String    @unique
-  title        String    
-  description  String?
-  cover        String?
-  
+  id          Int     @id @default(autoincrement())
+  slug        String  @unique
+  title       String
+  description String?
+  cover       String?
+
   // 文章类型
-  type         ArticleType
-  
+  type ArticleType
+
   // 统计数据
-  viewCount    Int       @default(0)
-  
-  // 草稿
-  content      String?
-  
+  viewCount Int @default(0)
+
+  // 存储大型文本内容
+  content String? @db.Text
+  // 存储文章所在路径
+  mdxPath String?
+
   // 随记特有
-  mood         String?
-  weather      String?
-  location     String?
-  
+  mood     String?
+  weather  String?
+  location String?
+
   // 分类与标签
-  category     Category  @relation(fields: [categoryId], references: [id])
-  categoryId   Int
-  tags         Tag[]    @relation("ArticleTags")
-  
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId Int
+  tags       Tag[]    @relation("ArticleTags")
+
   // 发布状态
-  published    Boolean    @default(true)
-  
+  published Boolean @default(true)
+
   // 关联数据
-  comments     Comment[]  // 评论
-  
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  comments Comment[] // 评论
+
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  ArticleTag ArticleTag[]
 }
 
 model Category {
-  id           Int       @id @default(autoincrement())
-  name         String    @unique
-  cover        String?
-  count        Int       @default(0)
-  articles     Article[] 
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  cover    String?
+  count    Int       @default(0)
+  articles Article[]
 }
 
 model Tag {
-  id           Int       @id @default(autoincrement())
-  name         String    @unique
-  count        Int       @default(0)
-  articles     Article[] @relation("ArticleTags")
+  id         Int          @id @default(autoincrement())
+  name       String       @unique
+  count      Int          @default(0)
+  articles   Article[]    @relation("ArticleTags")
+  ArticleTag ArticleTag[]
 }
 
-
 model Comment {
-  id           Int       @id @default(autoincrement())
-  content      String
-  
-  // 关联到用户
-  author       User      @relation(fields: [authorId], references: [id])
-  authorId     String
-  
-  // 关联到文章
-  article      Article?   @relation(fields: [articleId], references: [id], onDelete: Cascade)
-  articleId    Int?
-  
-  // 嵌套
-  parentId     Int?
-  parent       Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: SetNull)
-  replies      Comment[] @relation("CommentReplies")
+  id      Int    @id @default(autoincrement())
+  content String
 
-  status      ApprovalStatus @default(APPROVED)
-  
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  // 关联到用户
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
+
+  // 关联到文章
+  article   Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  articleId Int?
+
+  // 嵌套
+  parentId Int?
+  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: SetNull)
+  replies  Comment[] @relation("CommentReplies")
+
+  status ApprovalStatus @default(APPROVED)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // 点赞关联表
 model Like {
-  id        Int      @id @default(autoincrement())
-  
+  id Int @id @default(autoincrement())
+
   // 关联到用户
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String
-  
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
   // 点赞对象类型
-  type      LikeableType
-  
+  type LikeableType
+
   // 点赞对象ID (可以是文章ID或评论ID)
-  targetId  Int
-  
+  targetId Int
+
   createdAt DateTime @default(now())
-  
+
   // 复合唯一索引确保一个用户只能对一个内容点赞一次
   @@unique([userId, type, targetId])
 }
 
 model FriendLink {
-  id          Int      @id @default(autoincrement())
+  id          Int     @id @default(autoincrement())
   name        String
   url         String
   description String?
   avatar      String?
-  
-  status      ApprovalStatus @default(PENDING)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+
+  status ApprovalStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-
 model SiteConfig {
-  id          Int      @id @default(autoincrement())
-  key         String   @unique
-  value       String
-  updatedAt   DateTime @updatedAt
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
 }
 
 model Subscriber {
-  id          Int      @id @default(autoincrement())
-  email       String   @unique
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
+
+// 仅用来生成E-R图，Prisima会自动创建并管理隐式的中间表
+// model ArticleTag {
+//   article   Article @relation(fields: [articleId], references: [id])
+//   articleId Int
+//   tag       Tag     @relation(fields: [tagId], references: [id])
+//   tagId     Int
+
+//   @@id([articleId, tagId])
+// }

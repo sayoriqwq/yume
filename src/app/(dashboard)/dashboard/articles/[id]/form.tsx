@@ -71,14 +71,7 @@ export function ArticleForm({ id }: FormProps) {
       })
 
       // 设置内容
-      try {
-        const parsedContent = article.content ? JSON.parse(article.content) : ''
-        setContent(parsedContent)
-      }
-      catch (e) {
-        console.error('解析内容失败:', e)
-        setContent(article.content || '')
-      }
+      setContent(article.content || '')
 
       // 设置标签
       if (article.tags && article.tags.length > 0) {
@@ -94,7 +87,7 @@ export function ArticleForm({ id }: FormProps) {
   const handleSave = async (formData: any) => {
     const payload = {
       ...formData,
-      content: JSON.stringify(content),
+      content,
       tagIds: selectedTags,
     }
 
