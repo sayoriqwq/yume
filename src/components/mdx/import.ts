@@ -1,12 +1,12 @@
 import { db } from '@/db'
-import { getMDXData } from './server-utils'
+import { getMDXData } from './posts-utils'
 
 interface ImportOptions {
   sourceDir: string
 }
 
 export async function importMDXFiles({ sourceDir }: ImportOptions) {
-  const posts = getMDXData(sourceDir)
+  const posts = await getMDXData(sourceDir)
 
   for (const post of posts) {
     const { metadata } = post
@@ -33,6 +33,7 @@ export async function importMDXFiles({ sourceDir }: ImportOptions) {
           type: 'BLOG',
           published: metadata.published ?? true,
           content: post.content,
+          mdxPath: metadata.filePath ?? '',
           category: {
             connectOrCreate: {
               where: { name: metadata.category },

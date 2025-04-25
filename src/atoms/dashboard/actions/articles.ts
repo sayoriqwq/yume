@@ -1,6 +1,6 @@
 import type { ArticlesResponse } from '@/app/api/admin/articles/route'
+import type { Article, ArticleType } from '@/generated'
 import type { SingleData, SingleDeleteData } from '@/lib/api'
-import type { Article, ArticleType } from '../types'
 import { errorLogger, errorToaster } from '@/lib/error-handler'
 import { yumeFetchDelete, yumeFetchGet, yumeFetchPatch, yumeFetchPost } from '@/lib/yume-fetcher'
 import { createYumeError, extractYumeError, YumeErrorType } from '@/lib/YumeError'

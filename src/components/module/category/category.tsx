@@ -1,36 +1,17 @@
 'use client'
 
+import type { ArticlesResponse } from '@/app/api/articles/route'
+import type { Article } from '@/types/article/article'
 import { Button } from '@/components/ui/button'
+import { formatArticle } from '@/types/article/format'
+import Link from 'next/link'
 import { useModalStack } from 'rc-modal-sheet'
 import { useCallback } from 'react'
 import useSWR from 'swr'
 
-interface CategoryProps {
-  name: string
-}
-
-interface Article {
-  id: number
-  title: string
-  slug: string
-  description: string | null
-  category: {
-    id: number
-    name: string
-    cover: string | null
-  }
-  tags: Array<{
-    id: number
-    name: string
-  }>
-  createdAt: string
-  updatedAt: string
-}
-
 function CategoryContent({ name }: { name: string }) {
-  const { data, isLoading, error } = useSWR<{ articles: Article[] }>(
-    `/api/categories/by-name/${name}/articles`,
-    (url: string) => fetch(url).then(res => res.json()),
+  const { data, isLoading, error } = useSWR<ArticlesResponse>(
+    `/api/categories/by-name/${name}`,
   )
 
   if (isLoading) {
@@ -51,6 +32,18 @@ function CategoryContent({ name }: { name: string }) {
   }
 
   const articles = data?.articles || []
+  const getArticleLink = (article: Article) => {
+    switch (article.type) {
+      case 'BLOG':
+        return `/posts/${article.category}/${article.slug}`
+      case 'DRAFT':
+        return `/drafts/${article.id}`
+      case 'NOTE':
+        return `/notes/${article.id}`
+      default:
+        return '#'
+    }
+  }
 
   return (
     <div className="space-y-4">
@@ -62,9 +55,9 @@ function CategoryContent({ name }: { name: string }) {
             <div className="space-y-2">
               {articles.map(article => (
                 <div key={article.id} className="p-3 border rounded">
-                  <a href={`/posts/${article.category.name}/${article.slug}`} className="font-medium hover:underline">
+                  <Link href={getArticleLink(formatArticle(article))} className="font-medium hover:underline">
                     {article.title}
-                  </a>
+                  </Link>
                   {article.description && (
                     <p className="text-sm text-muted-foreground">{article.description}</p>
                   )}
@@ -76,7 +69,7 @@ function CategoryContent({ name }: { name: string }) {
   )
 }
 
-export function Category({ name }: CategoryProps) {
+export function Category({ name }: { name: string }) {
   const { present } = useModalStack()
 
   const showModal = useCallback(() => {

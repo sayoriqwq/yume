@@ -1,7 +1,7 @@
 'use client'
 
 import type { PropsWithCC } from '@/types'
-import type { Post } from '@/types/post'
+import type { Post } from '@/types/article/post'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
 import Link from 'next/link'

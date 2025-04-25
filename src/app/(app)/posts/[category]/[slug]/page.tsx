@@ -1,15 +1,15 @@
-import { getAllPosts } from '@/components/mdx/server-utils'
+import { getAllPosts } from '@/components/mdx/posts-utils'
 import { CommentContainer } from '@/components/module/comment/comment-container'
 import { PostDetail } from '@/components/module/post/post-detail'
 import { WiderContainer } from '@/layout/container/Normal'
 import { notFound } from 'next/navigation'
 
 export async function generateStaticParams() {
-  const posts = getAllPosts()
-
-  return posts.map(post => ({
-    slug: post.metadata.slug,
-  }))
+  return (await getAllPosts())
+    .filter(post => post.metadata.published)
+    .map(post => ({
+      slug: post.metadata.slug,
+    }))
 }
 
 interface Props {
@@ -18,7 +18,7 @@ interface Props {
 
 export default async function Page({ params }: Props) {
   const { slug } = await params
-  const post = getAllPosts().find(post => post.metadata.slug === slug)
+  const post = (await getAllPosts()).find(post => post.metadata.slug === slug)
 
   if (!post) {
     notFound()

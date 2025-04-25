@@ -1,4 +1,4 @@
-import type { Article, Category, Comment, Tag } from './types'
+import type { Article, Category, Comment, Tag } from '@/generated'
 import { produce } from 'immer'
 import { atom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'

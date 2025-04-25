@@ -1,7 +1,7 @@
 import type { CategoryDetailResponse } from '@/app/api/admin/categories/[id]/route'
 import type { CategoriesApiResponse } from '@/app/api/admin/categories/route'
+import type { Category } from '@/generated'
 import type { SingleData, SingleDeleteData } from '@/lib/api'
-import type { Category } from '../types'
 import { errorLogger, errorToaster } from '@/lib/error-handler'
 import { yumeFetchDelete, yumeFetchGet, yumeFetchPatch, yumeFetchPost } from '@/lib/yume-fetcher'
 import { createYumeError, extractYumeError, YumeErrorType } from '@/lib/YumeError'

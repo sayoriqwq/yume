@@ -1,14 +1,10 @@
-import { Loading } from '@/components/common/loading'
 import { IMG_PADDING } from '@/constants/page-config'
-import { useMounted } from '@/hooks/useMounted'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useTheme } from 'next-themes'
 import Image from 'next/image'
 import { useRef } from 'react'
 
 export function CenterImg() {
-  const mounted = useMounted()
-
   const { resolvedTheme } = useTheme()
 
   const isDarkMode = resolvedTheme === 'dark'
@@ -30,19 +26,22 @@ export function CenterImg() {
 
   const renderImage = () => {
     return (
-      <Image
-        src={isDarkMode ? 'https://s3-yume.s3.ap-northeast-1.amazonaws.com/bg-dark.webp' : 'https://s3-yume.s3.ap-northeast-1.amazonaws.com/bg-light.webp'}
-        alt="Background Image"
-        fill
-        priority
-        className="object-cover"
-        quality={100}
-      />
+      <>
+        <Image
+          src={isDarkMode ? 'https://s3-yume.s3.ap-northeast-1.amazonaws.com/bg-dark.webp' : 'https://s3-yume.s3.ap-northeast-1.amazonaws.com/bg-light.webp'}
+          alt="Background Image"
+          fill
+          priority
+          className="object-cover"
+          quality={100}
+        />
+        <motion.div
+          className="absolute inset-0 bg-neutral-950/50"
+          style={{ opacity }}
+        />
+      </>
     )
   }
-
-  if (!mounted)
-    return <Loading />
 
   return (
     <motion.div
@@ -55,10 +54,6 @@ export function CenterImg() {
       }}
     >
       {renderImage()}
-      <motion.div
-        className="absolute inset-0 bg-neutral-950/50"
-        style={{ opacity }}
-      />
     </motion.div>
   )
 }

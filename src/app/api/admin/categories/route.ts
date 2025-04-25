@@ -1,4 +1,4 @@
-import type { Category } from '@/atoms/dashboard/types'
+import type { Category } from '@/generated'
 import type { SingleData } from '@/lib/api'
 import type { NextRequest } from 'next/server'
 import { createSingleEntityResponse } from '@/lib/api'

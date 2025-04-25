@@ -1,5 +1,6 @@
 'use client'
 
+import type { Draft } from '@/types/article/article'
 import type { RefObject } from 'react'
 import { useZIndex } from '@/hooks/useZIndex'
 import { cn } from '@/lib/utils'
@@ -7,19 +8,8 @@ import { motion, useMotionValue } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 import { DraftCard } from './draft-card'
 
-interface DraftDragCardProps {
+type DraftDragCardProps = Draft & {
   containerRef: RefObject<HTMLDivElement | null>
-  id: number
-  title: string
-  slug: string
-  category: string
-  description?: string
-  cover?: string
-  content: string
-  viewCount: number
-  published: boolean
-  createdAt: Date
-  updatedAt?: Date
   top: string
   left: string
   rotate: string
@@ -33,7 +23,7 @@ export function DraftDragCard({
   rotate: initialRotate,
   className,
   id,
-  ...articleProps
+  ...draftProps
 }: DraftDragCardProps) {
   const [zIndex, updateZIndex] = useZIndex(0)
   const [isRotateMode, setIsRotateMode] = useState(false)
@@ -174,7 +164,7 @@ export function DraftDragCard({
       }}
     >
       <DraftCard
-        {...articleProps}
+        {...draftProps}
         id={id}
         mode="drag"
         className={cn(

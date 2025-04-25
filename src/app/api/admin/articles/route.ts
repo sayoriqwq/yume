@@ -3,7 +3,7 @@ import type { Article } from '@prisma/client'
 import type { NextRequest } from 'next/server'
 import { createSingleEntityResponse } from '@/lib/api'
 import { parseGetQuery, parsePostBody } from '@/lib/parser'
-import { createYumeError, YumeError, YumeErrorType } from '@/lib/YumeError'
+import { createYumeError, createYumeErrorResponse, YumeErrorType } from '@/lib/YumeError'
 import { ArticleType } from '@prisma/client'
 import { NextResponse } from 'next/server'
 import { getArticles } from './get'
@@ -23,60 +23,62 @@ export interface ArticlesResponse {
 }
 
 export async function GET(request: NextRequest): Promise<NextResponse<ArticlesResponse | string>> {
-  const input = parseGetQuery(request, articleSchema)
-  if (input instanceof YumeError) {
-    return NextResponse.json(input.toJSON())
+  try {
+    const input = parseGetQuery(request, articleSchema)
+
+    const { type } = input
+
+    const { articles, count } = await getArticles(type)
+
+    const articleMap = articles.reduce<Record<number, Article>>((acc, article) => {
+      acc[article.id] = article
+      return acc
+    }, {})
+
+    const articleIdToCategoryId = articles.reduce<Record<number, number>>((acc, article) => {
+      acc[article.id] = article.categoryId
+      return acc
+    }, {})
+
+    const articleIdToTagIds = articles.reduce<Record<number, number[]>>((acc, article) => {
+      acc[article.id] = article.tags?.map(tag => tag.id) || []
+      return acc
+    }, {})
+
+    return NextResponse.json({
+      data: {
+        articleIds: articles.map(article => article.id),
+        count,
+      },
+      objects: {
+        articleMap,
+        articleIdToCategoryId,
+        articleIdToTagIds,
+      },
+    })
   }
-  const { type } = input
-
-  const { articles, count } = await getArticles(type)
-
-  const articleMap = articles.reduce<Record<number, Article>>((acc, article) => {
-    acc[article.id] = article
-    return acc
-  }, {})
-
-  const articleIdToCategoryId = articles.reduce<Record<number, number>>((acc, article) => {
-    acc[article.id] = article.categoryId
-    return acc
-  }, {})
-
-  const articleIdToTagIds = articles.reduce<Record<number, number[]>>((acc, article) => {
-    acc[article.id] = article.tags?.map(tag => tag.id) || []
-    return acc
-  }, {})
-
-  return NextResponse.json({
-    data: {
-      articleIds: articles.map(article => article.id),
-      count,
-    },
-    objects: {
-      articleMap,
-      articleIdToCategoryId,
-      articleIdToTagIds,
-    },
-  })
+  catch (error) {
+    return createYumeErrorResponse(error)
+  }
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse<SingleData<Article> | string>> {
-  const input = await parsePostBody(request, createArticleSchema)
-  if (input instanceof YumeError) {
-    return NextResponse.json(input.toJSON())
+  try {
+    const input = await parsePostBody(request, createArticleSchema)
+
+    const { type } = input
+
+    if (type === ArticleType.NOTE) {
+      const note = await createNote(input)
+      return createSingleEntityResponse(note)
+    }
+    if (type === ArticleType.DRAFT) {
+      const draft = await createDraft(input)
+      return createSingleEntityResponse(draft)
+    }
+    throw createYumeError(new Error('文章类型错误'), YumeErrorType.BadRequestError)
   }
-
-  const { type } = input
-
-  if (type === ArticleType.NOTE) {
-    const note = await createNote(input)
-    return createSingleEntityResponse(note)
+  catch (error) {
+    return createYumeErrorResponse(error)
   }
-  if (type === ArticleType.DRAFT) {
-    const draft = await createDraft(input)
-    return createSingleEntityResponse(draft)
-  }
-
-  const error = createYumeError(new Error('无效的文章类型'), YumeErrorType.BadRequestError)
-
-  return NextResponse.json(error.toJSON())
 }

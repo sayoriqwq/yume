@@ -1,6 +1,6 @@
 'use client'
 
-import type { Post } from '@/types/post'
+import type { Post } from '@/types/article/post'
 import { HoverBg } from '@/components/common/framer-animation/hover-bg'
 import { Button } from '@/components/ui/button'
 import { ChevronLeft, ChevronRight } from 'lucide-react'

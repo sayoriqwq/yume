@@ -1,38 +1,26 @@
 import type { NextRequest } from 'next/server'
 import type { z, ZodSchema } from 'zod'
-import type { YumeError } from './YumeError'
-import { createYumeError } from './YumeError'
 
-export function parseGetQuery<T extends ZodSchema>(request: NextRequest, schema: T): z.infer<T> | YumeError {
+export function parseGetQuery<T extends ZodSchema>(request: NextRequest, schema: T): z.infer<T> {
   const url = new URL(request.url)
   const searchParams = url.searchParams
   const query = Object.fromEntries(searchParams.entries())
-
-  console.log('query', query)
-  const res = schema.safeParse(query)
-  if (!res.success) {
-    return createYumeError(res.error)
-  }
-  return res.data
+  return schema.parse(query)
 }
 
-export async function parsePostBody<T extends ZodSchema>(request: NextRequest, schema: T): Promise<z.infer<T> | YumeError> {
+export async function parsePostBody<T extends ZodSchema>(request: NextRequest, schema: T): Promise<z.infer<T>> {
   const body = await request.json()
-  const res = schema.safeParse(body)
-  if (!res.success) {
-    return createYumeError(res.error)
-  }
-  return res.data
+  return schema.parse(body)
 }
 
-export async function parsePutBody<T extends ZodSchema>(request: NextRequest, schema: T): Promise<z.infer<T> | YumeError> {
+export async function parsePutBody<T extends ZodSchema>(request: NextRequest, schema: T): Promise<z.infer<T>> {
   return parsePostBody(request, schema)
 }
 
-export function parseDeleteQuery<T extends ZodSchema>(request: NextRequest, schema: T): z.infer<T> | YumeError {
+export function parseDeleteQuery<T extends ZodSchema>(request: NextRequest, schema: T): z.infer<T> {
   return parseGetQuery(request, schema)
 }
 
-export function parsePatchBody<T extends ZodSchema>(request: NextRequest, schema: T): Promise<z.infer<T> | YumeError> {
+export function parsePatchBody<T extends ZodSchema>(request: NextRequest, schema: T): Promise<z.infer<T>> {
   return parsePostBody(request, schema)
 }

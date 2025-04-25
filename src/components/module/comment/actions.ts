@@ -1,16 +1,11 @@
 'use server'
 
 import type { CommentState, CommentWithAuthor, CreateCommentData } from './types'
-import { db } from '@/db'
+import { CommentSchema } from '@/db/comment/schema'
+import { addComment, deleteComment as deleteCommentService, getArticleComments } from '@/db/comment/service'
+import prisma from '@/db/prisma'
 import { currentUser } from '@clerk/nextjs/server'
 import { revalidatePath } from 'next/cache'
-import { z } from 'zod'
-
-const CommentSchema = z.object({
-  content: z.string().min(1, '评论不能为空').max(500, '评论长度不能超过500字符'),
-  articleId: z.number(),
-  parentId: z.number().nullable().optional(),
-})
 
 export async function createComment(data: CreateCommentData): Promise<CommentState> {
   const user = await currentUser()
@@ -35,7 +30,7 @@ export async function createComment(data: CreateCommentData): Promise<CommentSta
     // 只会在开发的时候有可能会出现，测试的时候没有开webhook针对本地地址的代理因此没有同步user数据到数据库
 
     // 检查用户是否存在于数据库中
-    const dbUser = await db.user.findUnique({
+    const dbUser = await prisma.user.findUnique({
       where: { id: user.id },
     })
 
@@ -45,10 +40,10 @@ export async function createComment(data: CreateCommentData): Promise<CommentSta
         email => email.id === user.primaryEmailAddressId,
       )?.emailAddress
 
-      await db.user.create({
+      await prisma.user.create({
         data: {
           id: user.id,
-          username: user.username || user.firstName || '未知用户',
+          username: user.username || user.firstName || '神秘',
           email: primaryEmail || null,
           image_url: user.imageUrl,
           clerkData: JSON.parse(JSON.stringify(user)),
@@ -56,15 +51,12 @@ export async function createComment(data: CreateCommentData): Promise<CommentSta
       })
     }
 
-    await db.comment.create({
-      data: {
-        content: validationResult.data.content,
-        authorId: user.id,
-        articleId: validationResult.data.articleId,
-        parentId: validationResult.data.parentId,
-        status: 'APPROVED',
-      },
-    })
+    await addComment(
+      user.id,
+      validationResult.data.articleId,
+      validationResult.data.content,
+      validationResult.data.parentId || undefined,
+    )
 
     revalidatePath(`/posts/[category]/[slug]`)
     return {
@@ -88,43 +80,7 @@ export async function deleteComment({ id }: { id: number }) {
       return { success: false, message: '请先登录' }
     }
 
-    // 获取评论及其所有回复
-    const comment = await db.comment.findUnique({
-      where: { id },
-      include: {
-        replies: true,
-      },
-    })
-
-    if (!comment) {
-      return { success: false, message: '评论不存在' }
-    }
-
-    if (comment.authorId !== user.id) {
-      return { success: false, message: '没有权限删除此评论' }
-    }
-
-    // 递归删除所有回复
-    async function deleteReplies(commentId: number) {
-      const replies = await db.comment.findMany({
-        where: { parentId: commentId },
-      })
-
-      for (const reply of replies) {
-        await deleteReplies(reply.id)
-        await db.comment.delete({
-          where: { id: reply.id },
-        })
-      }
-    }
-
-    // 先删除所有回复
-    await deleteReplies(id)
-
-    // 最后删除主评论
-    await db.comment.delete({
-      where: { id },
-    })
+    await deleteCommentService(id, user.id)
 
     revalidatePath('/posts/[category]/[slug]')
     return { success: true, message: '评论已删除' }
@@ -137,24 +93,16 @@ export async function deleteComment({ id }: { id: number }) {
 
 export async function getComments(articleId: number): Promise<CommentWithAuthor[]> {
   try {
-    const comments = await db.comment.findMany({
-      where: {
-        articleId,
-        status: 'APPROVED',
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-      include: {
-        author: true,
-        replies: {
-          include: {
-            author: true,
-          },
-        },
-      },
-    })
-    return comments as CommentWithAuthor[]
+    // 使用 service 中的 getArticleComments 函数
+    const comments = await getArticleComments(articleId)
+    // 确保返回类型匹配 CommentWithAuthor
+    return comments.map(comment => ({
+      ...comment,
+      replies: (comment.replies || []).map(reply => ({
+        ...reply,
+        replies: [],
+      })),
+    })) as CommentWithAuthor[]
   }
   catch (error) {
     console.error('获取评论失败:', error)

@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client'
+import { NextResponse } from 'next/server'
 import { ZodError } from 'zod'
 
 export enum YumeErrorType {
@@ -7,6 +8,9 @@ export enum YumeErrorType {
   ServerError = 'ServerError',
   NotFoundError = 'NotFoundError',
   BadRequestError = 'BadRequestError',
+  FileSystemError = 'FileSystemError',
+  UnauthorizedError = 'UnauthorizedError',
+  ForbiddenError = 'ForbiddenError',
 }
 
 // 集中处理已知的错误
@@ -66,6 +70,11 @@ export function createYumeError(error: unknown, errorType?: YumeErrorType): Yume
     return new YumeError(error.message, 500, errorType ?? YumeErrorType.ServerError, error)
   }
   else {
-    return new YumeError('你是怎么到这的？', 500, YumeErrorType.ServerError, error)
+    return new YumeError('你是怎么到这的？抛出的并不是一个Error！', 500, YumeErrorType.ServerError, error)
   }
+}
+
+export function createYumeErrorResponse(error: unknown) {
+  const yumeError = createYumeError(error)
+  return NextResponse.json(yumeError.toJSON())
 }

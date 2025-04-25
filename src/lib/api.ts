@@ -1,4 +1,3 @@
-import type { Entity } from '@/atoms/dashboard/types'
 import type { YumeError } from './YumeError'
 import { NextResponse } from 'next/server'
 
@@ -14,6 +13,10 @@ export interface NormalizedData {
   objects: Record<string, Record<number, any>>
 }
 
+// 实体类型应该都有id
+export interface Entity {
+  id: number
+}
 /**
  * 创建单个实体的响应
  * @param data 实体对象

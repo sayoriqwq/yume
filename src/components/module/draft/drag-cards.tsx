@@ -1,32 +1,20 @@
 'use client'
 
+import type { ArticlesResponse } from '@/app/api/articles/route'
+import type { Draft } from '@/types/article/article'
 import { Button } from '@/components/ui/button'
+import { formatArticle } from '@/types/article/format'
 import { motion } from 'framer-motion'
 import { Info, LayoutGrid, Move } from 'lucide-react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useRef, useState } from 'react'
 import useSWR from 'swr'
 import { DraftCard } from './draft-card'
 import { DraftDragCard } from './drag-card'
 
-interface Article {
-  id: number
-  title: string
-  slug: string
-  category: string
-  description?: string
-  cover?: string
-  content: string
-  viewCount: number
-  published: boolean
-  createdAt: string
-  updatedAt: string
-}
-
 type ViewMode = 'grid' | 'drag'
 
 export function DraftDragCards() {
-  const router = useRouter()
   const searchParams = useSearchParams()
 
   // 从URL中获取模式，如果没有则使用默认值'drag'
@@ -34,11 +22,9 @@ export function DraftDragCards() {
   const [viewMode, setViewMode] = useState<ViewMode>(initialMode)
 
   const containerRef = useRef<HTMLDivElement | null>(null)
-  const { data: articles, isLoading, error } = useSWR<Article[]>(
+  const { data, isLoading, error } = useSWR<ArticlesResponse>(
     '/api/articles?type=DRAFT',
-    (url: string) => fetch(url).then(res => res.json()),
   )
-
   // 当模式改变时更新URL
   const updateMode = (mode: ViewMode) => {
     setViewMode(mode)
@@ -66,12 +52,6 @@ export function DraftDragCards() {
       return
     localStorage.setItem('draftCardPositions', JSON.stringify(positions))
   }
-
-  const formattedArticles = articles?.map(article => ({
-    ...article,
-    createdAt: new Date(article.createdAt),
-    updatedAt: new Date(article.updatedAt),
-  })) || []
 
   const generateCardPosition = (index: number, totalCards: number, articleId: number) => {
     const savedPositions = getSavedPositions()
@@ -106,6 +86,8 @@ export function DraftDragCards() {
     return position
   }
 
+  const drafts = data?.articles.map(article => formatArticle<Draft>(article)) || []
+
   if (isLoading) {
     return (
       <div className="flex h-[500px] w-full items-center justify-center">
@@ -122,14 +104,11 @@ export function DraftDragCards() {
     )
   }
 
-  if (formattedArticles.length === 0) {
+  if (drafts.length === 0) {
     return (
       <div className="flex h-[500px] w-full items-center justify-center flex-col gap-4">
         <Info className="h-12 w-12 text-muted-foreground opacity-50" />
         <div className="text-lg text-muted-foreground">暂无草稿</div>
-        <Button variant="outline" onClick={() => router.push('/editor')}>
-          开始创作
-        </Button>
       </div>
     )
   }
@@ -138,7 +117,7 @@ export function DraftDragCards() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <div className="text-sm text-muted-foreground">
-          {formattedArticles.length}
+          {data?.meta.totalCount}
           {' '}
           篇草稿
         </div>
@@ -168,15 +147,15 @@ export function DraftDragCards() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
             >
-              {formattedArticles.map(article => (
+              {drafts.map(draft => (
                 <motion.div
-                  key={article.id}
+                  key={draft.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
                 >
                   <DraftCard
-                    {...article}
+                    {...draft}
                     mode="grid"
                   />
                 </motion.div>
@@ -191,13 +170,13 @@ export function DraftDragCards() {
               transition={{ duration: 0.3 }}
             >
               <div className="absolute inset-0" ref={containerRef}>
-                {formattedArticles.map((article, index) => {
-                  const { top, left, rotate } = generateCardPosition(index, formattedArticles.length, article.id)
+                {drafts.map((draft, index) => {
+                  const { top, left, rotate } = generateCardPosition(index, drafts.length, draft.id)
                   return (
                     <DraftDragCard
-                      key={article.id}
+                      key={draft.id}
                       containerRef={containerRef}
-                      {...article}
+                      {...draft}
                       top={top}
                       left={left}
                       rotate={rotate}

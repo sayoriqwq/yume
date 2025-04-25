@@ -1,5 +1,6 @@
 'use client'
 
+import type { Draft } from '@/types/article/article'
 import { NormalTime } from '@/components/common/time'
 import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
@@ -7,31 +8,20 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 
-interface DraftCardProps {
-  id: number
-  title: string
-  slug: string
-  category: string
-  description?: string
-  cover?: string
-  content: string
-  viewCount: number
-  published: boolean
-  createdAt: Date
-  updatedAt?: Date
+type DraftCardProps = Draft & {
   mode: 'scroll' | 'drag' | 'grid'
   className?: string
 }
 
 export function DraftCard({
   title,
-  slug,
   category,
   description,
   cover,
   createdAt,
   mode,
   className,
+  id,
 }: DraftCardProps) {
   const [isPressed, setIsPressed] = useState(false)
 
@@ -68,7 +58,7 @@ export function DraftCard({
 
       <div className="flex flex-col gap-y-3">
         <div className="flex-between">
-          <Link href={`/posts/${category}/${slug}`}>
+          <Link href={`/drafts//${id}`}>
             <h3 className="line-clamp-1 text-lg font-bold text-foreground transition-colors duration-300 group-hover:text-primary group-hover:underline">
               {title}
             </h3>

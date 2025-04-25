@@ -1,54 +1,45 @@
+import type { Prisma } from '@/generated'
 import type { NextRequest } from 'next/server'
-import { db } from '@/db'
+import { articleListQuerySchema } from '@/db/article/schema'
+import { getArticles } from '@/db/article/service'
+import { errorLogger } from '@/lib/error-handler'
+import { parseGetQuery } from '@/lib/parser'
+import { createYumeErrorResponse } from '@/lib/YumeError'
 import { NextResponse } from 'next/server'
+
+export type ArticleFromGet = Prisma.ArticleGetPayload<{
+  include: {
+    category: true
+    tags: true
+    _count: {
+      select: { comments: true }
+    }
+  }
+}>
+
+export interface ArticlesResponse {
+  articles: ArticleFromGet[]
+  meta: {
+    currentPage: number
+    totalPages: number
+    totalCount: number
+    limit: number
+  }
+}
 
 export async function GET(request: NextRequest) {
   try {
-    const searchParams = request.nextUrl.searchParams
-    const type = searchParams.get('type')
-    const take = Number(searchParams.get('take')) || undefined
+    const input = parseGetQuery(request, articleListQuerySchema)
 
-    const articles = await db.article.findMany({
-      where: {
-        type: type as 'BLOG' | 'NOTE' | 'DRAFT' || undefined,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-      include: {
-        category: true,
-        tags: true,
-        comments: true,
-      },
-      take,
+    const data = await getArticles({
+      ...input,
+      published: true,
     })
 
-    console.log('articles', articles)
-
-    if (!articles || articles.length === 0) {
-      console.log(`Warning: No articles found with type: ${type}`)
-    }
-
-    // 格式化数据
-    const formattedArticles = articles.map(article => ({
-      id: article.id,
-      title: article.title,
-      slug: article.slug,
-      category: article.category?.name || '未分类',
-      description: article.description,
-      cover: article.cover,
-      content: article.content,
-      type: article.type,
-      viewCount: article.viewCount,
-      published: article.published,
-      createdAt: article.createdAt.toISOString(),
-      updatedAt: article.updatedAt.toISOString(),
-    }))
-
-    return NextResponse.json(formattedArticles)
+    return NextResponse.json(data)
   }
   catch (error) {
-    console.error('获取文章失败:', error)
-    return NextResponse.json({ error: '获取文章失败' }, { status: 500 })
+    errorLogger(error)
+    return createYumeErrorResponse(error)
   }
 }

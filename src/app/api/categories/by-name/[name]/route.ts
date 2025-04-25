@@ -1,44 +1,31 @@
-// import type { Category } from '@/atoms/appData/store'
-import { db } from '@/db'
+import type { NextRequest } from 'next/server'
+import { articleListQuerySchema } from '@/db/article/schema'
+import { getArticlesByCategoryName } from '@/db/category/service'
+import { errorLogger } from '@/lib/error-handler'
+import { parseGetQuery } from '@/lib/parser'
+import { createYumeErrorResponse } from '@/lib/YumeError'
 import { NextResponse } from 'next/server'
 
-// interface CategoryResponse {
-//   data: {
-//     categoryId: number
-//   }
-//   objects: {
-//     categories: Record<number, Category>
-//   }
-// }
-
 export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ name: string }> },
+  request: NextRequest,
+  { params }: { params: { name: string } },
 ) {
-  const { name } = await params
-
   try {
-    const category = await db.category.findUnique({
-      where: { name },
+    const { name } = params
+
+    // 解析查询参数
+    const input = parseGetQuery(request, articleListQuerySchema)
+
+    // 获取该分类下的文章
+    const data = await getArticlesByCategoryName(name, {
+      ...input,
+      published: true,
     })
 
-    if (!category) {
-      return NextResponse.json({ error: '分类不存在' }, { status: 404 })
-    }
-
-    return NextResponse.json({
-      data: {
-        categoryId: category.id,
-      },
-      objects: {
-        categories: {
-          [category.id]: category,
-        },
-      },
-    })
+    return NextResponse.json(data)
   }
   catch (error) {
-    console.error('获取分类失败:', error)
-    return NextResponse.json({ error: '获取分类失败' }, { status: 500 })
+    errorLogger(error)
+    return createYumeErrorResponse(error)
   }
 }

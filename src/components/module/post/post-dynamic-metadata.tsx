@@ -1,6 +1,6 @@
 'use client'
 
-import type { IPostMetaData } from '@/types/post'
+import type { IPostMetaData } from '@/types/article/post'
 import { Category } from '@/components/module/category/category'
 import { Tag } from '@/components/module/tag/tag'
 

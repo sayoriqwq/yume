@@ -1,5 +1,5 @@
 import type { ClassValue } from 'clsx'
-import type { YumeError } from './errors/YumeError'
+import type { YumeError } from './YumeError'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -19,4 +19,8 @@ export async function tryCatch<T, E = YumeError>(promise: Promise<T>): Promise<R
   catch (error) {
     return { data: null, error: error as E }
   }
+}
+
+export function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms))
 }

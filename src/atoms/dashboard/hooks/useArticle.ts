@@ -1,4 +1,4 @@
-import type { ArticleType } from '../types'
+import type { ArticleType } from '@/generated'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { useCallback } from 'react'
 import useSWRImmutable from 'swr/immutable'

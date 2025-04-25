@@ -16,9 +16,7 @@ export async function createDraft(input: z.infer<typeof createDraftSchema>) {
 export async function createNote(input: z.infer<typeof createNoteSchema>) {
   const { title, content, description, cover, published, categoryId, mood, weather, location } = input
   const slug = slugify(title)
-  const note = await db.article.create({
+  return await db.article.create({
     data: { title, content, description, cover, type: ArticleType.NOTE, published, categoryId: categoryId ?? DEFAULT_CATEGORY_ID, mood, weather, location, slug },
   })
-
-  return note
 }

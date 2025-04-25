@@ -90,3 +90,9 @@
   "profile_image_url": "https://images.clerk.dev/oauth_github/img_2uR5DTa4GQ7aNujoWZ0vD8Zfvrz"
 }
 ```
+
+## types
+
+ArticleModel 代表prisma生成的数据库模型，数据库相关类型应该都使用Prisma.xxxx的形式
+
+在前端的types文件夹里应当有页面渲染采用的类型

@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output = "../src/generated"
 }
 
 datasource db {
@@ -72,7 +73,6 @@ model Article {
 
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
-  ArticleTag ArticleTag[]
 }
 
 model Category {
@@ -88,7 +88,6 @@ model Tag {
   name       String       @unique
   count      Int          @default(0)
   articles   Article[]    @relation("ArticleTags")
-  ArticleTag ArticleTag[]
 }
 
 model Comment {
@@ -109,6 +108,8 @@ model Comment {
   replies  Comment[] @relation("CommentReplies")
 
   status ApprovalStatus @default(APPROVED)
+  // 软删除
+  deleted  Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -160,13 +161,3 @@ model Subscriber {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
-// 仅用来生成E-R图，Prisima会自动创建并管理隐式的中间表
-// model ArticleTag {
-//   article   Article @relation(fields: [articleId], references: [id])
-//   articleId Int
-//   tag       Tag     @relation(fields: [tagId], references: [id])
-//   tagId     Int
-
-//   @@id([articleId, tagId])
-// }

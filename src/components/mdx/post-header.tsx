@@ -1,4 +1,4 @@
-import type { IPostMetaData } from '@/types/post'
+import type { IPostMetaData } from '@/types/article/post'
 import { PostDynamicMetadata } from '../module/post/post-dynamic-metadata'
 
 interface PostHeaderProps {

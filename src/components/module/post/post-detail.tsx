@@ -1,4 +1,4 @@
-import type { Post } from '@/types/post'
+import type { Post } from '@/types/article/post'
 import { CustomMDX } from '@/components/mdx/mdx'
 import { PostHeader } from '@/components/mdx/post-header'
 import { TableOfContents } from '@/components/toc/toc'

@@ -1,6 +1,6 @@
 import type { TagsApiResponse } from '@/app/api/admin/tags/route'
+import type { Tag } from '@/generated'
 import type { SingleData, SingleDeleteData } from '@/lib/api'
-import type { Tag } from '../types'
 import { errorLogger, errorToaster } from '@/lib/error-handler'
 import { yumeFetchDelete, yumeFetchGet, yumeFetchPatch, yumeFetchPost } from '@/lib/yume-fetcher'
 import { createYumeError, extractYumeError, YumeErrorType } from '@/lib/YumeError'
