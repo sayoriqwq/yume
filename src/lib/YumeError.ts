@@ -11,6 +11,7 @@ export enum YumeErrorType {
   FileSystemError = 'FileSystemError',
   UnauthorizedError = 'UnauthorizedError',
   ForbiddenError = 'ForbiddenError',
+  ValidationError = 'ValidationError',
 }
 
 // 集中处理已知的错误

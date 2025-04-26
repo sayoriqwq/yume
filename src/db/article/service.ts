@@ -1,14 +1,15 @@
 import type { Prisma } from '@/generated'
 import type { ArticlesFilter } from './schema'
+import { LikeableType } from '@/generated'
 import { createYumeError, YumeErrorType } from '@/lib/YumeError'
 import prisma from '../prisma'
 
 /**
- * 通过ID或slug获取文章 (辅助函数)
+ * 通过ID或slug获取文章
  */
 export async function getArticleByIdOrSlug(idOrSlug: string | number) {
   if (typeof idOrSlug === 'number' || /^\d+$/.test(idOrSlug)) {
-    const id = typeof idOrSlug === 'number' ? idOrSlug : Number.parseInt(idOrSlug, 10)
+    const id = typeof idOrSlug === 'number' ? idOrSlug : Number.parseInt(idOrSlug)
     return await getArticleById(id)
   }
   else {
@@ -124,6 +125,7 @@ export async function getArticleById(id: number) {
       _count: {
         select: {
           comments: { where: { status: 'APPROVED' } },
+          likes: { where: { type: LikeableType.ARTICLE } },
         },
       },
     },
@@ -136,7 +138,7 @@ export async function getArticleById(id: number) {
  * 通过Slug获取单篇文章
  */
 export async function getArticleBySlug(slug: string) {
-  const article = await prisma.article.findUnique({
+  return await prisma.article.findUnique({
     where: {
       slug,
       published: true,
@@ -147,20 +149,21 @@ export async function getArticleBySlug(slug: string) {
       _count: {
         select: {
           comments: { where: { status: 'APPROVED' } },
+          likes: { where: { type: LikeableType.ARTICLE } },
         },
       },
     },
   })
-
-  return article
 }
 
-/**
- * 增加文章浏览量
- */
-export async function incrementArticleViews(id: number) {
-  return prisma.article.update({
-    where: { id },
-    data: { viewCount: { increment: 1 } },
+export async function getArticleIdBySlug(slug: string) {
+  return await prisma.article.findUnique({
+    where: {
+      slug,
+      published: true,
+    },
+    select: {
+      id: true,
+    },
   })
 }

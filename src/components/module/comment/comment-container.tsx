@@ -5,30 +5,13 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { useUser } from '@clerk/nextjs'
 import { useRef, useState } from 'react'
-import useSWR from 'swr'
 import { CommentItem } from './comment-item'
 import { useComments } from './hooks'
 
-interface Props {
-  articleSlug: string
-}
-
-export function CommentContainer({ articleSlug }: Props) {
+export function CommentContainer({ articleId }: { articleId: number }) {
   const { user } = useUser()
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [content, setContent] = useState('')
-
-  // 通过slug获取文章ID
-  const { data, isLoading } = useSWR(
-    `/api/articles/by-slug/${articleSlug}`,
-    async (url: string) => {
-      const res = await fetch(url)
-      const data = await res.json()
-      return data.data
-    },
-  )
-
-  const articleId = data?.articleId
   const { comments, createComment, deleteComment } = useComments(articleId)
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -96,11 +79,6 @@ export function CommentContainer({ articleSlug }: Props) {
   }
 
   const commentTree = buildCommentTree(comments || [])
-
-  if (isLoading) {
-    return <div className="mt-10 py-8 text-center">加载评论...</div>
-  }
-
   if (!articleId) {
     return <div className="mt-10 py-8 text-center">无法加载评论，找不到文章</div>
   }

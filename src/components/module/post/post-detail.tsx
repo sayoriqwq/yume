@@ -14,7 +14,7 @@ export function PostDetail({ post }: PostDetailProps) {
         <PostHeader metadata={post.metadata} />
         <CustomMDX source={post.content} />
       </article>
-      <div className="lg:block hidden">
+      <div className="xl:block hidden">
         <TableOfContents />
       </div>
     </>

@@ -1,0 +1,2 @@
+-- AddForeignKey
+ALTER TABLE "Like" ADD CONSTRAINT "Like_targetId_fkey" FOREIGN KEY ("targetId") REFERENCES "Article"("id") ON DELETE CASCADE ON UPDATE CASCADE;
