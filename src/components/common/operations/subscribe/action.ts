@@ -1,6 +1,6 @@
 'use server'
 
-import { db } from '@/db'
+import prisma from '@/db/prisma'
 import { validateEmailAddress } from '@/lib/validate'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { revalidatePath } from 'next/cache'
@@ -34,7 +34,7 @@ export async function createSubscriber(_currentState: SubscribeState, formData: 
   const email = validatedField.data.email
 
   try {
-    await db.subscriber.create({
+    await prisma.subscriber.create({
       data: { email },
     })
     revalidatePath('/')

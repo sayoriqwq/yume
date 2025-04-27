@@ -1,4 +1,5 @@
 import { DraftDragCards } from '@/components/module/draft/drag-cards'
+import { Suspense } from 'react'
 
 export default function DraftsPage() {
   return (
@@ -20,9 +21,9 @@ export default function DraftsPage() {
         </div>
       </div>
 
-      <section className="mt-8">
+      <Suspense fallback={<div className="h-[500px] flex items-center justify-center">加载中...</div>}>
         <DraftDragCards />
-      </section>
+      </Suspense>
     </main>
   )
 }

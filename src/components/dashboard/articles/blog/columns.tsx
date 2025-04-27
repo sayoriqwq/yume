@@ -2,7 +2,7 @@
 
 import type { Article, Category, Tag } from '@prisma/client'
 import type { ColumnDef } from '@tanstack/react-table'
-import { baseActions, baseSelector } from '../../table/base-columns'
+import { baseSelector } from '../../table/base-columns'
 import { DataTableColumnHeader } from '../../table/DataTableColumnHeader'
 
 export type Blog = Partial<Article> & {
@@ -98,5 +98,5 @@ export const columns: ColumnDef<Blog>[] = [
       return new Date(row.original.updatedAt!).toLocaleString()
     },
   },
-  baseActions<Blog>(),
+//   baseActions<Blog>(),
 ]

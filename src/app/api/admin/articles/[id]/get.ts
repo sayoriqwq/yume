@@ -1,4 +1,4 @@
-import { db } from '@/db'
+import prisma from '@/db/prisma'
 import { createYumeError, YumeErrorType } from '@/lib/YumeError'
 
 /**
@@ -6,7 +6,7 @@ import { createYumeError, YumeErrorType } from '@/lib/YumeError'
  * @param id 文章ID
  */
 export async function getArticleDetail(id: number) {
-  const article = await db.article.findUnique({
+  const article = await prisma.article.findUnique({
     where: { id },
     include: {
       category: true,
@@ -54,7 +54,7 @@ export async function getArticleDetail(id: number) {
   }
 
   // 获取文章的点赞数
-  const likesCount = await db.like.count({
+  const likesCount = await prisma.like.count({
     where: {
       type: 'ARTICLE',
       targetId: id,
@@ -73,7 +73,7 @@ export async function getArticleDetail(id: number) {
  * 用于编辑文章等场景
  */
 export async function getArticleForEdit(id: number) {
-  const article = await db.article.findUnique({
+  const article = await prisma.article.findUnique({
     where: { id },
     include: {
       category: true,
@@ -92,7 +92,7 @@ export async function getArticleForEdit(id: number) {
  * 递增文章的浏览量
  */
 export async function incrementArticleViewCount(id: number) {
-  await db.article.update({
+  await prisma.article.update({
     where: { id },
     data: {
       viewCount: {

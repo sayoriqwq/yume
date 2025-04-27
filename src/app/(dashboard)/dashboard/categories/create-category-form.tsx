@@ -37,7 +37,10 @@ export function CreateCategoryForm() {
 
   async function onSubmit(data: FormValues) {
     setIsLoading(true)
-    await createCategory(data)
+    await createCategory({
+      name: data.name,
+      cover: data.cover || null,
+    })
     form.reset()
     close()
     setIsLoading(false)

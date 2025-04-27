@@ -1,5 +1,5 @@
 import type { UserJSON, WebhookEvent } from '@clerk/nextjs/server'
-import { db } from '@/db'
+import prisma from '@/db/prisma'
 /**
  * 同步Clerk用户数据到数据库
  */
@@ -17,7 +17,7 @@ export async function syncWithDatabase(evt: WebhookEvent) {
           email => email.id === userData.primary_email_address_id,
         )
 
-        await db.user.create({
+        await prisma.user.create({
           data: {
             id: userData.id,
             username: userData.username || '神秘',
@@ -37,7 +37,7 @@ export async function syncWithDatabase(evt: WebhookEvent) {
           email => email.id === userData.primary_email_address_id,
         )
 
-        await db.user.update({
+        await prisma.user.update({
           where: { id: userData.id },
           data: {
             username: userData.username || '神秘',
@@ -53,7 +53,7 @@ export async function syncWithDatabase(evt: WebhookEvent) {
 
       // 用户删除事件
       case 'user.deleted': {
-        await db.user.delete({
+        await prisma.user.delete({
           where: { id: userData.id },
         })
 

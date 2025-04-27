@@ -1,6 +1,6 @@
 import type { z } from 'zod'
 import type { updateTagSchema } from '../schema'
-import { db } from '@/db'
+import prisma from '@/db/prisma'
 
 export async function updateTag(input: z.infer<typeof updateTagSchema>, id: number) {
   const { name, articleIds } = input
@@ -8,7 +8,7 @@ export async function updateTag(input: z.infer<typeof updateTagSchema>, id: numb
   // 如果提供了articleIds，则需要在事务中同时更新count
   if (articleIds !== undefined) {
     // 使用事务确保数据一致性
-    return await db.$transaction(async (tx) => {
+    return await prisma.$transaction(async (tx) => {
       // 更新标签基本信息以及文章关联
       const tag = await tx.tag.update({
         where: { id },
@@ -35,7 +35,7 @@ export async function updateTag(input: z.infer<typeof updateTagSchema>, id: numb
   }
   else {
     // 如果只是更新标签名称，不涉及文章关联
-    const tag = await db.tag.update({
+    const tag = await prisma.tag.update({
       where: { id },
       data: {
         name,

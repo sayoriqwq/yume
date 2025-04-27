@@ -1,6 +1,6 @@
 'use client'
 
-import type { CommentWithAuthor } from './types'
+import type { CommentWithAuthor } from '@/types/comment'
 import { RelativeTime } from '@/components/common/time'
 import { Button } from '@/components/ui/button'
 import {
@@ -21,9 +21,10 @@ interface Props {
   comment: CommentWithAuthor
   onDelete: (id: number) => void
   onReply: (content: string, parentId: number) => Promise<void>
+  isProcessing?: boolean
 }
 
-export function CommentItem({ comment, onDelete, onReply }: Props) {
+export function CommentItem({ comment, onDelete, onReply, isProcessing = false }: Props) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isReplying, setIsReplying] = useState(false)
   const [replyContent, setReplyContent] = useState('')
@@ -61,6 +62,7 @@ export function CommentItem({ comment, onDelete, onReply }: Props) {
             <div className="flex items-center gap-3">
               <p className="font-medium">{author?.username || '未知用户'}</p>
               <RelativeTime date={comment.createdAt} className="text-muted-foreground text-xs" />
+              {isProcessing && <span className="text-xs text-muted-foreground">(发送中...)</span>}
             </div>
 
             <div className="flex items-start gap-3">
@@ -73,6 +75,7 @@ export function CommentItem({ comment, onDelete, onReply }: Props) {
                     <button
                       onClick={() => setIsDialogOpen(true)}
                       className="text-muted-foreground hover:text-foreground text-sm"
+                      disabled={isProcessing}
                     >
                       删除
                     </button>
@@ -80,6 +83,7 @@ export function CommentItem({ comment, onDelete, onReply }: Props) {
                   <button
                     onClick={() => setIsReplying(!isReplying)}
                     className="text-muted-foreground hover:text-foreground text-sm"
+                    disabled={isProcessing}
                   >
                     回复
                   </button>
@@ -106,7 +110,7 @@ export function CommentItem({ comment, onDelete, onReply }: Props) {
                   <Button
                     size="sm"
                     onClick={handleReply}
-                    disabled={!replyContent.trim()}
+                    disabled={!replyContent.trim() || isProcessing}
                   >
                     回复
                   </Button>
@@ -116,7 +120,7 @@ export function CommentItem({ comment, onDelete, onReply }: Props) {
           </div>
         </div>
 
-        {comment.replies.length > 0 && (
+        {comment.replies && comment.replies.length > 0 && (
           <ul className="ml-12 space-y-4 border-l-2 border-muted pl-4">
             {comment.replies.map(reply => (
               <CommentItem
@@ -124,6 +128,7 @@ export function CommentItem({ comment, onDelete, onReply }: Props) {
                 comment={reply}
                 onDelete={onDelete}
                 onReply={onReply}
+                isProcessing={isProcessing && reply.id < 0}
               />
             ))}
           </ul>

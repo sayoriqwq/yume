@@ -1,4 +1,4 @@
-import { db } from '@/db'
+import prisma from '@/db/prisma'
 import { getMDXData } from './posts-utils'
 
 interface ImportOptions {
@@ -12,7 +12,7 @@ export async function importMDXFiles({ sourceDir }: ImportOptions) {
     const { metadata } = post
 
     // 检查是否已存在
-    const existing = await db.article.findUnique({
+    const existing = await prisma.article.findUnique({
       where: { slug: metadata.slug },
     })
 
@@ -22,7 +22,7 @@ export async function importMDXFiles({ sourceDir }: ImportOptions) {
     }
 
     // 使用事务确保数据一致性
-    await db.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx) => {
       // 创建文章
       await tx.article.create({
         data: {

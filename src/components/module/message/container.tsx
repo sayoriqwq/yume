@@ -3,7 +3,7 @@
 import type { Message, MessageState, OptimisticMessage } from './type'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { MESSAGE_FAKE_ARTICLE_ID } from '@/constants/message'
+import { MESSAGE_FAKE_ARTICLE_ID } from '@/constants/defaults'
 import { useUser } from '@clerk/nextjs'
 import { use, useOptimistic, useRef, useTransition } from 'react'
 import toast from 'react-hot-toast'

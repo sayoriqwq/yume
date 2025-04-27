@@ -1,10 +1,10 @@
 import type { z } from 'zod'
 import type { updateArticleSchema } from '../schema'
-import { db } from '@/db'
+import prisma from '@/db/prisma'
 
 export async function updateArticle(input: z.infer<typeof updateArticleSchema>, id: number) {
   const { title, content, cover, categoryId, tagIds, published, description } = input
-  const article = await db.article.update({
+  const article = await prisma.article.update({
     where: { id },
     data: {
       title,

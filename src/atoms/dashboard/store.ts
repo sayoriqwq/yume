@@ -1,4 +1,5 @@
 import type { Article, Category, Comment, Tag } from '@/generated'
+import type { ArticleWithTags } from '@/types/article/article-model'
 import { produce } from 'immer'
 import { atom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
@@ -6,7 +7,7 @@ import { atomWithStorage } from 'jotai/utils'
 export interface DashboardStore {
   // 实体集合，映射关系
   entities: {
-    articleMap: Record<number, Article>
+    articleMap: Record<number, ArticleWithTags>
     categoryMap: Record<number, Category>
     tagMap: Record<number, Tag>
     commentMap: Record<number, Comment>

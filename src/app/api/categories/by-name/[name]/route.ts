@@ -8,11 +8,10 @@ import { NextResponse } from 'next/server'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { name: string } },
+  { params }: { params: Promise<{ name: string }> },
 ) {
   try {
-    const { name } = params
-
+    const { name } = await params
     // 解析查询参数
     const input = parseGetQuery(request, articleListQuerySchema)
 

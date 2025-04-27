@@ -1,9 +1,9 @@
 'use client'
 
-import type { Article } from '@/atoms/dashboard/types'
+import type { Article } from '@/generated'
 import type { ColumnDef } from '@tanstack/react-table'
-import type { DataTableRowAction } from './page'
 
+import type { DataTableRowAction } from './page'
 import { useArticleDetail } from '@/atoms/dashboard/hooks/useArticle'
 import { useCategoriesData } from '@/atoms/dashboard/hooks/useCategory'
 import { useTagsData } from '@/atoms/dashboard/hooks/useTag'

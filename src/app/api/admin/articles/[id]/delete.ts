@@ -1,16 +1,16 @@
-import { db } from '@/db'
+import prisma from '@/db/prisma'
 import { createYumeError, YumeErrorType } from '@/lib/YumeError'
 import { LikeableType } from '@prisma/client'
 
 export function deletePureArticle(id: number) {
-  return db.article.delete({
+  return prisma.article.delete({
     where: { id },
   })
 }
 
 export async function deleteArticle(id: number) {
   // 首先获取文章信息，以便更新相关计数
-  const article = await db.article.findUnique({
+  const article = await prisma.article.findUnique({
     where: { id },
     include: {
       tags: true,
@@ -24,7 +24,7 @@ export async function deleteArticle(id: number) {
   }
 
   // 使用事务确保数据一致性
-  return await db.$transaction(async (tx) => {
+  return await prisma.$transaction(async (tx) => {
     // 1. 删除与文章相关的点赞记录
     await tx.like.deleteMany({
       where: {

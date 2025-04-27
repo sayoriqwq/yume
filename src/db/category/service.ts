@@ -1,11 +1,11 @@
-import { db } from '@/db'
 import { getArticles } from '../article/service'
+import prisma from '../prisma'
 
 /**
  * 通过分类名获取分类
  */
 export async function getCategoryByName(name: string) {
-  const category = await db.category.findUnique({
+  const category = await prisma.category.findUnique({
     where: { name },
   })
   return category

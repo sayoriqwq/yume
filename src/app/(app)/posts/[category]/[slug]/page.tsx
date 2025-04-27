@@ -3,6 +3,7 @@ import { getAllPosts } from '@/components/mdx/posts-utils'
 import { CommentContainer } from '@/components/module/comment/comment-container'
 import { PostDetail } from '@/components/module/post/post-detail'
 import { getArticleBySlug } from '@/db/article/service'
+import { getArticleComments, getCommentCount } from '@/db/comment/service'
 import { getLikeStatus } from '@/db/like/action'
 import { LikeableType } from '@/generated'
 import { WiderContainer } from '@/layout/container/Normal'
@@ -35,6 +36,9 @@ export default async function Page({ params }: Props) {
     LikeableType.ARTICLE,
   )
 
+  const commentsPromise = getArticleComments(article.id)
+  const commentCountPromise = getCommentCount(article.id)
+
   return (
     <WiderContainer className="bg-background grid grid-cols-1 gap-20 xl:grid-cols-[1fr_300px] mt-16">
       <PostDetail post={post} />
@@ -48,7 +52,7 @@ export default async function Page({ params }: Props) {
             className="hover:scale-110 transition-transform"
           />
         </div>
-        <CommentContainer articleId={article.id} />
+        <CommentContainer articleId={article.id} commentsPromise={commentsPromise} commentCountPromise={commentCountPromise} />
       </div>
     </WiderContainer>
   )

@@ -1,8 +1,8 @@
-import { db } from '@/db'
+import prisma from '@/db/prisma'
 
 export async function getCategories() {
   const [categories, count] = await Promise.all([
-    db.category.findMany({
+    prisma.category.findMany({
       include: {
         articles: {
           select: {
@@ -11,7 +11,7 @@ export async function getCategories() {
         },
       },
     }),
-    db.category.count(),
+    prisma.category.count(),
   ])
   return { categories, count }
 }

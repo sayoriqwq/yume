@@ -1,6 +1,6 @@
 'use client'
 
-import type { Article } from '@/atoms/dashboard/types'
+import type { Article } from '@/generated'
 import { useArticlesData } from '@/atoms/dashboard/hooks/useArticle'
 import { BaseDataTable } from '@/components/dashboard/table/base-data-table'
 import { useEffect, useState } from 'react'

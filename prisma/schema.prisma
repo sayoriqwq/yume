@@ -127,8 +127,8 @@ model Comment {
   authorId String
 
   // 关联到文章
-  article   Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
-  articleId Int?
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  articleId Int
 
   // 嵌套
   parentId Int?

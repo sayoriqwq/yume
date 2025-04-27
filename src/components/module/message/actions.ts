@@ -1,8 +1,8 @@
 'use server'
 
 import type { MessageState } from './type'
-import { MESSAGE_FAKE_ARTICLE_ID } from '@/constants/message'
-import { db } from '@/db'
+import { MESSAGE_FAKE_ARTICLE_ID } from '@/constants/defaults'
+import prisma from '@/db/prisma'
 import { currentUser } from '@clerk/nextjs/server'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
@@ -33,7 +33,7 @@ export async function createMessage(formData: FormData): Promise<MessageState> {
   }
 
   try {
-    await db.comment.create({
+    await prisma.comment.create({
       data: {
         content: validationResult.data.message ?? '',
         authorId: user.id,
@@ -67,7 +67,7 @@ export async function deleteMessage(messageId: number): Promise<MessageState> {
   }
 
   try {
-    const message = await db.comment.findUnique({
+    const message = await prisma.comment.findUnique({
       where: { id: messageId },
     })
 
@@ -85,7 +85,7 @@ export async function deleteMessage(messageId: number): Promise<MessageState> {
       }
     }
 
-    await db.comment.delete({
+    await prisma.comment.delete({
       where: { id: messageId },
     })
 
@@ -106,7 +106,7 @@ export async function deleteMessage(messageId: number): Promise<MessageState> {
 
 export async function getMessages() {
   try {
-    const messages = await db.comment.findMany({
+    const messages = await prisma.comment.findMany({
       where: {
         articleId: MESSAGE_FAKE_ARTICLE_ID,
       },
