@@ -1,8 +1,8 @@
 'use server'
 
 import prisma from '@/db/prisma'
+import { PrismaClientKnownRequestError } from '@/generated/runtime/library'
 import { validateEmailAddress } from '@/lib/validate'
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 

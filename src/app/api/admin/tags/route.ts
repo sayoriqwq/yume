@@ -1,5 +1,5 @@
+import type { Tag } from '@/generated'
 import type { SingleData } from '@/lib/api'
-import type { Tag } from '@prisma/client'
 import type { NextRequest } from 'next/server'
 import { createSingleEntityResponse } from '@/lib/api'
 import { parsePostBody } from '@/lib/parser'

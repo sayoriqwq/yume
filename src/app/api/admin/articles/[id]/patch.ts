@@ -1,3 +1,5 @@
+'server only'
+
 import type { z } from 'zod'
 import type { updateArticleSchema } from '../schema'
 import prisma from '@/db/prisma'

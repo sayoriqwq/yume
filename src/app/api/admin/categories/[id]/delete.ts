@@ -1,3 +1,5 @@
+'server only'
+
 import { DEFAULT_CATEGORY_ID } from '@/constants/defaults'
 import prisma from '@/db/prisma'
 

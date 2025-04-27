@@ -1,4 +1,4 @@
-import type { ApprovalStatus as ApprovalStatusType } from '@prisma/client'
+import type { ApprovalStatus as ApprovalStatusType } from '@/generated'
 import { CheckCircle, Circle, CircleOff } from 'lucide-react'
 
 interface ApprovalStatus {

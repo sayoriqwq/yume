@@ -1,3 +1,5 @@
+'server only'
+
 // 查询出某个分类下所有文章详细信息
 
 import prisma from '@/db/prisma'

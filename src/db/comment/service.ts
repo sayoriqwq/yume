@@ -1,3 +1,5 @@
+'server only'
+
 import { createYumeError, YumeErrorType } from '@/lib/YumeError'
 import prisma from '../prisma'
 

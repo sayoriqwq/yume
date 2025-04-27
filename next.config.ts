@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next'
+import path from 'node:path'
 import process from 'node:process'
 import bundleAnalyzer from '@next/bundle-analyzer'
-import { codeInspectorPlugin } from 'code-inspector-plugin'
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
@@ -9,7 +9,8 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const nextConfig: NextConfig = {
   webpack: (config) => {
-    config.plugins.push(codeInspectorPlugin({ bundler: 'webpack' }))
+    config.resolve.alias['.prisma/client/index-browser']
+          = path.join(__dirname, 'src/generated/index-browser.js')
     return config
   },
   transpilePackages: ['next-mdx-remote'],

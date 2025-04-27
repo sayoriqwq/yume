@@ -1,9 +1,11 @@
+'server only'
+
 import type { z } from 'zod'
 import type { createDraftSchema, createNoteSchema } from './schema'
 import { slugify } from '@/components/mdx/utils'
 import { DEFAULT_CATEGORY_ID } from '@/constants/defaults'
 import prisma from '@/db/prisma'
-import { ArticleType } from '@prisma/client'
+import { ArticleType } from '@/generated'
 
 export async function createDraft(input: z.infer<typeof createDraftSchema>) {
   const { title, content, description, cover, published, categoryId } = input

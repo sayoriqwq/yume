@@ -1,11 +1,11 @@
 'use client'
 
 import { toggleLike } from '@/db/like/action'
+import { LikeableType } from '@/generated'
 import { errorLogger, errorToaster } from '@/lib/error-handler'
 import { cn } from '@/lib/utils'
 import { createYumeError, YumeErrorType } from '@/lib/YumeError'
 import { useUser } from '@clerk/nextjs'
-import { LikeableType } from '@prisma/client'
 import { Heart } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { useOptimistic, useState, useTransition } from 'react'

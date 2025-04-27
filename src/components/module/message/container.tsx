@@ -52,6 +52,7 @@ export default function MessageContainer({ messagesPromise }: { messagesPromise:
         articleId: MESSAGE_FAKE_ARTICLE_ID,
         parentId: null,
         status: 'APPROVED',
+        deleted: false, // Add the missing 'deleted' property
         isSending: true,
         createdAt: new Date(),
         updatedAt: new Date(),

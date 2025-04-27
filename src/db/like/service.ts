@@ -1,4 +1,6 @@
-import { LikeableType } from '@prisma/client'
+'server only'
+
+import { LikeableType } from '@/generated'
 import prisma from '../prisma'
 
 /**

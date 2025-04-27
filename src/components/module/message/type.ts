@@ -1,4 +1,4 @@
-import type { Comment, User } from '@prisma/client'
+import type { Comment, User } from '@/generated'
 
 export type Message = Comment & {
   author: Partial<User>

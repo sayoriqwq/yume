@@ -1,3 +1,5 @@
+'server only'
+
 import type { Prisma } from '@/generated'
 import type { ArticlesFilter } from './schema'
 import { LikeableType } from '@/generated'

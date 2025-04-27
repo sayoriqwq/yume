@@ -10,15 +10,12 @@ import { WiderContainer } from '@/layout/container/Normal'
 import { notFound } from 'next/navigation'
 
 export async function generateStaticParams() {
-  return (await getAllPosts())
-    .filter(post => post.metadata.published)
-    .map(post => ({
-      slug: post.metadata.slug,
-    }))
+  const posts = await getAllPosts()
+  return posts.map(post => ({ slug: post.metadata.slug, category: post.metadata.category }))
 }
 
 interface Props {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string, category: string }>
 }
 
 export default async function Page({ params }: Props) {

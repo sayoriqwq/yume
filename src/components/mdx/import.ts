@@ -1,3 +1,5 @@
+'server only'
+
 import prisma from '@/db/prisma'
 import { getMDXData } from './posts-utils'
 

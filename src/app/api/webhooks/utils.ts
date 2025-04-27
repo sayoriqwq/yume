@@ -1,3 +1,5 @@
+'server only'
+
 import type { UserJSON, WebhookEvent } from '@clerk/nextjs/server'
 import prisma from '@/db/prisma'
 /**

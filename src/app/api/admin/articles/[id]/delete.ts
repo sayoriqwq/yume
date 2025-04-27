@@ -1,6 +1,8 @@
+'server only'
+
 import prisma from '@/db/prisma'
+import { LikeableType } from '@/generated'
 import { createYumeError, YumeErrorType } from '@/lib/YumeError'
-import { LikeableType } from '@prisma/client'
 
 export function deletePureArticle(id: number) {
   return prisma.article.delete({

@@ -1,3 +1,5 @@
+'server only'
+
 import type { ArticleType } from '@/generated'
 import prisma from '@/db/prisma'
 

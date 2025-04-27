@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client'
+import { Prisma } from '@/generated'
 import { NextResponse } from 'next/server'
 import { ZodError } from 'zod'
 

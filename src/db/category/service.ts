@@ -1,3 +1,5 @@
+'server only'
+
 import { getArticles } from '../article/service'
 import prisma from '../prisma'
 

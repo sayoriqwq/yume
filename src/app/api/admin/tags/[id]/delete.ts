@@ -1,3 +1,5 @@
+'server only'
+
 import prisma from '@/db/prisma'
 
 export async function deletePureTag(id: number) {

@@ -1,10 +1,10 @@
 'use server'
 
 import { checkUserLiked, getLikesCount, toggleArticleLike, toggleCommentLike } from '@/db/like/service'
+import { LikeableType } from '@/generated'
 import { errorLogger } from '@/lib/error-handler'
 import { createYumeError, YumeErrorType } from '@/lib/YumeError'
 import { auth } from '@clerk/nextjs/server'
-import { LikeableType } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 
 /**

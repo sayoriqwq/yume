@@ -1,6 +1,6 @@
 'use client'
 
-import type { Article, Category, Tag } from '@prisma/client'
+import type { Article, Category, Tag } from '@/generated'
 import type { ColumnDef } from '@tanstack/react-table'
 import { baseSelector } from '../../table/base-columns'
 import { DataTableColumnHeader } from '../../table/DataTableColumnHeader'
