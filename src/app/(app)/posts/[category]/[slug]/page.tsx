@@ -1,19 +1,14 @@
-import { getLikeStatus } from '@/components/common/operations/like/action'
-import { LikeButton } from '@/components/common/operations/like/like-button'
-import { ShareButton } from '@/components/common/operations/share/share-button'
 import { CustomMDX } from '@/components/mdx/mdx'
 import { getAllPosts, readMDXFile } from '@/components/mdx/posts-utils'
+import { ArticleInteractions } from '@/components/module/article/interactions'
 import { ArticleMetadata } from '@/components/module/article/metadata'
 import { Title } from '@/components/module/article/title'
 import { ViewCountRecord } from '@/components/module/article/view-count-record'
-import { getCommentStatus } from '@/components/module/comment/actions'
-import { Comments } from '@/components/module/comment/comments'
 import { TableOfContents } from '@/components/toc/toc'
 import { baseUrl } from '@/config/base-url'
 import { getArticleBySlug } from '@/db/article/service'
 import { ArticleType } from '@/generated'
 import { WiderContainer } from '@/layout/container/Normal'
-import { LikeableType } from '@/types'
 import { notFound } from 'next/navigation'
 
 // 生成静态路由
@@ -30,7 +25,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
   const ogImage = article.cover
     ? article.cover
-    : `/og?title=${encodeURIComponent(article.title)}&description=${encodeURIComponent(article.description || '')}`
+    : `${baseUrl}/og?title=${encodeURIComponent(article.title)}&description=${encodeURIComponent(article.description || '')}`
 
   return {
     title: article.title,
@@ -79,15 +74,6 @@ export default async function Page({ params }: Props) {
     mdxContent = content
   }
 
-  // 并行获取评论和点赞数据以提高性能
-  const [commentData, likesData] = await Promise.all([
-    getCommentStatus(article.id),
-    getLikeStatus(article.id, LikeableType.ARTICLE),
-  ])
-
-  const [initialComments, commentsCount] = commentData
-  const [initialLiked, initialLikeCount] = likesData
-
   return (
     <>
       <ViewCountRecord articleId={article.id} />
@@ -98,23 +84,7 @@ export default async function Page({ params }: Props) {
             <ArticleMetadata article={article} />
             <CustomMDX source={mdxContent} />
           </article>
-
-          {/* 文章操作区域 */}
-          <div className="mt-10 flex items-center justify-end gap-2">
-            <LikeButton
-              targetId={article.id}
-              type={LikeableType.ARTICLE}
-              initialLiked={initialLiked}
-              initialCount={initialLikeCount}
-            />
-            <ShareButton title={article.title} />
-          </div>
-
-          <Comments
-            articleId={article.id}
-            initialComments={initialComments}
-            initialCount={commentsCount}
-          />
+          <ArticleInteractions articleId={article.id} title={article.title} />
         </div>
         <div className="hidden xl:block">
           <TableOfContents />
