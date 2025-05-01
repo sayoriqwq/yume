@@ -64,9 +64,10 @@ CREATE TABLE "Comment" (
     "id" SERIAL NOT NULL,
     "content" TEXT NOT NULL,
     "authorId" TEXT NOT NULL,
-    "articleId" INTEGER,
+    "articleId" INTEGER NOT NULL,
     "parentId" INTEGER,
     "status" "ApprovalStatus" NOT NULL DEFAULT 'APPROVED',
+    "deleted" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -77,8 +78,8 @@ CREATE TABLE "Comment" (
 CREATE TABLE "Like" (
     "id" SERIAL NOT NULL,
     "userId" TEXT NOT NULL,
-    "type" "LikeableType" NOT NULL,
-    "targetId" INTEGER NOT NULL,
+    "articleId" INTEGER,
+    "commentId" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Like_pkey" PRIMARY KEY ("id")
@@ -142,7 +143,10 @@ CREATE UNIQUE INDEX "Category_name_key" ON "Category"("name");
 CREATE UNIQUE INDEX "Tag_name_key" ON "Tag"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Like_userId_type_targetId_key" ON "Like"("userId", "type", "targetId");
+CREATE UNIQUE INDEX "Like_userId_articleId_key" ON "Like"("userId", "articleId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Like_userId_commentId_key" ON "Like"("userId", "commentId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "SiteConfig_key_key" ON "SiteConfig"("key");
@@ -167,6 +171,12 @@ ALTER TABLE "Comment" ADD CONSTRAINT "Comment_parentId_fkey" FOREIGN KEY ("paren
 
 -- AddForeignKey
 ALTER TABLE "Like" ADD CONSTRAINT "Like_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Like" ADD CONSTRAINT "Like_articleId_fkey" FOREIGN KEY ("articleId") REFERENCES "Article"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Like" ADD CONSTRAINT "Like_commentId_fkey" FOREIGN KEY ("commentId") REFERENCES "Comment"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_ArticleTags" ADD CONSTRAINT "_ArticleTags_A_fkey" FOREIGN KEY ("A") REFERENCES "Article"("id") ON DELETE CASCADE ON UPDATE CASCADE;

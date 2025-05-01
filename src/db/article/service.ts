@@ -1,29 +1,16 @@
 'server only'
 
 import type { Prisma } from '@/generated'
+import type { ArticleWithAllMetadata } from '@/types/article/article-model'
 import type { ArticlesFilter } from './schema'
-import { LikeableType } from '@/generated'
 import { createYumeError, YumeErrorType } from '@/lib/YumeError'
 import prisma from '../prisma'
 
 /**
- * 通过ID或slug获取文章
- */
-export async function getArticleByIdOrSlug(idOrSlug: string | number) {
-  if (typeof idOrSlug === 'number' || /^\d+$/.test(idOrSlug)) {
-    const id = typeof idOrSlug === 'number' ? idOrSlug : Number.parseInt(idOrSlug)
-    return await getArticleById(id)
-  }
-  else {
-    return await getArticleBySlug(idOrSlug)
-  }
-}
-
-/**
  * 安全地增加文章浏览量并返回更新后的数据
  */
-export async function safeIncrementArticleViews(idOrSlug: string | number) {
-  const article = await getArticleByIdOrSlug(idOrSlug)
+export async function safeIncrementArticleViews(id: number) {
+  const article = await getArticleById(id)
 
   if (!article) {
     throw createYumeError(new Error('文章不存在'), YumeErrorType.NotFoundError)
@@ -91,6 +78,7 @@ export async function getArticles({
         _count: {
           select: {
             comments: { where: { status: 'APPROVED' } },
+            likes: true,
           },
         },
       },
@@ -127,7 +115,7 @@ export async function getArticleById(id: number) {
       _count: {
         select: {
           comments: { where: { status: 'APPROVED' } },
-          likes: { where: { type: LikeableType.ARTICLE } },
+          likes: true,
         },
       },
     },
@@ -137,10 +125,10 @@ export async function getArticleById(id: number) {
 }
 
 /**
- * 通过Slug获取单篇文章
+ * 通过 slug 获取单篇文章详情
  */
-export async function getArticleBySlug(slug: string) {
-  return await prisma.article.findUnique({
+export async function getArticleBySlug(slug: string): Promise<ArticleWithAllMetadata | null> {
+  const article = await prisma.article.findUnique({
     where: {
       slug,
       published: true,
@@ -148,14 +136,20 @@ export async function getArticleBySlug(slug: string) {
     include: {
       category: true,
       tags: true,
+      likes: true,
+      comments: true,
       _count: {
         select: {
-          comments: { where: { status: 'APPROVED' } },
-          likes: { where: { type: LikeableType.ARTICLE } },
+          likes: true,
+          comments: {
+            where: { status: 'APPROVED' },
+          },
         },
       },
     },
   })
+
+  return article
 }
 
 export async function getArticleIdBySlug(slug: string) {

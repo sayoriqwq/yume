@@ -1,6 +1,7 @@
 'use server'
 
-import { addComment, deleteComment as deleteCommentService, getArticleComments } from '@/db/comment/service'
+import type { CommentActionParams, CommentStatus, DeleteCommentParams } from '@/types/comment'
+import { addComment, deleteComment as deleteCommentService, getArticleComments, getCommentCount } from '@/db/comment/service'
 import prisma from '@/db/prisma'
 import { errorLogger } from '@/lib/error-handler'
 import { createYumeError, YumeErrorType } from '@/lib/YumeError'
@@ -10,13 +11,7 @@ import { revalidatePath } from 'next/cache'
 /**
  * 创建评论的server action
  */
-export async function createComment(content: string, articleId: number, parentId: number | null = null, path: string) {
-  const { userId } = await auth()
-
-  if (!userId) {
-    throw createYumeError(new Error('请先登录'), YumeErrorType.UnauthorizedError)
-  }
-
+export async function createComment({ content, articleId, parentId = null, path, userId }: CommentActionParams) {
   if (!content.trim()) {
     throw createYumeError(new Error('评论内容不能为空'), YumeErrorType.ValidationError)
   }
@@ -59,6 +54,17 @@ export async function createComment(content: string, articleId: number, parentId
             image_url: true,
           },
         },
+        likes: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                image_url: true,
+              },
+            },
+          },
+        },
       },
     })
 
@@ -68,10 +74,15 @@ export async function createComment(content: string, articleId: number, parentId
       throw createYumeError(new Error('评论创建失败'), YumeErrorType.BadRequestError)
     }
 
-    return {
-      success: true,
-      comment: fullComment,
+    // 添加点赞计数和当前用户点赞状态
+    const enrichedComment = {
+      ...fullComment,
+      likeCount: 0,
+      hasLiked: false,
+      replies: [],
     }
+
+    return enrichedComment
   }
   catch (error) {
     errorLogger(error)
@@ -82,22 +93,11 @@ export async function createComment(content: string, articleId: number, parentId
 /**
  * 删除评论的server action
  */
-export async function deleteComment(id: number, path: string) {
-  const { userId } = await auth()
-
-  if (!userId) {
-    throw createYumeError(new Error('请先登录'), YumeErrorType.UnauthorizedError)
-  }
-
+export async function deleteComment({ id, path, userId }: DeleteCommentParams) {
   try {
     await deleteCommentService(id, userId)
-
     revalidatePath(path)
-
-    return {
-      success: true,
-      id,
-    }
+    return true
   }
   catch (error) {
     console.error('删除评论失败:', error)
@@ -106,15 +106,26 @@ export async function deleteComment(id: number, path: string) {
 }
 
 /**
- * 获取文章评论的server action
+ * 获取文章评论的server action，包含点赞信息
  */
 export async function getArticleCommentsAction(articleId: number) {
   try {
-    const comments = await getArticleComments(articleId)
-    return comments
+    const { userId } = await auth()
+    return await getArticleComments(articleId, userId)
   }
   catch (error) {
     console.error('获取评论失败:', error)
     throw createYumeError(error)
   }
+}
+
+/**
+ * 获取评论状态（列表和数量），包含点赞信息
+ */
+export async function getCommentStatus(articleId: number): Promise<CommentStatus> {
+  const { userId } = await auth()
+  return await Promise.all([
+    getArticleComments(articleId, userId),
+    getCommentCount(articleId),
+  ])
 }

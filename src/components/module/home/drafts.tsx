@@ -35,7 +35,7 @@ export function Drafts() {
     `/api/articles?type=${ArticleType.DRAFT}&limit=5`,
   )
 
-  const drafts = data?.articles.map(article => formatArticle<Draft>(article)) || []
+  const drafts = data?.articles?.map(article => formatArticle<Draft>(article)) || []
 
   const renderContent = () => {
     if (isLoading) {

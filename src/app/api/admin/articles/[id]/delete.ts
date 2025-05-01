@@ -1,7 +1,6 @@
 'server only'
 
 import prisma from '@/db/prisma'
-import { LikeableType } from '@/generated'
 import { createYumeError, YumeErrorType } from '@/lib/YumeError'
 
 export function deletePureArticle(id: number) {
@@ -30,8 +29,7 @@ export async function deleteArticle(id: number) {
     // 1. 删除与文章相关的点赞记录
     await tx.like.deleteMany({
       where: {
-        type: LikeableType.ARTICLE,
-        targetId: id,
+        articleId: id,
       },
     })
 

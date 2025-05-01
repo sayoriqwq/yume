@@ -1,17 +1,20 @@
 'use client'
 
 import type { ArticlesResponse } from '@/app/api/articles/route'
-import type { Article } from '@/types/article/article'
+import type { Category as CategoryModel } from '@/generated'
 import { Button } from '@/components/ui/button'
-import { formatArticle } from '@/types/article/format'
-import Link from 'next/link'
 import { useModalStack } from 'rc-modal-sheet'
 import { useCallback } from 'react'
 import useSWR from 'swr'
+import { ArticleRowItem } from './article-row-item'
 
-function CategoryContent({ name }: { name: string }) {
+interface CategoryContentProps {
+  category: CategoryModel
+}
+
+function CategoryContent({ category }: CategoryContentProps) {
   const { data, isLoading, error } = useSWR<ArticlesResponse>(
-    `/api/categories/by-name/${name}`,
+    `/api/articles?categoryId=${category.id}`,
   )
 
   if (isLoading) {
@@ -32,18 +35,6 @@ function CategoryContent({ name }: { name: string }) {
   }
 
   const articles = data?.articles || []
-  const getArticleLink = (article: Article) => {
-    switch (article.type) {
-      case 'BLOG':
-        return `/posts/${article.category}/${article.slug}`
-      case 'DRAFT':
-        return `/drafts/${article.id}`
-      case 'NOTE':
-        return `/notes/${article.id}`
-      default:
-        return '#'
-    }
-  }
 
   return (
     <div className="space-y-4">
@@ -54,14 +45,7 @@ function CategoryContent({ name }: { name: string }) {
         : (
             <div className="space-y-2">
               {articles.map(article => (
-                <div key={article.id} className="p-3 border rounded">
-                  <Link href={getArticleLink(formatArticle(article))} className="font-medium hover:underline">
-                    {article.title}
-                  </Link>
-                  {article.description && (
-                    <p className="text-sm text-muted-foreground">{article.description}</p>
-                  )}
-                </div>
+                <ArticleRowItem key={article.id} article={article} />
               ))}
             </div>
           )}
@@ -69,24 +53,24 @@ function CategoryContent({ name }: { name: string }) {
   )
 }
 
-export function Category({ name }: { name: string }) {
+export function Category({ category }: CategoryContentProps) {
   const { present } = useModalStack()
 
   const showModal = useCallback(() => {
     present({
-      title: `Category: ${name}`,
-      content: () => <CategoryContent name={name} />,
+      title: `分类: ${category.name}`,
+      content: () => <CategoryContent category={category} />,
     })
-  }, [present, name])
+  }, [present, category])
 
   return (
     <Button
       variant="link"
-      className="p-1 text-md"
+      className="text-md p-0"
       onClick={showModal}
     >
       #
-      {name}
+      {category.name}
     </Button>
   )
 }

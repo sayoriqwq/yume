@@ -1,14 +1,20 @@
-import { LikeButton } from '@/components/common/operations/like-button'
-import { getAllPosts } from '@/components/mdx/posts-utils'
-import { CommentContainer } from '@/components/module/comment/comment-container'
-import { PostDetail } from '@/components/module/post/post-detail'
+import { getLikeStatus } from '@/components/common/operations/like/action'
+import { LikeButton } from '@/components/common/operations/like/like-button'
+import { ShareButton } from '@/components/common/operations/share/share-button'
+import { CustomMDX } from '@/components/mdx/mdx'
+import { getAllPosts, readMDXFile } from '@/components/mdx/posts-utils'
+import { ArticleMetadata } from '@/components/module/article/metadata'
+import { Title } from '@/components/module/article/title'
+import { ViewCountRecord } from '@/components/module/article/view-count-record'
+import { getCommentStatus } from '@/components/module/comment/actions'
+import { Comments } from '@/components/module/comment/comments'
+import { TableOfContents } from '@/components/toc/toc'
 import { getArticleBySlug } from '@/db/article/service'
-import { getArticleComments, getCommentCount } from '@/db/comment/service'
-import { getLikeStatus } from '@/db/like/action'
-import { LikeableType } from '@/generated'
+import { ArticleType } from '@/generated'
 import { WiderContainer } from '@/layout/container/Normal'
+import { LikeableType } from '@/types'
 import { notFound } from 'next/navigation'
-
+// 生成静态路由
 export async function generateStaticParams() {
   const posts = await getAllPosts()
   return posts.map(post => ({ slug: post.metadata.slug, category: post.metadata.category }))
@@ -18,39 +24,70 @@ interface Props {
   params: Promise<{ slug: string, category: string }>
 }
 
+// 布局组件，组合文章 content、交互信息、metadata
+// 在这个组件里，不可以使用 headers
+/*
+  Error: Dynamic server usage: Route /posts/[category]/[slug] couldn't be rendered statically because it used headers. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+*/
+// 在这里可以获取到 slug 和 category
 export default async function Page({ params }: Props) {
   const { slug } = await params
-  const post = (await getAllPosts()).find(post => post.metadata.slug === slug)
-
   const article = await getArticleBySlug(slug)
-
-  if (!post || !article) {
+  if (!article) {
     notFound()
   }
+  let mdxContent = ''
 
-  const likeStatus = await getLikeStatus(
-    article.id,
-    LikeableType.ARTICLE,
-  )
+  if (article.type === ArticleType.BLOG) {
+    const { mdxPath } = article
+    if (!mdxPath) {
+      return <div>文章内容不存在</div>
+    }
+    const { content } = await readMDXFile(mdxPath)
+    mdxContent = content
+  }
 
-  const commentsPromise = getArticleComments(article.id)
-  const commentCountPromise = getCommentCount(article.id)
+  // 并行获取评论和点赞数据以提高性能
+  const [commentData, likesData] = await Promise.all([
+    getCommentStatus(article.id),
+    getLikeStatus(article.id, LikeableType.ARTICLE),
+  ])
+
+  const [initialComments, commentsCount] = commentData
+  const [initialLiked, initialLikeCount] = likesData
 
   return (
-    <WiderContainer className="bg-background grid grid-cols-1 gap-20 xl:grid-cols-[1fr_300px] mt-16">
-      <PostDetail post={post} />
-      <div>
-        <div className="mt-16 flex justify-end">
-          <LikeButton
-            targetId={article.id}
-            type={LikeableType.ARTICLE}
-            initialCount={article._count.likes}
-            initialLiked={likeStatus}
-            className="hover:scale-110 transition-transform"
+    <>
+      <ViewCountRecord articleId={article.id} />
+      <WiderContainer className="grid grid-cols-1 gap-20 xl:grid-cols-[1fr_300px] mt-16">
+        <div>
+          <article className="prose dark:prose-invert">
+            <Title title={article.title} />
+            <ArticleMetadata article={article} />
+            <CustomMDX source={mdxContent} />
+          </article>
+
+          {/* 文章操作区域 */}
+          <div className="mt-10 flex items-center justify-end gap-2">
+            <LikeButton
+              targetId={article.id}
+              type={LikeableType.ARTICLE}
+              initialLiked={initialLiked}
+              initialCount={initialLikeCount}
+            />
+            <ShareButton title={article.title} />
+          </div>
+
+          <Comments
+            articleId={article.id}
+            initialComments={initialComments}
+            initialCount={commentsCount}
           />
         </div>
-        <CommentContainer articleId={article.id} commentsPromise={commentsPromise} commentCountPromise={commentCountPromise} />
-      </div>
-    </WiderContainer>
+        <div className="hidden xl:block">
+          <TableOfContents />
+        </div>
+      </WiderContainer>
+    </>
   )
 }

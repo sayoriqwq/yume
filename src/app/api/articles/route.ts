@@ -12,7 +12,7 @@ export type ArticleFromGet = Prisma.ArticleGetPayload<{
     category: true
     tags: true
     _count: {
-      select: { comments: true }
+      select: { comments: true, likes: true }
     }
   }
 }>

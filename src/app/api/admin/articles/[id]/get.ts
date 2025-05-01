@@ -58,8 +58,7 @@ export async function getArticleDetail(id: number) {
   // 获取文章的点赞数
   const likesCount = await prisma.like.count({
     where: {
-      type: 'ARTICLE',
-      targetId: id,
+      articleId: id,
     },
   })
 

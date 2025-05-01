@@ -1,17 +1,21 @@
 import process from 'process'
-import { PrismaClient } from '@/generated/client'
-
-function prismaClientSingleton() {
-  return new PrismaClient()
-}
+import { PrismaClient } from '@/generated'
 
 declare const globalThis: {
-  prismaGlobal: ReturnType<typeof prismaClientSingleton>
+  cachedprisma: PrismaClient
 }
 
-const prisma = globalThis.prismaGlobal ?? prismaClientSingleton()
+// eslint-disable-next-line import/no-mutable-exports
+let prismaSingleton: PrismaClient
 
-if (process.env.NODE_ENV !== 'production')
-  globalThis.prismaGlobal = prisma
+if (process.env.NODE_ENV === 'production') {
+  prismaSingleton = new PrismaClient()
+}
+else {
+  if (!globalThis.cachedprisma) {
+    globalThis.cachedprisma = new PrismaClient()
+  }
+  prismaSingleton = globalThis.cachedprisma
+}
 
-export default prisma
+export default prismaSingleton

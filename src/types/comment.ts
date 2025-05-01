@@ -1,29 +1,54 @@
-import type { ApprovalStatus } from '@/generated'
+import type { Prisma, User } from '@/generated'
 
 /**
  * 评论作者基本信息
  */
-export interface CommentAuthor {
+export type CommentAuthor = Pick<User, 'id' | 'username' | 'image_url'>
+
+/**
+ * 点赞用户基本信息
+ */
+export interface LikeUser {
   id: string
   username: string
   image_url: string | null
 }
 
 /**
+ * 评论点赞信息
+ */
+export interface CommentLike {
+  id: number
+  userId: string
+  user: LikeUser
+}
+
+/**
  * 带有作者和回复的评论类型
  */
-export interface CommentWithAuthor {
-  id: number
-  content: string
-  articleId: number
-  parentId: number | null
-  authorId: string
-  author: CommentAuthor
-  status: ApprovalStatus
-  createdAt: Date
-  updatedAt: Date
-  deleted?: boolean
-  replies?: CommentWithAuthor[] // 递归类型，用于嵌套回复
+export type CommentWithAuthor = Prisma.CommentGetPayload<{ include: {
+  author: {
+    select: {
+      id: true
+      username: true
+      image_url: true
+    }
+  }
+  likes: {
+    include: {
+      user: {
+        select: {
+          id: true
+          username: true
+          image_url: true
+        }
+      }
+    }
+  }
+} }> & {
+  replies?: CommentWithAuthor[]
+  likeCount?: number
+  hasLiked?: boolean
 }
 
 /**
@@ -35,30 +60,35 @@ export type CommentAction =
   | { type: 'set', comments: CommentWithAuthor[] }
 
 /**
- * 创建评论的请求数据
+ * 评论表单数据
  */
-export interface CreateCommentData {
+export interface CommentFormData {
   content: string
   articleId: number
   parentId?: number | null
 }
 
 /**
- * 评论API响应
+ * 评论服务操作参数
  */
-export interface CommentResponse {
-  success: boolean
-  comment?: CommentWithAuthor
-  id?: number
-  message?: string
+export interface CommentActionParams {
+  content: string
+  articleId: number
+  parentId?: number | null
+  path: string
+  userId: string
 }
 
 /**
- * 获取评论的过滤参数
+ * 删除评论参数
  */
-export interface CommentFilter {
-  articleId: number
-  page?: number
-  limit?: number
-  status?: ApprovalStatus
+export interface DeleteCommentParams {
+  id: number
+  path: string
+  userId: string
 }
+
+/**
+ * 评论状态信息
+ */
+export type CommentStatus = [CommentWithAuthor[], number]

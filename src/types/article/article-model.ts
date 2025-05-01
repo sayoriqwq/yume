@@ -12,3 +12,25 @@ export type ArticleWithTags = Prisma.ArticleGetPayload<{
     tags: true
   }
 }>
+
+export type ArticleWithCategory = Prisma.ArticleGetPayload<{
+  include: {
+    category: true
+  }
+}>
+
+export type ArticleWithAllMetadata = Prisma.ArticleGetPayload<{
+  include: {
+    category: true
+    tags: true
+    _count: {
+      select:
+      {
+        likes: true
+        comments: {
+          where: { status: 'APPROVED' }
+        }
+      }
+    }
+  }
+}>

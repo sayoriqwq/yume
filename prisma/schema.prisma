@@ -41,11 +41,6 @@ enum ArticleType {
   DRAFT // 未成文的博客
 }
 
-enum LikeableType {
-  ARTICLE // 文章
-  COMMENT // 评论
-}
-
 enum ApprovalStatus {
   PENDING
   APPROVED
@@ -130,6 +125,9 @@ model Comment {
   article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
   articleId Int
 
+  // like
+  likes Like[] @relation("CommentLikes")
+
   // 嵌套
   parentId Int?
   parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: SetNull)
@@ -151,18 +149,17 @@ model Like {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
 
-  article   Article?   @relation("ArticleLikes", fields: [targetId], references: [id], onDelete: Cascade)
+  articleId Int?
+  commentId Int?
 
-  // 点赞对象类型
-  type LikeableType
-
-  // 点赞对象ID (可以是文章ID或评论ID)
-  targetId Int
+  article   Article? @relation("ArticleLikes", fields: [articleId], references: [id], onDelete: Cascade)
+  comment   Comment? @relation("CommentLikes", fields: [commentId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 
-  // 复合唯一索引确保一个用户只能对一个内容点赞一次
-  @@unique([userId, type, targetId])
+  // 确保同一用户不能重复点赞
+  @@unique([userId, articleId])
+  @@unique([userId, commentId])
 }
 
 model FriendLink {
