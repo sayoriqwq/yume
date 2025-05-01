@@ -9,15 +9,47 @@ import { ViewCountRecord } from '@/components/module/article/view-count-record'
 import { getCommentStatus } from '@/components/module/comment/actions'
 import { Comments } from '@/components/module/comment/comments'
 import { TableOfContents } from '@/components/toc/toc'
+import { baseUrl } from '@/config/base-url'
 import { getArticleBySlug } from '@/db/article/service'
 import { ArticleType } from '@/generated'
 import { WiderContainer } from '@/layout/container/Normal'
 import { LikeableType } from '@/types'
 import { notFound } from 'next/navigation'
+
 // 生成静态路由
 export async function generateStaticParams() {
   const posts = await getAllPosts()
   return posts.map(post => ({ slug: post.metadata.slug, category: post.metadata.category }))
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string, category: string }> }) {
+  const { category, slug } = await params
+  const article = await getArticleBySlug(slug)
+  if (!article) {
+    return
+  }
+  const ogImage = article.cover
+    ? article.cover
+    : `/og?title=${encodeURIComponent(article.title)}&description=${encodeURIComponent(article.description || '')}`
+
+  return {
+    title: article.title,
+    description: article.description,
+    openGraph: {
+      title: article.title,
+      description: article.description,
+      type: 'article',
+      publishedTime: article.createdAt,
+      url: `${baseUrl}/posts/${category}/${slug}`,
+      images: [{ url: ogImage }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: article.title,
+      description: article.description,
+      images: [ogImage],
+    },
+  }
 }
 
 interface Props {

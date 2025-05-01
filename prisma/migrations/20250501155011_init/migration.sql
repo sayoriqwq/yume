@@ -2,9 +2,6 @@
 CREATE TYPE "ArticleType" AS ENUM ('BLOG', 'NOTE', 'DRAFT');
 
 -- CreateEnum
-CREATE TYPE "LikeableType" AS ENUM ('ARTICLE', 'COMMENT');
-
--- CreateEnum
 CREATE TYPE "ApprovalStatus" AS ENUM ('PENDING', 'APPROVED', 'REJECTED');
 
 -- CreateTable

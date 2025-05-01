@@ -1,4 +1,4 @@
-import process from 'process'
+import { baseUrl } from '@/config/base-url'
 import { createYumeError, YumeError } from './YumeError'
 
 interface FetchOptions {
@@ -21,11 +21,7 @@ async function yumeFetcher<T>(url: string, method: 'GET' | 'POST' | 'PUT' | 'PAT
           .join('&')}`
       : ''
 
-    const base = process.env.NODE_ENV === 'development'
-      ? process.env.NEXT_PUBLIC_API_URL_DEV
-      : process.env.NEXT_PUBLIC_API_URL_PROD
-
-    const fullUrl = `${base}/api${url}${queryString}`
+    const fullUrl = `${baseUrl}/api${url}${queryString}`
 
     const fetchOptions: RequestInit = {
       method,

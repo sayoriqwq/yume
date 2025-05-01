@@ -1,13 +1,13 @@
 import process from 'process'
 import { importMDXFiles } from '@/components/mdx/import'
-import { fullPath } from '@/components/mdx/posts-utils'
+import { relativePath } from '@/components/mdx/posts-utils'
 import * as dotenv from 'dotenv'
 
 // 显示加载环境变量
 dotenv.config()
 
 async function main() {
-  const sourceDir = fullPath
+  const sourceDir = relativePath
 
   try {
     await importMDXFiles({

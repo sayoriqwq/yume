@@ -78,16 +78,8 @@ export function ShareButton({ title, text, className }: ShareButtonProps) {
       disabled={!mounted} // 在客户端挂载前禁用按钮
     >
       {copied
-        ? (
-            <>
-              <CheckIcon className="mr-2 h-4 w-4" />
-            </>
-          )
-        : (
-            <>
-              <Share2Icon className="mr-2 h-4 w-4" />
-            </>
-          )}
+        ? (<CheckIcon className="mr-2 h-4 w-4" />)
+        : (<Share2Icon className="mr-2 h-4 w-4" />)}
     </button>
   )
 }

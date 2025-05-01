@@ -60,7 +60,8 @@ export async function getMDXData(dir: string): Promise<Post[]> {
   return Promise.all(files.map(file => processFile(dir, file)))
 }
 
-export const fullPath = path.join(process.cwd(), 'contents')
+export const fullPath = path.join(process.cwd(), 'public', 'contents', 'blogs')
+export const relativePath = path.relative(process.cwd(), fullPath)
 
 /**
  * 获取所有文章（缓存版本）
