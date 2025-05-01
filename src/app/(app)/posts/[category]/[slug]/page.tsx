@@ -6,6 +6,7 @@ import { Title } from '@/components/module/article/title'
 import { ViewCountRecord } from '@/components/module/article/view-count-record'
 import { TableOfContents } from '@/components/toc/toc'
 import { baseUrl } from '@/config/base-url'
+import { siteConfig } from '@/config/site'
 import { getArticleBySlug } from '@/db/article/service'
 import { ArticleType } from '@/generated'
 import { WiderContainer } from '@/layout/container/Normal'
@@ -43,6 +44,24 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       title: article.title,
       description: article.description,
       images: [ogImage],
+    },
+    other: {
+      'application/ld+json': JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        'headline': article.title,
+        'datePublished': article.createdAt,
+        'dateModified': article.updatedAt || article.createdAt,
+        'description': article.description || siteConfig.description,
+        'image': article.cover
+          ? article.cover
+          : `${baseUrl}/og?title=${encodeURIComponent(article.title)}`,
+        'url': `${baseUrl}/posts/${category}/${slug}`,
+        'author': {
+          '@type': 'Person',
+          'name': siteConfig.author,
+        },
+      }),
     },
   }
 }
