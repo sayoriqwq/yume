@@ -1,21 +1,17 @@
-import { CustomMDX } from '@/components/mdx/mdx'
-import { getAllPosts, readMDXFile } from '@/components/mdx/posts-utils'
-import { ArticleInteractions } from '@/components/module/article/interactions'
-import { ArticleMetadata } from '@/components/module/article/metadata'
-import { Title } from '@/components/module/article/title'
+import { ArticleContainer } from '@/components/module/article/article-container'
 import { ViewCountRecord } from '@/components/module/article/view-count-record'
-import { TableOfContents } from '@/components/toc/toc'
 import { baseUrl } from '@/config/base-url'
 import { siteConfig } from '@/config/site'
-import { getArticleBySlug } from '@/db/article/service'
-import { ArticleType } from '@/generated'
-import { WiderContainer } from '@/layout/container/Normal'
+import { getArticleBySlug, getArticles } from '@/db/article/service'
 import { notFound } from 'next/navigation'
 
 // 生成静态路由
 export async function generateStaticParams() {
-  const posts = await getAllPosts()
-  return posts.map(post => ({ slug: post.metadata.slug, category: post.metadata.category }))
+  const { articles } = await getArticles({ page: 1, limit: 100, published: true })
+  return articles.map(article => ({
+    slug: article.slug,
+    category: article.category.name,
+  }))
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string, category: string }> }) {
@@ -82,33 +78,11 @@ export default async function Page({ params }: Props) {
   if (!article) {
     notFound()
   }
-  let mdxContent = ''
-
-  if (article.type === ArticleType.BLOG) {
-    const { mdxPath } = article
-    if (!mdxPath) {
-      return <div>文章内容不存在</div>
-    }
-    const { content } = await readMDXFile(mdxPath)
-    mdxContent = content
-  }
 
   return (
     <>
       <ViewCountRecord articleId={article.id} />
-      <WiderContainer className="grid grid-cols-1 gap-20 xl:grid-cols-[1fr_300px] mt-16">
-        <div>
-          <article className="prose dark:prose-invert">
-            <Title title={article.title} />
-            <ArticleMetadata article={article} />
-            <CustomMDX source={mdxContent} />
-          </article>
-          <ArticleInteractions articleId={article.id} title={article.title} />
-        </div>
-        <div className="hidden xl:block">
-          <TableOfContents />
-        </div>
-      </WiderContainer>
+      <ArticleContainer article={article} />
     </>
   )
 }

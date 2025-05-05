@@ -24,12 +24,9 @@ export type ArticleWithAllMetadata = Prisma.ArticleGetPayload<{
     category: true
     tags: true
     _count: {
-      select:
-      {
+      select: {
+        comments: { where: { status: 'APPROVED' } }
         likes: true
-        comments: {
-          where: { status: 'APPROVED' }
-        }
       }
     }
   }

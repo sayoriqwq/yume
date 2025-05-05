@@ -3,24 +3,30 @@ import { ClientMDX } from '@/components/mdx/client-mdx'
 import { CustomMDX } from '@/components/mdx/mdx'
 import { readMDXFile } from '@/components/mdx/posts-utils'
 import { ArticleType } from '@/generated'
+import { notFound } from 'next/navigation'
 
-interface ContentSelectorProps {
+interface ArticleContentProps {
   article: Article
 }
 
-export async function ContentSelector({ article }: ContentSelectorProps) {
+// 主要是用来加载不同源的数据 & 选择不同的组件
+export async function ArticleContent({ article }: ArticleContentProps) {
+  let mdxContent = ''
   if (article.type === ArticleType.BLOG) {
     const { mdxPath } = article
     if (!mdxPath) {
-      return <div>文章内容不存在</div>
+      notFound()
     }
     const { content } = await readMDXFile(mdxPath)
-    return <CustomMDX source={content} />
+    mdxContent = content
+    return <CustomMDX source={mdxContent} />
   }
   else {
     if (!article.content) {
-      return <div>文章内容不存在</div>
+      notFound()
     }
-    return <ClientMDX markdown={article.content} />
+    return (
+      <ClientMDX markdown={article.content} />
+    )
   }
 }

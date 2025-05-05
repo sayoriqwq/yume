@@ -12,7 +12,7 @@ export default function DraftsPage() {
           </p>
         </header>
 
-        <div className="bg-muted/40 rounded-lg p-4 text-sm">
+        <div className="bg-muted/40 rounded-lg p-4 text-sm mb-4">
           <p className="text-muted-foreground">
             <span className="font-medium text-foreground">提示：</span>
             {' '}

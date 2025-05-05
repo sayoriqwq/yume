@@ -14,11 +14,14 @@ interface TagsProps {
 
 export function Tags({ tags }: TagsProps) {
   return (
-    <>
-      {tags.map(tag => (
-        <Tag key={tag.id} name={tag.name} />
+    <span>
+      {tags.map((tag, index) => (
+        <span key={tag.id}>
+          <Tag name={tag.name} />
+          {index < tags.length - 1 && <span className="text-muted-foreground m-1">•</span>}
+        </span>
       ))}
-    </>
+    </span>
   )
 }
 

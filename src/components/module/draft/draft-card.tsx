@@ -21,7 +21,7 @@ export function DraftCard({
   createdAt,
   mode,
   className,
-  id,
+  slug,
 }: DraftCardProps) {
   const [isPressed, setIsPressed] = useState(false)
 
@@ -58,7 +58,7 @@ export function DraftCard({
 
       <div className="flex flex-col gap-y-3">
         <div className="flex-between">
-          <Link href={`/drafts//${id}`}>
+          <Link href={`/posts/${category}/${slug}`}>
             <h3 className="line-clamp-1 text-lg font-bold text-foreground transition-colors duration-300 group-hover:text-primary group-hover:underline">
               {title}
             </h3>

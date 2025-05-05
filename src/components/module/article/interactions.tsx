@@ -42,7 +42,7 @@ export function ArticleInteractions({ articleId, title }: ArticleInteractionsPro
   const [initialLiked, initialLikeCount] = likesData
 
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <div className="mt-10 flex items-center justify-end gap-2">
         <LikeButton
           targetId={articleId}
@@ -58,6 +58,6 @@ export function ArticleInteractions({ articleId, title }: ArticleInteractionsPro
         initialComments={initialComments}
         initialCount={commentsCount}
       />
-    </>
+    </div>
   )
 }

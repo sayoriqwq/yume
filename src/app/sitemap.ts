@@ -1,5 +1,8 @@
 import type { MetadataRoute } from 'next'
 import { siteConfig } from '@/config/site'
+import { getArticles } from '@/db/article/service'
+
+export const revalidate = 86400 // 24小时更新
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = siteConfig.url
@@ -38,5 +41,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
-  return routes
+  const { articles } = await getArticles({ page: 1, limit: 100, published: true })
+
+  const articleRoutes = articles.map((article) => {
+    return {
+      url: `${baseUrl}/posts/${article.category}/${article.slug}`,
+      lastModified: article.updatedAt || article.createdAt,
+      priority: article.type === 'BLOG' ? 0.9 : 0.8,
+    }
+  })
+
+  return [...routes, ...articleRoutes]
 }

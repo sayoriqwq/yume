@@ -108,7 +108,7 @@ export function DraftDragCards() {
     return (
       <div className="flex h-[500px] w-full items-center justify-center flex-col gap-4">
         <Info className="h-12 w-12 text-muted-foreground opacity-50" />
-        <div className="text-lg text-muted-foreground">暂无草稿</div>
+        <div className="text-lg text-muted-foreground">暂无短文</div>
       </div>
     )
   }
@@ -119,7 +119,7 @@ export function DraftDragCards() {
         <div className="text-sm text-muted-foreground">
           {data?.meta.totalCount}
           {' '}
-          篇草稿
+          篇短文
         </div>
         <div className="flex gap-2">
           <Button

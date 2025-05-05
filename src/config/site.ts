@@ -10,6 +10,7 @@ export const siteConfig = {
     email: 'mailto:2531600563@qq.com',
   },
   rss: '/feed.xml',
+  keywords: ['frontend', 'React', 'Next.js', 'Blog'],
 }
 
 export type SiteConfig = typeof siteConfig

@@ -18,17 +18,17 @@ export function Providers({ children }: PropsWithChildren) {
       defaultTheme="system"
       enableSystem
     >
-      <LenisProvider>
-        <FontProvider>
-          <SWRProvider>
+      <SWRProvider>
+        <LenisProvider>
+          <FontProvider>
             <ClerkProvider localization={zhCN} publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
               <ModalStackContainer m={motion}>
                 {children}
               </ModalStackContainer>
             </ClerkProvider>
-          </SWRProvider>
-        </FontProvider>
-      </LenisProvider>
+          </FontProvider>
+        </LenisProvider>
+      </SWRProvider>
     </ThemeProvider>
   )
 }

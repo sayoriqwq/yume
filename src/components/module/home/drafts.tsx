@@ -18,7 +18,7 @@ import { ReadMore } from './read-more'
 function DraftRowItem({ draft }: { draft: Draft }) {
   return (
     <ScrollToShow y={20}>
-      <Link href={`/drafts/${draft.id}`} className="flex flex-col p-3 group">
+      <Link href={`/posts/${draft.category}/${draft.slug}`} className="flex flex-col p-3 group">
         <article className="flex-between">
           <h2 className="font-heading relative line-clamp-1 w-fit max-w-64 text-xl group-hover:max-w-full transition-all duration-300">
             {draft.title}

@@ -1,8 +1,14 @@
+import { cn } from '@/lib/utils'
 import { EyeIcon } from 'lucide-react'
 
-export function ViewCount({ count }: { count: number }) {
+interface ViewCountProps {
+  count: number
+  className?: string
+}
+
+export function ViewCount({ count, className }: ViewCountProps) {
   return (
-    <span className="flex-center gap-1">
+    <span className={cn('flex-center gap-1', className)}>
       <EyeIcon className="size-3" />
       {' '}
       {count.toString()}
