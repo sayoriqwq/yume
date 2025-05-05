@@ -17,11 +17,28 @@ const client = new MeiliSearch({
   apiKey: 'aSampleMasterKey',
 })
 
+// 使用articles索引
+const INDEX_UID = 'articles'
+
+// 搜索函数
 async function fetcher(query: string) {
   if (!query.trim())
     return []
-  const results = await client.index('movies').search(query)
-  return results.hits
+
+  try {
+    // 执行搜索，返回文章结果
+    const results = await client.index(INDEX_UID).search(query, {
+      limit: 10,
+      attributesToRetrieve: ['id', 'title', 'description', 'slug', 'category'],
+      attributesToHighlight: ['title', 'description'],
+    })
+
+    return results.hits
+  }
+  catch (error) {
+    console.error('搜索出错:', error)
+    return []
+  }
 }
 
 export function SearchModal() {
@@ -49,8 +66,8 @@ export function SearchModal() {
   useSearchHotkeys()
 
   const { data: hits, error, isLoading } = useSWR(
-    (!isComposing && debouncedQuery.trim()) ? `/api/search?q=${debouncedQuery}` : null,
-    () => fetcher(debouncedQuery),
+    (!isComposing && debouncedQuery.trim()) ? debouncedQuery : null,
+    fetcher,
     {
       revalidateOnFocus: false,
       // 在指定的时间间隔内（以毫秒为单位），相同的请求只会执行一次
@@ -74,7 +91,6 @@ export function SearchModal() {
       />
 
       <CommandList>
-
         <style jsx global>
           {`
            div[cmdk-list-sizer] {
@@ -104,9 +120,10 @@ export function SearchModal() {
           {hits?.map(hit => (
             <CommandItem
               key={hit.id}
-              value={hit.id}
+              value={`${hit.title} ${hit.description || ''}`}
               onSelect={() => {
-                router.push(`/posts/${hit.id}`)
+                const url = `/posts/${hit.category}/${hit.slug}`
+                router.push(url)
                 setOpen(false)
               }}
             >
