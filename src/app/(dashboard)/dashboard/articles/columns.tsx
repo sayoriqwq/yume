@@ -16,14 +16,14 @@ import { useRouter } from 'next/navigation'
 
 function CategoryCell({ categoryId }: { categoryId: number }) {
   const { categoryMap } = useCategoriesData()
-  return <div>{categoryMap[categoryId].name}</div>
+  return <div>{categoryMap[categoryId]?.name}</div>
 }
 
 function TagCell({ articleId }: { articleId: number }) {
   const { tagMap } = useTagsData()
   const { articleIdToTagIdsMap } = useArticleDetail(articleId)
   const tagIds = articleIdToTagIdsMap[articleId]
-  return <div>{tagIds.map(tagId => tagMap[tagId].name).join(', ')}</div>
+  return <div>{tagIds.map(tagId => tagMap[tagId]?.name).join(', ')}</div>
 }
 
 interface ColumnsProps {

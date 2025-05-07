@@ -1,5 +1,5 @@
 import type { Article, Category, Comment, Tag } from '@/generated'
-import type { ArticleWithTags } from '@/types/article/article-model'
+import type { CommentForStore } from '@/types'
 import { produce } from 'immer'
 import { atom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
@@ -7,10 +7,10 @@ import { atomWithStorage } from 'jotai/utils'
 export interface DashboardStore {
   // 实体集合，映射关系
   entities: {
-    articleMap: Record<number, ArticleWithTags>
+    articleMap: Record<number, Article>
     categoryMap: Record<number, Category>
     tagMap: Record<number, Tag>
-    commentMap: Record<number, Comment>
+    commentMap: Record<number, CommentForStore>
   }
   // 实体ID列表，实际操作的数据
   ids: {
@@ -24,10 +24,13 @@ export interface DashboardStore {
     categoryIdToArticleIds: Record<number, number[]>
     articleIdToCategoryId: Record<number, number>
     articleIdToTagIds: Record<number, number[]>
+    articleIdToCommentsIds: Record<number, number[]>
     tagIdToArticleIds: Record<number, number[]>
+    commentIdToRepliesIds: Record<number, number[]>
   }
   counts: {
     articlesTotal: number
+    commentsTotal: number
   }
 }
 
@@ -54,9 +57,12 @@ const initialStore: DashboardStore = {
     articleIdToCategoryId: {},
     articleIdToTagIds: {},
     tagIdToArticleIds: {},
+    commentIdToRepliesIds: {},
+    articleIdToCommentsIds: {},
   },
   counts: {
     articlesTotal: 0,
+    commentsTotal: 0,
   },
 }
 
@@ -118,12 +124,21 @@ export const commentIdsAtom = atom(
   },
 )
 
-// 文章总数
+// counts
 export const articlesTotalCountAtom = atom(
   get => get(dashboardStoreAtom).counts.articlesTotal,
   (get, set, count: number) => {
     set(dashboardStoreAtom, produce((store) => {
       store.counts.articlesTotal = count
+    }))
+  },
+)
+
+export const commentsTotalCountAtom = atom(
+  get => get(dashboardStoreAtom).counts.commentsTotal,
+  (get, set, count: number) => {
+    set(dashboardStoreAtom, produce((store) => {
+      store.counts.commentsTotal = count
     }))
   },
 )
@@ -161,6 +176,23 @@ export const articleIdToCategoryIdAtom = atom(
   (get, set, update: Record<number, number>) => {
     set(dashboardStoreAtom, produce((store) => {
       Object.assign(store.relations.articleIdToCategoryId, update)
+    }))
+  },
+)
+
+export const articleIdToCommentsIdsAtom = atom(
+  get => get(dashboardStoreAtom).relations.articleIdToCommentsIds,
+  (get, set, update: Record<number, number[]>) => {
+    set(dashboardStoreAtom, produce((store) => {
+      Object.assign(store.relations.articleIdToCommentsIds, update)
+    }))
+  },
+)
+export const commentIdToRepliesIdsAtom = atom(
+  get => get(dashboardStoreAtom).relations.commentIdToRepliesIds,
+  (get, set, update: Record<number, number[]>) => {
+    set(dashboardStoreAtom, produce((store) => {
+      Object.assign(store.relations.commentIdToRepliesIds, update)
     }))
   },
 )

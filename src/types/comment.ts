@@ -92,3 +92,32 @@ export interface DeleteCommentParams {
  * 评论状态信息
  */
 export type CommentStatus = [CommentWithAuthor[], number]
+
+export type CommentForStore = Prisma.CommentGetPayload<{ include: {
+  author: {
+    select: {
+      id: true
+      username: true
+      image_url: true
+    }
+  }
+  likes: {
+    include: {
+      user: {
+        select: {
+          id: true
+          username: true
+          image_url: true
+        }
+      }
+    }
+  }
+  _count: {
+    select: {
+      likes: true
+      replies: true
+    }
+  }
+} }> & {
+  replies?: CommentForStore[]
+}

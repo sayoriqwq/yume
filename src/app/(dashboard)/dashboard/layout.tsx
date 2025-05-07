@@ -4,6 +4,7 @@ import { CommandSheet } from '@/components/common/command-sheet'
 import { LoadingIcon } from '@/components/common/loading/loading-icon'
 import { ModeToggle } from '@/components/common/operations/mode-toggle'
 import { DashboardNav } from '@/components/dashboard/nav'
+import { UserButton } from '@clerk/nextjs'
 import { Suspense } from 'react'
 
 interface DashboardLayoutProps {
@@ -24,7 +25,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <div className="flex h-screen">
         <DashboardNav />
         <div className="flex-1 flex flex-col">
-          <header className="h-16 border-b flex items-center justify-end px-6">
+          <header className="h-16 flex items-center justify-end px-6 gap-4">
+            <UserButton />
             <ModeToggle />
           </header>
           <main className="flex-1 overflow-y-auto p-6">

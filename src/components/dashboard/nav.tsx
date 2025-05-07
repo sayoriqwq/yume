@@ -1,5 +1,6 @@
 'use client'
 
+import { Logo } from '@/layout/header/logo'
 import { cn } from '@/lib/utils'
 import {
   FileText,
@@ -113,11 +114,11 @@ export function DashboardNav() {
 
   return (
     <nav
-      className="hidden w-64 h-full flex-col border-r bg-background md:flex"
+      className="hidden w-64 h-full flex-col bg-background md:flex"
       onMouseEnter={prefetchRoutes}
     >
-      <div className="flex h-16 items-center border-b px-4">
-        <span className="text-xl font-bold">yume-space</span>
+      <div className="flex-center h-16 px-4">
+        <Logo text="yume space" />
       </div>
       <div className="space-y-1 p-2">
         {navItems.map(item => (
