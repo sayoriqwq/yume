@@ -1,26 +1,22 @@
 'use client'
 
+import type * as z from 'zod'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
 
+import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { createFriendLinkSchema } from '@/db/site/schema'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
-import * as z from 'zod'
-
-const formSchema = z.object({
-  nickname: z.string().min(1, '昵称不能为空'),
-  siteName: z.string().min(1, '网站名称不能为空'),
-  avatar: z.string().url('请输入有效的URL'),
-  link: z.string().url('请输入有效的URL'),
-  description: z.string().min(1, '网站描述不能为空'),
-})
+import { submitFriendLinkAction } from './action'
 
 export function ApplyForm() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const form = useForm<z.infer<typeof createFriendLinkSchema>>({
+    resolver: zodResolver(createFriendLinkSchema),
     defaultValues: {
       nickname: '',
       siteName: '',
@@ -30,11 +26,27 @@ export function ApplyForm() {
     },
   })
 
-  function onSubmit(_values: z.infer<typeof formSchema>) {
-    toast({
-      title: '提交成功',
-      description: '你的友链申请已提交',
-    })
+  async function onSubmit(values: z.infer<typeof createFriendLinkSchema>) {
+    try {
+      setIsSubmitting(true)
+
+      const result = await submitFriendLinkAction(values)
+
+      if (result.success) {
+        toast.success('友链申请提交成功，我会尽快回复！')
+        form.reset()
+      }
+      else {
+        toast.error(result.error || '提交失败，请稍后重试')
+      }
+    }
+    catch (error) {
+      console.error('申请提交出错:', error)
+      toast.error('提交时发生错误，请稍后再试')
+    }
+    finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -101,10 +113,10 @@ export function ApplyForm() {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>网站描述</FormLabel>
+              <FormLabel>描述</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="简单介绍一下你的网站吧"
+                  placeholder="一些关于你的额外信息"
                   className="resize-none"
                   {...field}
                 />
@@ -122,8 +134,8 @@ export function ApplyForm() {
           >
             重置
           </Button>
-          <Button type="submit">
-            提交申请
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? '提交中...' : '提交申请'}
           </Button>
         </div>
       </form>

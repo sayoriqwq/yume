@@ -164,10 +164,11 @@ model Like {
 
 model FriendLink {
   id          Int     @id @default(autoincrement())
-  name        String
-  url         String
-  description String?
-  avatar      String?
+  nickname    String
+  siteName    String
+  link        String
+  description String
+  avatar      String
 
   status ApprovalStatus @default(PENDING)
 

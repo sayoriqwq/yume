@@ -127,7 +127,7 @@ export function useColumns({ setRowAction, showCommentDetail }: ColumnsProps): C
 
         return (
           <div className="flex items-center gap-2">
-            <Avatar className="h-8 w-8">
+            <Avatar className="size-8">
               <AvatarImage src={author.image_url || ''} alt={author.username || '匿名'} />
               <AvatarFallback>{(author.username?.[0] || '?').toUpperCase()}</AvatarFallback>
             </Avatar>
