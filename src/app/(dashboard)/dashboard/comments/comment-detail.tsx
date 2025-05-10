@@ -1,7 +1,9 @@
 'use client'
 
 import type { ApprovalStatus } from '@/generated'
-import { useCommentReplies, useCommentsData } from '@/atoms/dashboard/hooks/useComment'
+import { useArticlesData } from '@/atoms/dashboard/hooks/useArticle'
+import { useCategoriesData } from '@/atoms/dashboard/hooks/useCategory'
+import { useCommentsData } from '@/atoms/dashboard/hooks/useComment'
 import { NormalTime } from '@/components/common/time'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -37,11 +39,13 @@ function StatusBadge({ status }: { status: ApprovalStatus }) {
 
 export function CommentDetail({ id }: { id: number }) {
   const { commentMap, updateComment } = useCommentsData()
-  const { replies } = useCommentReplies(id)
+  const { articleMap } = useArticlesData()
+  const { categoryMap } = useCategoriesData()
   const [isEditing, setIsEditing] = useState(false)
   const [editingContent, setEditingContent] = useState('')
 
   const comment = commentMap[id]
+  const article = articleMap[comment.articleId]
 
   const { present } = useModalStack()
   const showReplyDetail = useCallback((replyId: number) => {
@@ -155,19 +159,19 @@ export function CommentDetail({ id }: { id: number }) {
         </div>
       </div>
 
-      {comment.article && (
+      {article && (
         <div className="flex items-center text-sm bg-muted/20 p-2 rounded">
           <ArrowLeft className="h-3 w-3 mr-1" />
           <span className="text-muted-foreground mr-2">评论于：</span>
           <div className="flex items-center">
             <Link
-              href={`/dashboard/articles/${comment.article.id}`}
+              href={`/dashboard/articles/${article.id}`}
               className="font-medium text-primary hover:underline"
             >
-              {comment.article.title}
+              {article.title}
             </Link>
             <Button variant="ghost" size="icon" className="h-6 w-6 ml-1" asChild>
-              <Link href={`/blog/${comment.article.slug}`} target="_blank">
+              <Link href={`/post/${categoryMap[article.categoryId].name}/${article.slug}`} target="_blank">
                 <ExternalLink className="h-3 w-3" />
               </Link>
             </Button>
@@ -175,19 +179,19 @@ export function CommentDetail({ id }: { id: number }) {
         </div>
       )}
 
-      {comment.parentId && comment.parent && (
+      {comment.parentId && (
         <div className="text-sm bg-muted/30 p-3 rounded-md border border-muted">
           <div className="flex items-center gap-2 mb-1">
             <span className="text-muted-foreground">回复：</span>
-            {comment.parent.author
+            {commentMap[comment.parentId]?.author
               ? (
-                  <span className="font-medium">{comment.parent.author.username}</span>
+                  <span className="font-medium">{commentMap[comment.parentId].author.username}</span>
                 )
               : (
                   <span className="text-muted-foreground">匿名用户</span>
                 )}
           </div>
-          <p className="text-muted-foreground italic line-clamp-2">{comment.parent.content}</p>
+          <p className="text-muted-foreground italic line-clamp-2">{commentMap[comment.parentId]?.content}</p>
         </div>
       )}
 
@@ -213,7 +217,7 @@ export function CommentDetail({ id }: { id: number }) {
             )}
       </div>
 
-      {replies.length > 0 && (
+      {comment?.replyIds && comment.replyIds?.length > 0 && (
         <>
           <Separator />
           <div className="space-y-4">
@@ -221,42 +225,45 @@ export function CommentDetail({ id }: { id: number }) {
               <MessageCircle className="h-4 w-4" />
               <h3 className="font-medium">
                 回复 (
-                {replies.length}
+                {comment.replyIds.length}
                 )
               </h3>
             </div>
 
             <div className="space-y-4">
-              {replies.map(reply => (
-                <Card
-                  key={reply.id}
-                  className={`p-4 ${reply.deleted ? 'bg-muted/20 border-dashed' : ''} hover:border-primary transition-colors cursor-pointer`}
-                  onClick={() => showReplyDetail(reply.id)}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <Avatar className="h-6 w-6">
-                        <AvatarImage src={reply.author?.image_url || ''} alt={reply.author?.username || '匿名'} />
-                        <AvatarFallback>{(reply.author?.username?.[0] || '?').toUpperCase()}</AvatarFallback>
-                      </Avatar>
-                      <span className="font-medium">{reply.author?.username || '匿名'}</span>
-                      <span className="text-xs text-muted-foreground">
-                        <NormalTime date={reply.createdAt} />
-                      </span>
-                      <StatusBadge status={reply.status as ApprovalStatus} />
-                      {reply.deleted && (
-                        <Badge variant="outline" className="bg-slate-50 text-slate-700 border-slate-200">已删除</Badge>
-                      )}
+              {comment.replyIds.map((replyId) => {
+                const reply = commentMap[replyId]
+                return (
+                  <Card
+                    key={reply.id}
+                    className={`p-4 ${reply.deleted ? 'bg-muted/20 border-dashed' : ''} hover:border-primary transition-colors cursor-pointer`}
+                    onClick={() => showReplyDetail(reply.id)}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Avatar className="h-6 w-6">
+                          <AvatarImage src={reply.author?.image_url || ''} alt={reply.author?.username || '匿名'} />
+                          <AvatarFallback>{(reply.author?.username?.[0] || '?').toUpperCase()}</AvatarFallback>
+                        </Avatar>
+                        <span className="font-medium">{reply.author?.username || '匿名'}</span>
+                        <span className="text-xs text-muted-foreground">
+                          <NormalTime date={reply.createdAt} />
+                        </span>
+                        <StatusBadge status={reply.status as ApprovalStatus} />
+                        {reply.deleted && (
+                          <Badge variant="outline" className="bg-slate-50 text-slate-700 border-slate-200">已删除</Badge>
+                        )}
+                      </div>
+                      <Button variant="ghost" size="sm" className="h-8 text-primary">
+                        查看详情
+                      </Button>
                     </div>
-                    <Button variant="ghost" size="sm" className="h-8 text-primary">
-                      查看详情
-                    </Button>
-                  </div>
-                  <p className={`text-sm ${reply.deleted ? 'text-muted-foreground italic' : ''}`}>
-                    {reply.content}
-                  </p>
-                </Card>
-              ))}
+                    <p className={`text-sm ${reply.deleted ? 'text-muted-foreground italic' : ''}`}>
+                      {reply.content}
+                    </p>
+                  </Card>
+                )
+              })}
             </div>
           </div>
         </>

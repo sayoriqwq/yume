@@ -1,39 +1,47 @@
-import type { CategoryDetailResponse } from '@/app/api/admin/categories/[id]/route'
-import type { CategoriesApiResponse } from '@/app/api/admin/categories/route'
 import type { Category } from '@/generated'
 import type { SingleData, SingleDeleteData } from '@/lib/api'
+import type { CategoriesResponse, NormalizedCategory } from '../types'
 import { errorLogger, errorToaster } from '@/lib/error-handler'
 import { yumeFetchDelete, yumeFetchGet, yumeFetchPatch, yumeFetchPost } from '@/lib/yume-fetcher'
 import { createYumeError, extractYumeError, YumeErrorType } from '@/lib/YumeError'
 import { atom } from 'jotai'
 import toast from 'react-hot-toast'
-import { articleIdsAtom, categoryIdsAtom, categoryIdToArticleIdsAtom, categoryMapAtom } from '../store'
+import { articleMapAtom, categoryIdsAtom, categoryMapAtom } from '../store'
 
 // 获取分类列表
 export const fetchCategoriesAtom = atom(
   null,
   async (get, set) => {
-    const response = await yumeFetchGet<CategoriesApiResponse>('/admin/categories')
+    const response = await yumeFetchGet<CategoriesResponse>('/admin/categories')
     if (typeof response === 'string') {
       throw extractYumeError(response)
     }
     const { data, objects } = response
-    set(categoryIdsAtom, { type: 'set', ids: data.categoryIds })
-    set(categoryMapAtom, objects.categories)
-    set(categoryIdToArticleIdsAtom, objects.categoryIdToArticleIds)
+
+    set(categoryIdsAtom, { type: 'set', ids: data.map(category => category.id) })
+    const categoryMap = data.reduce((acc, category) => {
+      acc[category.id] = category
+      return acc
+    }, {} as Record<number, typeof data[0]>)
+
+    set(categoryMapAtom, categoryMap)
+
+    if (objects.articles) {
+      set(articleMapAtom, objects.articles)
+    }
   },
 )
 
 // 创建新分类
 export const createCategoryAtom = atom(
   null,
-  async (get, set, newCategory: Omit<Category, 'id' | 'createdAt' | 'updatedAt' | 'count'>) => {
-    const response = await yumeFetchPost<SingleData<Category>>('/admin/categories', newCategory)
+  async (get, set, newCategory: Omit<Category, 'id'>) => {
+    const response = await yumeFetchPost<SingleData<NormalizedCategory>>('/admin/categories', newCategory)
     if (typeof response === 'string') {
       throw extractYumeError(response)
     }
-    const { id, data } = response
-    set(categoryMapAtom, { ...get(categoryMapAtom), [id]: data })
+    const { data, id } = response
+    set(categoryMapAtom, { [id]: data })
     set(categoryIdsAtom, { type: 'add', ids: [id] })
     toast.success(`创建分类${data.name}成功`)
   },
@@ -46,27 +54,24 @@ export const optimisticUpdateCategoryAtom = atom(
     const originalCategoryMap = get(categoryMapAtom)
     const originalCategory = originalCategoryMap[id]
     const rollback = () => {
-      set(categoryIdsAtom, { type: 'remove', ids: [id] })
       set(categoryMapAtom, originalCategoryMap)
     }
     // 先乐观更新本地数据
-    set(categoryIdsAtom, { type: 'add', ids: [id] })
-    set(categoryMapAtom, { [id]: { ...originalCategory, ...updates } })
+    set(categoryMapAtom, { [id]: updates })
 
     try {
       if (!originalCategory) {
         throw createYumeError(new Error(`找不到ID为${id}的分类`), YumeErrorType.NotFoundError)
       }
 
-      const response = await yumeFetchPatch<SingleData<Category>>(`/admin/categories/${id}`, updates)
+      const response = await yumeFetchPatch<SingleData<NormalizedCategory>>(`/admin/categories/${id}`, updates)
       if (typeof response === 'string') {
         throw extractYumeError(response)
       }
-      const { id: updatedId, data: updatedCategory } = response
+      const { data } = response
 
       // 用真实数据替换本地数据
-      set(categoryMapAtom, { [updatedId]: updatedCategory })
-      set(categoryIdsAtom, { type: 'add', ids: [updatedId] })
+      set(categoryMapAtom, { [id]: data })
       toast.success(`更新分类${originalCategory.name}成功`)
     }
     catch (error) {
@@ -111,19 +116,5 @@ export const optimisticRemoveCategoryAtom = atom(
       errorLogger(error)
       errorToaster(error)
     }
-  },
-)
-
-// 获取分类详情
-export const fetchCategoryDetailAtom = atom(
-  null,
-  async (get, set, id: number) => {
-    const response = await yumeFetchGet<CategoryDetailResponse>(`/admin/categories/${id}`)
-    if (typeof response === 'string') {
-      throw extractYumeError(response)
-    }
-    const { data, objects } = response
-    set(articleIdsAtom, { type: 'add', ids: data.articleIds })
-    set(categoryIdToArticleIdsAtom, objects.categoryIdToArticleIds)
   },
 )

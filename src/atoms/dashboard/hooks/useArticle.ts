@@ -3,13 +3,13 @@ import { useAtomValue, useSetAtom } from 'jotai'
 import { useCallback } from 'react'
 import useSWRImmutable from 'swr/immutable'
 import { createArticleAtom, fetchArticlesAtom, optimisticRemoveArticleAtom, optimisticUpdateArticleAtom } from '../actions/articles'
-import { articleIdsAtom, articleIdToTagIdsAtom, articleMapAtom, articlesTotalCountAtom } from '../store'
+import { articleIdsAtom, articleMapAtom } from '../store'
 import { useCommonSwrConfig } from '../useSwrConfig'
 
 export function useArticlesData(type?: ArticleType) {
   const articleIds = useAtomValue(articleIdsAtom)
   const articleMap = useAtomValue(articleMapAtom)
-  const articlesTotal = useAtomValue(articlesTotalCountAtom)
+
   const fetchArticles = useSetAtom(fetchArticlesAtom)
   const createArticle = useSetAtom(createArticleAtom)
   const updateArticle = useSetAtom(optimisticUpdateArticleAtom)
@@ -29,7 +29,6 @@ export function useArticlesData(type?: ArticleType) {
   return {
     articleIds,
     articleMap,
-    articlesTotal,
     isLoading,
     error,
     mutate,
@@ -37,10 +36,4 @@ export function useArticlesData(type?: ArticleType) {
     updateArticle,
     removeArticle,
   }
-}
-
-export function useArticleDetail(id: number) {
-  const articleMap = useAtomValue(articleMapAtom)
-  const articleIdToTagIdsMap = useAtomValue(articleIdToTagIdsAtom)
-  return { article: articleMap[id], articleIdToTagIdsMap }
 }

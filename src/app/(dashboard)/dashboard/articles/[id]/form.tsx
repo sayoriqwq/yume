@@ -1,6 +1,6 @@
 'use client'
 
-import { useArticleDetail, useArticlesData } from '@/atoms/dashboard/hooks/useArticle'
+import { useArticlesData } from '@/atoms/dashboard/hooks/useArticle'
 import { useCategoriesData } from '@/atoms/dashboard/hooks/useCategory'
 import { MDXPreview } from '@/components/mdx/MDXPreview'
 import { TextAreaEditor } from '@/components/mdx/TextAreaEditor'
@@ -25,12 +25,12 @@ interface FormProps {
 
 export function ArticleForm({ id }: FormProps) {
   const router = useRouter()
-  const { isLoading, error, updateArticle } = useArticlesData()
-  const { article, articleIdToTagIdsMap } = useArticleDetail(id)
+  const { isLoading, error, updateArticle, articleMap } = useArticlesData()
   const { categoryIds, categoryMap } = useCategoriesData()
-
   const [content, setContent] = useState<string>('')
-  const [selectedTags, setSelectedTags] = useState<number[]>(articleIdToTagIdsMap[id] || [])
+
+  const article = articleMap[id]
+  const [selectedTags, setSelectedTags] = useState<number[]>(article?.tagIds || [])
 
   const [showMetadata, setShowMetadata] = useState(false)
 
@@ -74,8 +74,8 @@ export function ArticleForm({ id }: FormProps) {
       setContent(article.content || '')
 
       // 设置标签
-      if (article.tags && article.tags.length > 0) {
-        setSelectedTags(article.tags.map(tag => tag.id))
+      if (article.tagIds && article.tagIds.length > 0) {
+        setSelectedTags(article.tagIds)
       }
     }
   }, [article, form])

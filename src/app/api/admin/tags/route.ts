@@ -1,55 +1,39 @@
+import type { NormalizedTag, TagsResponse } from '@/atoms/dashboard/types'
 import type { Tag } from '@/generated'
 import type { SingleData } from '@/lib/api'
 import type { NextRequest } from 'next/server'
+import { normalizeTag, normalizeTags } from '@/atoms/normalize/tag'
 import { createSingleEntityResponse } from '@/lib/api'
 import { parsePostBody } from '@/lib/parser'
-import { YumeError } from '@/lib/YumeError'
+import { createYumeErrorResponse, YumeError } from '@/lib/YumeError'
 import { NextResponse } from 'next/server'
 import { getTags } from './get'
 import { createTag } from './post'
 import { createTagSchema } from './schema'
 
-export interface TagsApiResponse {
-  data: {
-    tagIds: number[]
+export async function GET(_request: NextRequest): Promise<NextResponse<TagsResponse | string>> {
+  try {
+    const tags = await getTags()
+    const normalized = normalizeTags(tags)
+    return NextResponse.json(normalized)
   }
-  objects: {
-    tagMap: Record<number, Tag>
-    tagIdToArticleIds: Record<number, number[]>
+  catch (error) {
+    return createYumeErrorResponse(error)
   }
-}
-
-export async function GET(_request: NextRequest): Promise<NextResponse<TagsApiResponse | string>> {
-  const { tags } = await getTags()
-  const tagMap = tags.reduce((acc, tag) => {
-    acc[tag.id] = tag
-    return acc
-  }, {} as Record<number, Tag>)
-
-  const tagIdToArticleIds = tags.reduce((acc, tag) => {
-    acc[tag.id] = tag.articles.map(article => article.id)
-    return acc
-  }, {} as Record<number, number[]>)
-
-  return NextResponse.json<TagsApiResponse>({
-    data: {
-      tagIds: tags.map(tag => tag.id),
-    },
-    objects: {
-      tagMap,
-      tagIdToArticleIds,
-    },
-  })
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse<SingleData<Tag> | string>> {
   const input = await parsePostBody(request, createTagSchema)
-
   if (input instanceof YumeError) {
     return NextResponse.json(input.toJSON())
   }
 
-  const { tag } = await createTag(input)
-
-  return createSingleEntityResponse<Tag>(tag)
+  try {
+    const tag = await createTag(input)
+    const normalized = normalizeTag(tag)
+    return createSingleEntityResponse<NormalizedTag>(normalized)
+  }
+  catch (error) {
+    return createYumeErrorResponse(error)
+  }
 }

@@ -1,12 +1,12 @@
-import type { ArticlesResponse } from '@/app/api/admin/articles/route'
 import type { Article, ArticleType } from '@/generated'
 import type { SingleData, SingleDeleteData } from '@/lib/api'
+import type { ArticlesResponse, NormalizedArticle } from '../types'
 import { errorLogger, errorToaster } from '@/lib/error-handler'
 import { yumeFetchDelete, yumeFetchGet, yumeFetchPatch, yumeFetchPost } from '@/lib/yume-fetcher'
 import { createYumeError, extractYumeError, YumeErrorType } from '@/lib/YumeError'
 import { atom } from 'jotai'
 import toast from 'react-hot-toast'
-import { articleIdsAtom, articleIdToCategoryIdAtom, articleIdToTagIdsAtom, articleMapAtom, articlesTotalCountAtom } from '../store'
+import { articleIdsAtom, articleMapAtom, categoryMapAtom, commentMapAtom, tagMapAtom } from '../store'
 
 // 获取文章列表
 export const fetchArticlesAtom = atom(
@@ -18,11 +18,27 @@ export const fetchArticlesAtom = atom(
     }
     const { data, objects } = response
 
-    set(articleIdsAtom, { type: 'set', ids: data.articleIds })
-    set(articleMapAtom, objects.articleMap)
-    set(articleIdToCategoryIdAtom, objects.articleIdToCategoryId)
-    set(articleIdToTagIdsAtom, objects.articleIdToTagIds)
-    set(articlesTotalCountAtom, data.count)
+    // 更新文章ID列表
+    set(articleIdsAtom, { type: 'set', ids: data.map(article => article.id) })
+
+    const articleMap = data.reduce((acc, article) => {
+      acc[article.id] = article
+      return acc
+    }, {} as Record<number, typeof data[0]>)
+
+    // 更新文章映射
+    set(articleMapAtom, articleMap)
+
+    // 更新关联数据
+    if (objects.categories) {
+      set(categoryMapAtom, objects.categories)
+    }
+    if (objects.tags) {
+      set(tagMapAtom, objects.tags)
+    }
+    if (objects.comments) {
+      set(commentMapAtom, objects.comments)
+    }
   },
 )
 
@@ -35,43 +51,36 @@ export const createArticleAtom = atom(
       throw extractYumeError(response)
     }
     const { id, data } = response
-    set(articleMapAtom, { ...get(articleMapAtom), [id]: data })
+    set(articleMapAtom, { [id]: data })
     set(articleIdsAtom, { type: 'add', ids: [id] })
   },
 )
 
 export const optimisticUpdateArticleAtom = atom(
   null,
-  async (get, set, id: number, updates: Partial<Article> & { tagIds?: number[] }) => {
+  async (get, set, id: number, updates: Partial<NormalizedArticle>) => {
     const originalArticleMap = get(articleMapAtom)
     const originalArticle = originalArticleMap[id]
     const rollback = () => {
-      set(articleIdsAtom, { type: 'remove', ids: [id] })
       set(articleMapAtom, originalArticleMap)
     }
     // 先乐观更新本地数据
-    const { tagIds, ...rest } = updates
-    set(articleIdsAtom, { type: 'add', ids: [id] })
-    set(articleMapAtom, { [id]: { ...rest } as Article })
-
-    // 关联信息
-    if (tagIds)
-      set(articleIdToTagIdsAtom, { [id]: tagIds })
+    set(articleMapAtom, { [id]: updates })
 
     try {
       if (!originalArticle) {
         throw createYumeError(new Error(`找不到ID为${id}的文章`), YumeErrorType.NotFoundError)
       }
 
-      const response = await yumeFetchPatch<SingleData<Article>>(`/admin/articles/${id}`, updates)
+      const response = await yumeFetchPatch<SingleData<NormalizedArticle>>(`/admin/articles/${id}`, updates)
       if (typeof response === 'string') {
         throw extractYumeError(response)
       }
-      const { id: updatedId, data: updatedArticle } = response
+
+      const { data } = response
 
       // 用真实数据替换本地数据
-      set(articleMapAtom, { [updatedId]: updatedArticle })
-      set(articleIdsAtom, { type: 'add', ids: [updatedId] })
+      set(articleMapAtom, { [id]: data })
       toast.success(`更新文章${originalArticle.title}成功`)
     }
     catch (error) {

@@ -1,7 +1,7 @@
 'use client'
 
 import { useArticlesData } from '@/atoms/dashboard/hooks/useArticle'
-import { useTagDetail, useTagsData } from '@/atoms/dashboard/hooks/useTag'
+import { useTagsData } from '@/atoms/dashboard/hooks/useTag'
 import { NormalTime } from '@/components/common/time'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,8 +10,10 @@ import { useModalStack } from 'rc-modal-sheet'
 import { useCallback, useState } from 'react'
 
 export function TagDetail({ id }: { id: number }) {
-  const { articleIds, articleMap } = useTagDetail(id)
-  const { updateTag } = useTagsData()
+  const { tagMap, updateTag } = useTagsData()
+  const { articleMap } = useArticlesData()
+  const tag = tagMap[id]
+  const articleIds = tag?.articleIds || []
   const [isEditing, setIsEditing] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const { articleIds: allArticleIds, articleMap: allArticleMap } = useArticlesData()

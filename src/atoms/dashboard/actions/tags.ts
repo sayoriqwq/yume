@@ -1,25 +1,33 @@
-import type { TagsApiResponse } from '@/app/api/admin/tags/route'
 import type { Tag } from '@/generated'
 import type { SingleData, SingleDeleteData } from '@/lib/api'
+import type { NormalizedTag, TagsResponse } from '../types'
 import { errorLogger, errorToaster } from '@/lib/error-handler'
 import { yumeFetchDelete, yumeFetchGet, yumeFetchPatch, yumeFetchPost } from '@/lib/yume-fetcher'
 import { createYumeError, extractYumeError, YumeErrorType } from '@/lib/YumeError'
 import { atom } from 'jotai'
 import toast from 'react-hot-toast'
-import { tagIdsAtom, tagIdToArticleIdsAtom, tagMapAtom } from '../store'
+import { articleMapAtom, tagIdsAtom, tagMapAtom } from '../store'
 
 // 获取标签列表
 export const fetchTagsAtom = atom(
   null,
   async (get, set) => {
-    const response = await yumeFetchGet<TagsApiResponse>('/admin/tags')
+    const response = await yumeFetchGet<TagsResponse>('/admin/tags')
     if (typeof response === 'string') {
       throw extractYumeError(response)
     }
     const { data, objects } = response
-    set(tagIdsAtom, { type: 'set', ids: data.tagIds })
-    set(tagMapAtom, objects.tagMap)
-    set(tagIdToArticleIdsAtom, objects.tagIdToArticleIds)
+    set(tagIdsAtom, { type: 'set', ids: data.map(tag => tag.id) })
+
+    const tagMap = data.reduce((acc, tag) => {
+      acc[tag.id] = tag
+      return acc
+    }, {} as Record<number, Tag>)
+    set(tagMapAtom, tagMap)
+
+    if (objects && objects.articles) {
+      set(articleMapAtom, objects.articles)
+    }
   },
 )
 
@@ -41,33 +49,29 @@ export const createTagAtom = atom(
 // 乐观更新标签
 export const optimisticUpdateTagAtom = atom(
   null,
-  async (get, set, id: number, updates: Partial<Tag> & { articleIds?: number[] }) => {
+  async (get, set, id: number, updates: Partial<NormalizedTag>) => {
     const originalTagMap = get(tagMapAtom)
     const originalTag = originalTagMap[id]
-    const originalTagIdToArticleIds = get(tagIdToArticleIdsAtom)
     const rollback = () => {
       set(tagMapAtom, originalTagMap)
-      set(tagIdToArticleIdsAtom, originalTagIdToArticleIds)
     }
     // 先乐观更新本地数据
-    set(tagMapAtom, { ...originalTagMap, [id]: { ...originalTag, ...updates } as Tag })
+    set(tagMapAtom, { [id]: updates })
 
     try {
       if (!originalTag) {
         throw createYumeError(new Error(`找不到ID为 ${id} 的标签`), YumeErrorType.NotFoundError)
       }
 
-      const response = await yumeFetchPatch<SingleData<Tag>>(`/admin/tags/${id}`, updates)
+      const response = await yumeFetchPatch<SingleData<NormalizedTag>>(`/admin/tags/${id}`, updates)
       if (typeof response === 'string') {
         throw extractYumeError(response)
       }
-      const { id: updatedId, data: updatedTag } = response
+      const { data: updatedTag } = response
 
       // 用真实数据替换本地数据
-      set(tagMapAtom, { ...get(tagMapAtom), [updatedId]: updatedTag })
-      if (updates.articleIds) {
-        set(tagIdToArticleIdsAtom, { [updatedId]: updates.articleIds })
-      }
+      set(tagMapAtom, { [id]: updatedTag })
+
       toast.success(`更新标签 ${originalTag.name} 成功`)
     }
     catch (error) {
@@ -83,18 +87,17 @@ export const optimisticRemoveTagAtom = atom(
   null,
   async (get, set, id: number) => {
     const originalTagMap = get(tagMapAtom)
-    const originalTagIds = get(tagIdsAtom) // Get original IDs for rollback
+    const originalTagIds = get(tagIdsAtom)
     const originalTag = originalTagMap[id]
     const rollback = () => {
       set(tagMapAtom, originalTagMap)
-      set(tagIdsAtom, { type: 'set', ids: originalTagIds }) // Rollback IDs
+      set(tagIdsAtom, { type: 'set', ids: originalTagIds })
     }
 
     // 先乐观删除本地数据
     const { [id]: _removed, ...restMap } = originalTagMap
-    const restIds = originalTagIds.filter(tagId => tagId !== id)
     set(tagMapAtom, restMap)
-    set(tagIdsAtom, { type: 'set', ids: restIds })
+    set(tagIdsAtom, { type: 'remove', ids: [id] })
 
     try {
       if (!originalTag) {

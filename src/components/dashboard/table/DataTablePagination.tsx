@@ -25,17 +25,18 @@ export function DataTablePagination<TData>({
   return (
     <div className="flex items-center justify-between px-2">
       <div className="flex-1 text-sm text-muted-foreground">
+        已选择
         {table.getFilteredSelectedRowModel().rows.length}
+        行
         {' '}
-        of
-        {' '}
+        共
         {table.getFilteredRowModel().rows.length}
+        条数据
         {' '}
-        row(s) selected.
       </div>
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
-          <p className="text-sm font-medium">Rows per page</p>
+          <p className="text-sm font-medium">分页规模</p>
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={(value) => {
@@ -55,13 +56,17 @@ export function DataTablePagination<TData>({
           </Select>
         </div>
         <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-          Page
+          第
           {' '}
           {table.getState().pagination.pageIndex + 1}
           {' '}
-          of
+          页
+          {' '}
+          共
           {' '}
           {table.getPageCount()}
+          {' '}
+          页
         </div>
         <div className="flex items-center space-x-2">
           <Button

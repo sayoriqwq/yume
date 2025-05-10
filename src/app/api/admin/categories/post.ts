@@ -13,5 +13,5 @@ export async function createCategory(input: z.infer<typeof createCategorySchema>
     },
   })
 
-  return { category }
+  return category
 }

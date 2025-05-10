@@ -1,7 +1,7 @@
 'use client'
 
 import { useArticlesData } from '@/atoms/dashboard/hooks/useArticle'
-import { useCategoriesData, useCategoryDetail } from '@/atoms/dashboard/hooks/useCategory'
+import { useCategoriesData } from '@/atoms/dashboard/hooks/useCategory'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -12,11 +12,15 @@ import Image from 'next/image'
 import { useState } from 'react'
 
 export function CategoryDetail({ id }: { id: number }) {
-  const { category, articleIds, isLoading, error } = useCategoryDetail(id)
   const { articleMap } = useArticlesData()
-  const { updateCategory } = useCategoriesData()
+  const { categoryMap, updateCategory } = useCategoriesData()
+  const category = categoryMap[id]
   const [isEditing, setIsEditing] = useState(false)
   const [name, setName] = useState(category?.name || '')
+
+  if (!category) {
+    return <div>分类不存在</div>
+  }
 
   const handleNameSubmit = async () => {
     setIsEditing(false)
@@ -26,21 +30,6 @@ export function CategoryDetail({ id }: { id: number }) {
   const handleCancel = () => {
     setName(category?.name || '')
     setIsEditing(false)
-  }
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    )
-  }
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-        <div className="text-red-500">加载失败</div>
-      </div>
-    )
   }
 
   return (
@@ -91,7 +80,7 @@ export function CategoryDetail({ id }: { id: number }) {
           <p className="text-gray-500">
             共
             {' '}
-            {category.count}
+            {category.articleIds.length}
             {' '}
             篇文章
           </p>
@@ -102,7 +91,7 @@ export function CategoryDetail({ id }: { id: number }) {
         <h3 className="text-lg font-medium mb-4">文章列表</h3>
         <ScrollArea className="h-[400px]">
           <div className="space-y-4">
-            {articleIds.map(articleId => (
+            {category.articleIds.map(articleId => (
               <Card key={articleId} className="p-4">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">

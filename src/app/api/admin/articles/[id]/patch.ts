@@ -19,6 +19,9 @@ export async function updateArticle(input: z.infer<typeof updateArticleSchema>, 
         set: tagIds?.map(id => ({ id })) || [],
       },
     },
+    include: {
+      tags: true,
+    },
   })
   return article
 }

@@ -5,10 +5,8 @@ import { ApprovalStatus } from '@/generated'
 
 export async function getComments({
   status,
-  articleId,
 }: {
   status?: string
-  articleId?: number
 } = {}) {
   // 构建查询条件
   const where: any = {}
@@ -16,11 +14,6 @@ export async function getComments({
   // 添加状态过滤
   if (status && Object.values(ApprovalStatus).includes(status as ApprovalStatus)) {
     where.status = status
-  }
-
-  // 添加文章ID过滤
-  if (articleId) {
-    where.articleId = articleId
   }
 
   const [comments, count] = await Promise.all([
@@ -34,21 +27,14 @@ export async function getComments({
             image_url: true,
           },
         },
-        article: {
+        replies: {
           select: {
             id: true,
-            title: true,
-            slug: true,
-          },
-        },
-        likes: {
-          select: {
-            id: true,
-            userId: true,
           },
         },
         _count: {
           select: {
+            likes: true,
             replies: true,
           },
         },
@@ -63,8 +49,7 @@ export async function getComments({
   return {
     comments: comments.map(comment => ({
       ...comment,
-      likesCount: comment.likes.length,
-      repliesCount: comment._count.replies,
+      likesCount: comment._count.likes,
     })),
     count,
   }

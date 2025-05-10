@@ -15,3 +15,7 @@ export const updateCommentSchema = z.object({
   status: z.nativeEnum(ApprovalStatus).optional(),
   deleted: z.boolean().optional(),
 })
+
+export const commentListSchema = z.object({
+  status: z.nativeEnum(ApprovalStatus).optional(),
+})

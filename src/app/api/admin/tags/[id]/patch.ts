@@ -9,7 +9,6 @@ export async function updateTag(input: z.infer<typeof updateTagSchema>, id: numb
 
   // 如果提供了articleIds，则需要在事务中同时更新count
   if (articleIds !== undefined) {
-    // 使用事务确保数据一致性
     return await prisma.$transaction(async (tx) => {
       // 更新标签基本信息以及文章关联
       const tag = await tx.tag.update({
@@ -17,22 +16,16 @@ export async function updateTag(input: z.infer<typeof updateTagSchema>, id: numb
         data: {
           ...(name && { name }), // 如果提供了name则更新
           articles: {
-            set: [], // 先清空现有关联
-            connect: articleIds.map(articleId => ({ id: articleId })), // 重新建立关联
+            set: articleIds?.map(id => ({ id })) || [],
           },
-          // 直接更新count为articleIds的长度
           count: articleIds.length,
         },
         include: {
-          articles: {
-            select: {
-              id: true,
-            },
-          },
+          articles: true,
         },
       })
 
-      return { tag }
+      return tag
     })
   }
   else {
@@ -43,14 +36,9 @@ export async function updateTag(input: z.infer<typeof updateTagSchema>, id: numb
         name,
       },
       include: {
-        articles: {
-          select: {
-            id: true,
-          },
-        },
+        articles: true,
       },
     })
-
-    return { tag }
+    return tag
   }
 }

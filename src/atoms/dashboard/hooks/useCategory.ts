@@ -2,8 +2,8 @@ import { useAtomValue, useSetAtom } from 'jotai'
 import { useCallback } from 'react'
 
 import useSWRImmutable from 'swr/immutable'
-import { createCategoryAtom, fetchCategoriesAtom, fetchCategoryDetailAtom, optimisticRemoveCategoryAtom, optimisticUpdateCategoryAtom } from '../actions/categories'
-import { categoryIdsAtom, categoryIdToArticleIdsAtom, categoryMapAtom } from '../store'
+import { createCategoryAtom, fetchCategoriesAtom, optimisticRemoveCategoryAtom, optimisticUpdateCategoryAtom } from '../actions/categories'
+import { categoryIdsAtom, categoryMapAtom } from '../store'
 import { useCommonSwrConfig } from '../useSwrConfig'
 
 export function useCategoriesData() {
@@ -37,33 +37,5 @@ export function useCategoriesData() {
     createCategory,
     updateCategory,
     removeCategory,
-  }
-}
-
-export function useCategoryDetail(id: number) {
-  const categoryMap = useAtomValue(categoryMapAtom)
-  const categoryIdToArticleIds = useAtomValue(categoryIdToArticleIdsAtom)
-  const fetchCategoryDetail = useSetAtom(fetchCategoryDetailAtom)
-
-  // 检查是否已有数据
-  const hasCategory = !!categoryMap[id]
-  const hasArticleIds = !!categoryIdToArticleIds[id]
-  const hasCompleteData = hasCategory && hasArticleIds
-
-  const swrConfig = useCommonSwrConfig(hasCompleteData)
-
-  // 使用条件请求和自动定时刷新
-  const { error, isLoading, mutate } = useSWRImmutable(
-    `category-${id}`,
-    () => fetchCategoryDetail(id),
-    swrConfig,
-  )
-
-  return {
-    category: categoryMap[id],
-    articleIds: categoryIdToArticleIds[id],
-    isLoading,
-    error,
-    mutate,
   }
 }

@@ -99,7 +99,7 @@
   --destructive: var(--color-red-300);
   --destructive-foreground: var(--color-red-600);
 
-  --popover: var(--color-yume-white);
+  --popover: var(--color-neutral-50);
   --popover-foreground: var(--color-yume-black);
 
   --border: var(--color-yume-gray-100);

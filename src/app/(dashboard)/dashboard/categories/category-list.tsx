@@ -96,7 +96,7 @@ export function CategoryList() {
                   {categoryMap[id]?.name}
                 </h3>
                 <p className="text-gray-500 text-sm mt-1">
-                  {categoryMap[id]?.count}
+                  {categoryMap[id]?.articleIds?.length || 0}
                   {' '}
                   篇文章
                 </p>

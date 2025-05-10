@@ -1,16 +1,20 @@
-import type { Article, Category, Comment, Tag } from '@/generated'
-import type { CommentForStore } from '@/types'
+import type { CommentWithAuthor } from '@/types'
+import type { NormalizedArticle, NormalizedCategory, NormalizedComment, NormalizedTag } from './types'
 import { produce } from 'immer'
 import { atom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
 
+export type IdsUpdate =
+  | { type: 'add', ids: number[] }
+  | { type: 'remove', ids: number[] }
+  | { type: 'set', ids: number[] }
 export interface DashboardStore {
   // 实体集合，映射关系
   entities: {
-    articleMap: Record<number, Article>
-    categoryMap: Record<number, Category>
-    tagMap: Record<number, Tag>
-    commentMap: Record<number, CommentForStore>
+    articleMap: Record<number, NormalizedArticle>
+    categoryMap: Record<number, NormalizedCategory>
+    tagMap: Record<number, NormalizedTag>
+    commentMap: Record<number, NormalizedComment>
   }
   // 实体ID列表，实际操作的数据
   ids: {
@@ -19,25 +23,7 @@ export interface DashboardStore {
     tagIds: number[]
     commentIds: number[]
   }
-  // 实体间关系
-  relations: {
-    categoryIdToArticleIds: Record<number, number[]>
-    articleIdToCategoryId: Record<number, number>
-    articleIdToTagIds: Record<number, number[]>
-    articleIdToCommentsIds: Record<number, number[]>
-    tagIdToArticleIds: Record<number, number[]>
-    commentIdToRepliesIds: Record<number, number[]>
-  }
-  counts: {
-    articlesTotal: number
-    commentsTotal: number
-  }
 }
-
-export type IdsUpdate =
-  | { type: 'add', ids: number[] }
-  | { type: 'remove', ids: number[] }
-  | { type: 'set', ids: number[] }
 
 const initialStore: DashboardStore = {
   entities: {
@@ -51,18 +37,6 @@ const initialStore: DashboardStore = {
     categoryIds: [],
     tagIds: [],
     commentIds: [],
-  },
-  relations: {
-    categoryIdToArticleIds: {},
-    articleIdToCategoryId: {},
-    articleIdToTagIds: {},
-    tagIdToArticleIds: {},
-    commentIdToRepliesIds: {},
-    articleIdToCommentsIds: {},
-  },
-  counts: {
-    articlesTotal: 0,
-    commentsTotal: 0,
   },
 }
 
@@ -124,111 +98,82 @@ export const commentIdsAtom = atom(
   },
 )
 
-// counts
-export const articlesTotalCountAtom = atom(
-  get => get(dashboardStoreAtom).counts.articlesTotal,
-  (get, set, count: number) => {
-    set(dashboardStoreAtom, produce((store) => {
-      store.counts.articlesTotal = count
-    }))
-  },
-)
-
-export const commentsTotalCountAtom = atom(
-  get => get(dashboardStoreAtom).counts.commentsTotal,
-  (get, set, count: number) => {
-    set(dashboardStoreAtom, produce((store) => {
-      store.counts.commentsTotal = count
-    }))
-  },
-)
-
-// relations
-export const categoryIdToArticleIdsAtom = atom(
-  get => get(dashboardStoreAtom).relations.categoryIdToArticleIds,
-  (get, set, update: Record<number, number[]>) => {
-    set(dashboardStoreAtom, produce((store) => {
-      Object.assign(store.relations.categoryIdToArticleIds, update)
-    }))
-  },
-)
-
-export const articleIdToTagIdsAtom = atom(
-  get => get(dashboardStoreAtom).relations.articleIdToTagIds,
-  (get, set, update: Record<number, number[]>) => {
-    set(dashboardStoreAtom, produce((store) => {
-      Object.assign(store.relations.articleIdToTagIds, update)
-    }))
-  },
-)
-
-export const tagIdToArticleIdsAtom = atom(
-  get => get(dashboardStoreAtom).relations.tagIdToArticleIds,
-  (get, set, update: Record<number, number[]>) => {
-    set(dashboardStoreAtom, produce((store) => {
-      Object.assign(store.relations.tagIdToArticleIds, update)
-    }))
-  },
-)
-
-export const articleIdToCategoryIdAtom = atom(
-  get => get(dashboardStoreAtom).relations.articleIdToCategoryId,
-  (get, set, update: Record<number, number>) => {
-    set(dashboardStoreAtom, produce((store) => {
-      Object.assign(store.relations.articleIdToCategoryId, update)
-    }))
-  },
-)
-
-export const articleIdToCommentsIdsAtom = atom(
-  get => get(dashboardStoreAtom).relations.articleIdToCommentsIds,
-  (get, set, update: Record<number, number[]>) => {
-    set(dashboardStoreAtom, produce((store) => {
-      Object.assign(store.relations.articleIdToCommentsIds, update)
-    }))
-  },
-)
-export const commentIdToRepliesIdsAtom = atom(
-  get => get(dashboardStoreAtom).relations.commentIdToRepliesIds,
-  (get, set, update: Record<number, number[]>) => {
-    set(dashboardStoreAtom, produce((store) => {
-      Object.assign(store.relations.commentIdToRepliesIds, update)
-    }))
-  },
-)
-
 export const articleMapAtom = atom(
   get => get(dashboardStoreAtom).entities.articleMap,
-  (get, set, update: Record<number, Article>) => {
+  (get, set, update: Record<number, Partial<NormalizedArticle>>) => {
     set(dashboardStoreAtom, produce((store) => {
-      Object.assign(store.entities.articleMap, update)
+      for (const [idStr, articleData] of Object.entries(update)) {
+        const id = Number(idStr)
+        if (store.entities.articleMap[id]) {
+          store.entities.articleMap[id] = {
+            ...store.entities.articleMap[id],
+            ...articleData,
+          }
+        }
+        else {
+          store.entities.articleMap[id] = articleData
+        }
+      }
     }))
   },
 )
 
 export const categoryMapAtom = atom(
   get => get(dashboardStoreAtom).entities.categoryMap,
-  (get, set, update: Record<number, Category>) => {
+  (get, set, update: Record<number, Partial<NormalizedCategory>>) => {
     set(dashboardStoreAtom, produce((store) => {
-      Object.assign(store.entities.categoryMap, update)
+      for (const [idStr, categoryData] of Object.entries(update)) {
+        const id = Number(idStr)
+        if (store.entities.categoryMap[id]) {
+          store.entities.categoryMap[id] = {
+            ...store.entities.categoryMap[id],
+            ...categoryData,
+          }
+        }
+        else {
+          store.entities.categoryMap[id] = categoryData
+        }
+      }
     }))
   },
 )
 
 export const tagMapAtom = atom(
   get => get(dashboardStoreAtom).entities.tagMap,
-  (get, set, update: Record<number, Tag>) => {
+  (get, set, update: Record<number, Partial<NormalizedTag>>) => {
     set(dashboardStoreAtom, produce((store) => {
-      Object.assign(store.entities.tagMap, update)
+      for (const [idStr, tagData] of Object.entries(update)) {
+        const id = Number(idStr)
+        if (store.entities.tagMap[id]) {
+          store.entities.tagMap[id] = {
+            ...store.entities.tagMap[id],
+            ...tagData,
+          }
+        }
+        else {
+          store.entities.tagMap[id] = tagData
+        }
+      }
     }))
   },
 )
 
 export const commentMapAtom = atom(
   get => get(dashboardStoreAtom).entities.commentMap,
-  (get, set, update: Record<number, Comment>) => {
+  (get, set, update: Record<number, Partial<CommentWithAuthor>>) => {
     set(dashboardStoreAtom, produce((store) => {
-      Object.assign(store.entities.commentMap, update)
+      for (const [idStr, commentData] of Object.entries(update)) {
+        const id = Number(idStr)
+        if (store.entities.commentMap[id]) {
+          store.entities.commentMap[id] = {
+            ...store.entities.commentMap[id],
+            ...commentData,
+          }
+        }
+        else {
+          store.entities.commentMap[id] = commentData
+        }
+      }
     }))
   },
 )

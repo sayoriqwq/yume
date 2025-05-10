@@ -1,34 +1,35 @@
-import type { CommentsApiResponse } from '@/app/api/admin/comments/route'
 import type { ApprovalStatus, Comment } from '@/generated'
 import type { SingleData, SingleDeleteData } from '@/lib/api'
+import type { CommentsResponse } from '../types'
 import { errorLogger, errorToaster } from '@/lib/error-handler'
 import { yumeFetchDelete, yumeFetchGet, yumeFetchPatch } from '@/lib/yume-fetcher'
 import { extractYumeError } from '@/lib/YumeError'
 import { atom } from 'jotai'
 import toast from 'react-hot-toast'
-import { articleIdToCommentsIdsAtom, commentIdsAtom, commentIdToRepliesIdsAtom, commentMapAtom, commentsTotalCountAtom } from '../store'
+import { articleMapAtom, commentIdsAtom, commentMapAtom } from '../store'
 
 // 获取评论列表
 export const fetchCommentsAtom = atom(
   null,
-  async (get, set, options?: { status?: ApprovalStatus, articleId?: number }) => {
-    const queryParams = new URLSearchParams()
-    if (options?.status)
-      queryParams.append('status', options.status)
-    if (options?.articleId)
-      queryParams.append('articleId', options.articleId.toString())
-
-    const response = await yumeFetchGet<CommentsApiResponse>('/admin/comments', Object.fromEntries(queryParams))
+  async (get, set, options?: { status?: ApprovalStatus }) => {
+    const params = options?.status ? { status: options.status } : undefined
+    const response = await yumeFetchGet<CommentsResponse>('/admin/comments', params)
     if (typeof response === 'string') {
       throw extractYumeError(response)
     }
 
     const { data, objects } = response
-    set(commentIdsAtom, { type: 'set', ids: data.commentIds })
-    set(commentMapAtom, objects.commentMap)
-    set(commentIdToRepliesIdsAtom, objects.commentIdToRepliesIds)
-    set(articleIdToCommentsIdsAtom, objects.articleIdToCommentsIds)
-    set(commentsTotalCountAtom, data.count)
+
+    const commentMap = data.reduce((acc, comment) => {
+      acc[comment.id] = comment
+      return acc
+    }, {} as Record<number, Comment>)
+    set(commentIdsAtom, { type: 'set', ids: data.map(comment => comment.id) })
+    set(commentMapAtom, commentMap)
+
+    if (objects.articles) {
+      set(articleMapAtom, objects.articles)
+    }
   },
 )
 
@@ -51,7 +52,7 @@ export const optimisticUpdateCommentAtom = atom(
     // 先乐观更新本地数据
     set(commentMapAtom, {
       ...originalCommentMap,
-      [id]: { ...originalComment, ...updates } as Comment,
+      [id]: updates,
     })
 
     try {
@@ -101,7 +102,7 @@ export const optimisticRemoveCommentAtom = atom(
 
     // 先乐观更新本地数据
     const newCommentMap = { ...originalCommentMap }
-    newCommentMap[id] = { ...originalComment, deleted: true } as Comment
+    newCommentMap[id] = { ...originalComment, deleted: true }
     set(commentMapAtom, newCommentMap)
 
     try {

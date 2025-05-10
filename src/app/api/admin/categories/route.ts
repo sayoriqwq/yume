@@ -1,57 +1,39 @@
-import type { Category } from '@/generated'
+import type { CategoriesResponse, NormalizedCategory } from '@/atoms/dashboard/types'
 import type { SingleData } from '@/lib/api'
 import type { NextRequest } from 'next/server'
+import { normalizeCategories, normalizeCategory } from '@/atoms/normalize/category'
 import { createSingleEntityResponse } from '@/lib/api'
 import { parsePostBody } from '@/lib/parser'
-import { YumeError } from '@/lib/YumeError'
+import { createYumeErrorResponse, YumeError } from '@/lib/YumeError'
 import { NextResponse } from 'next/server'
 import { getCategories } from './get'
 import { createCategory } from './post'
 import { createCategorySchema } from './schema'
 
-export interface CategoriesApiResponse {
-  data: {
-    categoryIds: number[]
+export async function GET(_request: NextRequest): Promise<NextResponse<CategoriesResponse | string>> {
+  try {
+    const categories = await getCategories()
+    const normalized = normalizeCategories(categories)
+    return NextResponse.json(normalized)
   }
-  objects: {
-    categories: Record<number, Category>
-    categoryIdToArticleIds: Record<number, number[]>
+  catch (error) {
+    return createYumeErrorResponse(error)
   }
 }
 
-export async function GET(_request: NextRequest): Promise<NextResponse<CategoriesApiResponse | string>> {
-  const res = await getCategories()
-  const { categories } = res
+export async function POST(request: NextRequest): Promise<NextResponse<SingleData<NormalizedCategory> | string>> {
+  try {
+    const input = await parsePostBody(request, createCategorySchema)
 
-  const categoriesMap = categories.reduce((acc, category) => {
-    acc[category.id] = category
-    return acc
-  }, {} as Record<number, Category>)
+    if (input instanceof YumeError) {
+      return NextResponse.json(input.toJSON())
+    }
 
-  const categoryIdToArticleIds = categories.reduce((acc, category) => {
-    acc[category.id] = category.articles.map(article => article.id)
-    return acc
-  }, {} as Record<number, number[]>)
-
-  return NextResponse.json<CategoriesApiResponse>({
-    data: {
-      categoryIds: categories.map(category => category.id),
-    },
-    objects: {
-      categories: categoriesMap,
-      categoryIdToArticleIds,
-    },
-  })
-}
-
-export async function POST(request: NextRequest): Promise<NextResponse<SingleData<Category> | string>> {
-  const input = await parsePostBody(request, createCategorySchema)
-
-  if (input instanceof YumeError) {
-    return NextResponse.json(input.toJSON())
+    const category = await createCategory(input)
+    const normalized = normalizeCategory(category)
+    return createSingleEntityResponse<NormalizedCategory>(normalized)
   }
-
-  const { category } = await createCategory(input)
-
-  return createSingleEntityResponse<Category>(category)
+  catch (error) {
+    return createYumeErrorResponse(error)
+  }
 }

@@ -4,7 +4,7 @@ import { useCallback } from 'react'
 import useSWRImmutable from 'swr/immutable'
 
 import { createTagAtom, fetchTagsAtom, optimisticRemoveTagAtom, optimisticUpdateTagAtom } from '../actions/tags'
-import { articleMapAtom, tagIdsAtom, tagIdToArticleIdsAtom, tagMapAtom } from '../store'
+import { tagIdsAtom, tagMapAtom } from '../store'
 import { useCommonSwrConfig } from '../useSwrConfig'
 
 export function useTagsData() {
@@ -20,30 +20,16 @@ export function useTagsData() {
 
   const cachedFetcher = useCallback(() => fetchTags(), [fetchTags])
 
-  const { data, error, isLoading, mutate } = useSWRImmutable('tags', cachedFetcher, swrConfig)
+  const { error, isLoading, mutate } = useSWRImmutable('tags', cachedFetcher, swrConfig)
 
   return {
     tagIds,
     tagMap,
-    tags: data,
     isLoading,
     error,
     mutate,
     createTag,
     updateTag,
     removeTag,
-  }
-}
-
-export function useTagDetail(id: number) {
-  const tagMap = useAtomValue(tagMapAtom)
-  const tagIdToArticleIds = useAtomValue(tagIdToArticleIdsAtom)
-  const articleMap = useAtomValue(articleMapAtom)
-
-  const articleIds = tagIdToArticleIds[id] || []
-  return {
-    tag: tagMap[id],
-    articleIds,
-    articleMap,
   }
 }

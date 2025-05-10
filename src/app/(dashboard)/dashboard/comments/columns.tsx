@@ -1,10 +1,11 @@
 'use client'
 
+import type { NormalizedComment } from '@/atoms/dashboard/types'
 import type { ApprovalStatus, Comment } from '@/generated'
-import type { CommentForStore } from '@/types'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { DataTableRowAction } from './page'
-import { useArticleDetail } from '@/atoms/dashboard/hooks/useArticle'
+import { useArticlesData } from '@/atoms/dashboard/hooks/useArticle'
+import { useCategoriesData } from '@/atoms/dashboard/hooks/useCategory'
 import { NormalTime, RelativeTime } from '@/components/common/time'
 import { baseSelector } from '@/components/dashboard/table/base-columns'
 import { DataTableColumnHeader } from '@/components/dashboard/table/DataTableColumnHeader'
@@ -59,7 +60,10 @@ interface ColumnsProps {
 }
 
 function ArticleCell({ articleId }: { articleId: number }) {
-  const { article } = useArticleDetail(articleId)
+  const { articleMap } = useArticlesData()
+  const { categoryMap } = useCategoriesData()
+  const article = articleMap[articleId]
+  const category = categoryMap[article?.categoryId]
   if (!article)
     return <span className="text-muted-foreground italic">无关联文章</span>
 
@@ -69,7 +73,7 @@ function ArticleCell({ articleId }: { articleId: number }) {
         {article.title}
       </Link>
       <Button variant="ghost" size="icon" className="h-5 w-5" asChild>
-        <Link href={`/posts/${article.category.name}/${article.slug}`} target="_blank">
+        <Link href={`/posts/${category.name}/${article.slug}`} target="_blank">
           <ExternalLink className="h-3 w-3" />
         </Link>
       </Button>
@@ -77,9 +81,9 @@ function ArticleCell({ articleId }: { articleId: number }) {
   )
 }
 
-export function useColumns({ setRowAction, showCommentDetail }: ColumnsProps): ColumnDef<CommentForStore>[] {
+export function useColumns({ setRowAction, showCommentDetail }: ColumnsProps): ColumnDef<NormalizedComment>[] {
   return [
-    baseSelector<CommentForStore>(),
+    baseSelector<NormalizedComment>(),
     {
       id: 'id',
       accessorKey: 'id',
@@ -161,7 +165,7 @@ export function useColumns({ setRowAction, showCommentDetail }: ColumnsProps): C
       id: 'replies',
       header: '回复',
       cell: ({ row }) => {
-        const replies = row.original._count?.replies || 0
+        const replies = row.original.replyIds?.length || 0
 
         return replies > 0
           ? (

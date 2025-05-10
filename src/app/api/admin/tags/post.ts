@@ -11,5 +11,5 @@ export async function createTag(input: z.infer<typeof createTagSchema>) {
       name,
     },
   })
-  return { tag }
+  return tag
 }

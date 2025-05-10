@@ -1,5 +1,6 @@
 import type { SingleDeleteData } from '@/lib/api'
 import type { NextRequest } from 'next/server'
+import { normalizeTag } from '@/atoms/normalize/tag'
 import { createSingleDeleteResponse, createSingleEntityResponse } from '@/lib/api'
 import { parsePatchBody } from '@/lib/parser'
 import { createYumeError, YumeError } from '@/lib/YumeError'
@@ -25,6 +26,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     return NextResponse.json(input.toJSON())
   }
 
-  const { tag } = await updateTag(input, Number(id))
-  return createSingleEntityResponse(tag)
+  const tag = await updateTag(input, Number(id))
+  const normalized = normalizeTag(tag)
+  return createSingleEntityResponse(normalized)
 }
