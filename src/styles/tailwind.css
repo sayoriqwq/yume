@@ -85,7 +85,7 @@
 :root {
   --background: var(--color-yume-blue-0);
   --foreground: var(--color-yume-black);
-  --card: var(--color-neutral-100);
+  --card: var(--color-neutral-50);
   --card-foreground: var(--color-yume-black);
   --muted: var(--color-yume-gray-50);
   --muted-foreground: var(--color-yume-gray-600);

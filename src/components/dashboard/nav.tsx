@@ -8,9 +8,7 @@ import {
   LayoutDashboard,
   Link as LinkIcon,
   MessageSquare,
-  Settings,
   Tags,
-  Users,
 } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
 import { memo, useCallback, useTransition } from 'react'
@@ -45,16 +43,6 @@ const navItems = [
     title: '友链',
     href: '/dashboard/friend-links',
     icon: LinkIcon,
-  },
-  {
-    title: '订阅',
-    href: '/dashboard/subscribers',
-    icon: Users,
-  },
-  {
-    title: '配置',
-    href: '/dashboard/config',
-    icon: Settings,
   },
 ]
 
