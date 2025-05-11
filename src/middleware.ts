@@ -3,7 +3,7 @@ import { UserRole } from '@/types/user'
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 
-const isProtectedRoute = createRouteMatcher(['/dashboard(.*)'])
+const isProtectedRoute = createRouteMatcher(['/dashboard(.*)', '/api/admin(.*)'])
 
 export default clerkMiddleware(
   async (auth, req) => {
@@ -12,7 +12,7 @@ export default clerkMiddleware(
       return redirectToSignIn({ returnBackUrl: req.url })
     }
 
-    // 再鉴权
+    // 鉴权
     const userRole = sessionClaims?.role as UserRoleType
     const isAdmin = userRole === UserRole.ADMIN
 

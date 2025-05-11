@@ -35,7 +35,7 @@ export const fetchCategoriesAtom = atom(
 // 创建新分类
 export const createCategoryAtom = atom(
   null,
-  async (get, set, newCategory: Omit<Category, 'id'>) => {
+  async (get, set, newCategory: Omit<Category, 'id' | 'count'>) => {
     const response = await yumeFetchPost<SingleData<NormalizedCategory>>('/admin/categories', newCategory)
     if (typeof response === 'string') {
       throw extractYumeError(response)

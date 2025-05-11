@@ -17,6 +17,7 @@ export function normalizeCategory(category: CategoryInput): NormalizedCategory {
     id: category.id,
     name: category.name,
     cover: category.cover,
+    count: articleIds.length,
     articleIds,
   }
 }
