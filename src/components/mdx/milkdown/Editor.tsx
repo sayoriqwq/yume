@@ -3,28 +3,28 @@ import { defaultValueCtx, Editor, rootCtx } from '@milkdown/kit/core'
 import { clipboard } from '@milkdown/kit/plugin/clipboard'
 import { indent } from '@milkdown/kit/plugin/indent'
 import { listener, listenerCtx } from '@milkdown/kit/plugin/listener'
+import { upload, uploadConfig } from '@milkdown/kit/plugin/upload'
 import { commonmark } from '@milkdown/kit/preset/commonmark'
 import { gfm } from '@milkdown/kit/preset/gfm'
-import { replaceAll } from '@milkdown/kit/utils'
 import { automd } from '@milkdown/plugin-automd'
 import { history } from '@milkdown/plugin-history'
 import { prism, prismConfig } from '@milkdown/plugin-prism'
 import { trailing } from '@milkdown/plugin-trailing'
 import { Milkdown, useEditor } from '@milkdown/react'
 import { nord } from '@milkdown/theme-nord'
-import { useEffect } from 'react'
 import css from 'refractor/css'
 import javascript from 'refractor/javascript'
 import jsx from 'refractor/jsx'
 import markdown from 'refractor/markdown'
 import tsx from 'refractor/tsx'
 import typescript from 'refractor/typescript'
+import { uploader, uploadWidgetFactory } from './uploader'
 import 'prism-themes/themes/prism-nord.css'
 import '@/styles/milkdown.css'
 
 export function MilkdownEditor() {
   const { milkdownContent, setMilkdownContent } = useMilkdown()
-  const editor = useEditor(root =>
+  useEditor(root =>
     Editor.make()
       .config((ctx) => {
         ctx.set(rootCtx, root)
@@ -38,6 +38,12 @@ export function MilkdownEditor() {
             setMilkdownContent(markdown)
           }
         })
+
+        ctx.update(uploadConfig.key, prev => ({
+          ...prev,
+          uploader,
+          uploadWidgetFactory,
+        }))
 
         ctx.set(prismConfig.key, {
           configureRefractor: (refractor) => {
@@ -57,6 +63,7 @@ export function MilkdownEditor() {
       .use(gfm)
       .use(prism)
       .use(clipboard)
+      .use(upload)
       .use(indent)
       // 文末node
       .use(trailing)
@@ -64,15 +71,6 @@ export function MilkdownEditor() {
       .use(automd),
   )
 
-  useEffect(
-    () => {
-      const editorInstance = editor.get()
-      if (editorInstance && milkdownContent) {
-        editorInstance.action(replaceAll(milkdownContent, true))
-      }
-    },
-    [editor, milkdownContent],
-  )
   return (
     <Milkdown />
   )

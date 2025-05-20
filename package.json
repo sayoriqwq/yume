@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.758.0",
+    "@aws-sdk/s3-request-presigner": "^3.812.0",
     "@clerk/localizations": "^3.10.6",
     "@clerk/nextjs": "^6.11.3",
     "@commitlint/config-conventional": "^19.7.1",
@@ -33,6 +34,8 @@
     "@milkdown/plugin-listener": "^7.10.2",
     "@milkdown/plugin-prism": "^7.10.2",
     "@milkdown/plugin-trailing": "^7.10.2",
+    "@milkdown/plugin-upload": "^7.10.5",
+    "@milkdown/prose": "^7.10.5",
     "@milkdown/react": "^7.10.2",
     "@milkdown/theme-nord": "^7.10.2",
     "@next/bundle-analyzer": "15.1.7",
