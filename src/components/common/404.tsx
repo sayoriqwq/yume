@@ -11,7 +11,7 @@ export function NotFound404() {
           <FileQuestion className="h-16 w-16 text-muted-foreground" />
         </div>
 
-        <h1 className="text-4xl font-bold mt-6">404</h1>
+        <h1 className="text-3xl font-bold tracking-tight font-aboreto">404</h1>
         <h2 className="text-2xl font-semibold">页面未找到</h2>
 
         <p className="text-muted-foreground mt-2">
