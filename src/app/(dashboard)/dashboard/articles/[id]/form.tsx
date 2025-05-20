@@ -189,7 +189,7 @@ export function ArticleForm({ id }: FormProps) {
               </div>
               {article?.type === 'NOTE' && (
                 <div className="mb-6 border-t border-dashed border-border pt-6">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="flex flex-wrap gap-4">
                     <FormField
                       control={form.control}
                       name="mood"

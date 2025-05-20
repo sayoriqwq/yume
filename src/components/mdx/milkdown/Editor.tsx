@@ -5,12 +5,14 @@ import { indent } from '@milkdown/kit/plugin/indent'
 import { listener, listenerCtx } from '@milkdown/kit/plugin/listener'
 import { commonmark } from '@milkdown/kit/preset/commonmark'
 import { gfm } from '@milkdown/kit/preset/gfm'
+import { replaceAll } from '@milkdown/kit/utils'
 import { automd } from '@milkdown/plugin-automd'
 import { history } from '@milkdown/plugin-history'
 import { prism, prismConfig } from '@milkdown/plugin-prism'
 import { trailing } from '@milkdown/plugin-trailing'
 import { Milkdown, useEditor } from '@milkdown/react'
 import { nord } from '@milkdown/theme-nord'
+import { useEffect } from 'react'
 import css from 'refractor/css'
 import javascript from 'refractor/javascript'
 import jsx from 'refractor/jsx'
@@ -22,7 +24,7 @@ import '@/styles/milkdown.css'
 
 export function MilkdownEditor() {
   const { milkdownContent, setMilkdownContent } = useMilkdown()
-  useEditor(root =>
+  const editor = useEditor(root =>
     Editor.make()
       .config((ctx) => {
         ctx.set(rootCtx, root)
@@ -62,6 +64,15 @@ export function MilkdownEditor() {
       .use(automd),
   )
 
+  useEffect(
+    () => {
+      const editorInstance = editor.get()
+      if (editorInstance && milkdownContent) {
+        editorInstance.action(replaceAll(milkdownContent, true))
+      }
+    },
+    [editor, milkdownContent],
+  )
   return (
     <Milkdown />
   )

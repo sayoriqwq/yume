@@ -1,5 +1,6 @@
 'use client'
 
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
 import { useLenis } from 'lenis/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -130,40 +131,44 @@ export function TableOfContents() {
     return null
 
   return (
-    <nav className="sticky top-1/5 ml-10 max-h-72 w-64">
+    <nav className="sticky top-1/5 ml-10 w-64">
       <h2 className="mb-4 text-lg font-bold">目录</h2>
-      <ul className="space-y-2">
-        {headings.map(heading => (
-          <li
-            key={heading.id}
-            style={{
-              marginLeft: `${(heading.level - 2) * 16}px`,
-            }}
-          >
-            <a
-              href={`#${heading.id}`}
-              className={cn(
-                'transition-colors hover:text-accent',
-                activeId === heading.id && 'text-accent',
-                activeId !== heading.id && 'text-foreground',
-              )}
-              onClick={(e) => {
-                e.preventDefault()
-                const element: HTMLElement | null = document.querySelector(
-                  `#${heading.id}`,
-                )
-                if (element) {
-                  window.history.pushState(null, '', `#${heading.id}`)
-                  lenis?.scrollTo(element, { offset: -60 })
-                  setActiveId(heading.id) // 立即更新激活的标题
-                }
-              }}
-            >
-              {heading.text}
-            </a>
-          </li>
-        ))}
-      </ul>
+      <div className="relative">
+        <ScrollArea className="h-[calc(100vh-250px)] max-h-[400px] pr-4">
+          <ul className="space-y-2 pr-2">
+            {headings.map(heading => (
+              <li
+                key={heading.id}
+                style={{
+                  marginLeft: `${(heading.level - 2) * 16}px`,
+                }}
+              >
+                <a
+                  href={`#${heading.id}`}
+                  className={cn(
+                    'block py-1 transition-colors hover:text-accent overflow-hidden text-ellipsis whitespace-nowrap',
+                    activeId === heading.id && 'text-accent font-medium',
+                    activeId !== heading.id && 'text-foreground',
+                  )}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    const element: HTMLElement | null = document.querySelector(
+                      `#${heading.id}`,
+                    )
+                    if (element) {
+                      window.history.pushState(null, '', `#${heading.id}`)
+                      lenis?.scrollTo(element, { offset: -60 })
+                      setActiveId(heading.id) // 立即更新激活的标题
+                    }
+                  }}
+                >
+                  {heading.text}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </ScrollArea>
+      </div>
     </nav>
   )
 }
