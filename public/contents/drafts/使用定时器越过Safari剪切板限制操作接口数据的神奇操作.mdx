@@ -1,0 +1,78 @@
+---
+title: "使用定时器越过Safari剪切板限制操作接口数据的神奇操作"
+published: true
+createdAt: "2024-07-02"
+updatedAt: "2024-07-02"
+category: "tech"
+tags: ["js","safari","bug"]
+cover: 'https://s3-yume.s3.ap-northeast-1.amazonaws.com/sky1.webp'
+---
+
+## 场景：
+
+`execCommand('copy')`和`navigator.clipboard api`是js常见的操作剪切板方式，然而当遇到safari时，由于其安全性限制，有不符合预期的表现。
+
+## 结论
+
+使用如下代码：
+
+``` js
+
+setTimeout(()=>{
+  your code
+}, 0)
+
+```
+
+可以绕过safari的安全性检测，从而可以执行一些notAllowed的操作。如果感兴趣的话，就接着往下吧。
+
+## 问题
+
+实际是在使用vue-clipboard2时(源码用的exec)，全局复制链接的地方在一处要操作接口数据的时候，chrome下正常，safari下就默默失效了。大概是这么一个场景：
+
+```js
+
+let link = await api(...)
+this.$copyText(link).then(...).catch(...)
+
+```
+
+运行的结果是进入到then里，但并没有将`link`写入剪切板。
+
+在到处翻文档之后，我很快得出了一个错误结论：`safari`下不支持`execCommand('copy')`
+
+事实上，如果在控制台用`alert(document.execCommand('copy'))`,chrome下为`true`，safari下为`false`
+
+然而问题并不在这里，safari只要选定了一定区域后再调这个方法，其实是有的。以后再也不会质疑can i use了
+
+然后，发现当上述代码的`link`不调接口的时候，一切表现正常。这就很奇怪了，但这里一点报错都没有，于是又去翻了一些文档，终于是在`clipboard api`里找到了报错
+
+https://stackoverflow.com/questions/62327358/javascript-clipboard-api-safari-ios-notallowederror-message
+
+https://webkit.org/blog/10247/new-webkit-features-in-safari-13-1/
+
+可以看出，safari需要确认剪切的操作是由用户交互下进行的才是安全的操作，使用js则不被允许。在`clipboard api`这样操作是会给一个明确的notAllowed报错的
+
+那么如何绕过该限制呢？除了定时器魔法以外，增加一个额外的交互是最简单的方式。比如加一个`prompt`，或者生成一个`modal`提示用户自己cv接口生成的数据。
+
+于是一个定时器就解决了折腾一下午的问题（
+
+## 原因（猜测）
+
+搜了很多地方都没有看到对此的原因分析，只在另外一个地方看到有相似的解法，而作者认为是把复制的操作延迟到下一个宏任务解决的问题，其实不无道理。如果检测的精度是在每一个事件循环，那么在下一次事件循环进行的复制操作自然就是普通变量了，没有接口影响就被视为用户的操作。
+
+## 其他
+
+### 剪切板与安全上下文
+
+剪切板传统的方式是通过`execCommand('copy')`实现，思路大体是创建一个不可视的input元素，然后选中它的值，操作剪切板，再删除这个元素。本身也是比较trick的方式，随着该方法的废弃已经不是正统的解决方式了。
+
+现在正统的方式是`clipboard api`，浏览器支持截止本文时间也很不错。
+
+https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API
+
+而该api调用的前提是得处于「安全上下文」，我还是第一次听说这个概念：
+
+https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts
+
+简单理解的话，https和localhost下就可以调，而http这种就不可以。

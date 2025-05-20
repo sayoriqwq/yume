@@ -1,0 +1,30 @@
+---
+title: "虚拟DOM"
+published: true
+createdAt: "2024-04-28"
+updatedAt: "2024-04-28"
+category: "tech"
+tags: ["前端", "wtf", "js"]
+cover: "https://s3-yume.s3.ap-northeast-1.amazonaws.com/react.svg"
+---
+
+-无虚拟 DOM：solid，svelte
+-虚拟 DOM：React，Vue
+
+## 框架消费层面
+
+编译时，运行时
+虚拟 DOM 框架：
+输入没有被直接编译成 DOM，而是编译为中间态的数据（虚拟 DOM）
+react：向 SSR 迈进，将运行的时机提前到服务端，规避了自己重运行的缺点
+
+## 虚拟 DOM 的优势：
+提供了一层抽象
+
+需要注意的是性能还是会减少（diff 只是让减少的更少）
+
+开发->数据->框架->输出
+
+1. 框架易升级。框架更新可以不影响开发者的代码更改，对开发的入侵很小，着重动了数据->框架的消费流程
+2. 跨平台。根据得到的数据，给不同的适配器就可以了
+3. 灵活。
