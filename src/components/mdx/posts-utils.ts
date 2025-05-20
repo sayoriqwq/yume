@@ -8,7 +8,6 @@ import { errorLogger } from '@/lib/error-handler'
 // import { sleep } from '@/lib/utils'
 import { createYumeError, YumeErrorType } from '@/lib/YumeError'
 import matter from 'gray-matter'
-import { slugify } from './utils'
 
 // 缓存变量
 let postsCache: Post[] | null = null
@@ -44,10 +43,8 @@ export async function readMDXFile(filePath: string) {
 async function processFile(dir: string, file: string): Promise<Post> {
   const filePath = path.join(dir, file)
   const { data: metadata, content } = await readMDXFile(filePath)
-  const name = path.basename(file, path.extname(file))
-  const slug = slugify(name)
   return {
-    metadata: { ...metadata, slug, filePath } as IPostMetaData,
+    metadata: { ...metadata, filePath } as IPostMetaData,
     content,
   }
 }
