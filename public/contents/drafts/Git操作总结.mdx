@@ -1,5 +1,6 @@
 ---
 title: "Git操作总结"
+slug: "git-summary"
 published: true
 createdAt: "2024-07-19"
 updatedAt: "2024-07-19"
@@ -11,7 +12,7 @@ description: "I Love Git"
 
 ## 修改历史 commit 的信息
 
-### rebase
+**rebase**
 
 ``` bash
 git rebase -i HEAD~n
@@ -24,7 +25,7 @@ git rebase -i HEAD~n
 
 这样就会打开一个交互式的编辑器面板 (vim 键位)
 
-### 修改
+**修改**
 
 常用的命令都在下面写着了，可以结合自己的需求使用
 
@@ -46,7 +47,7 @@ git rebase -i HEAD~n
 
 我的习惯是每写一个小的功能点/模块就 commit 一次，但这样会导致提交信息十分凌乱。当功能做完时，有没有一种方法可以压缩多条`commit`呢？
 
-### rebase
+**rebase**
 
 ``` bash
 git rebase -i HEAD~n
@@ -59,7 +60,7 @@ git rebase -i HEAD~n
 
 这样就会打开一个交互式的编辑器面板 (vim 键位)
 
-### 修改
+**修改**
 
 这里用的命令主要是`fixup`/`squash`
 

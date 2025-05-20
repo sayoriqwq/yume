@@ -17,9 +17,12 @@ interface NoteContainerProps {
 
 export function NoteContainer({ article }: NoteContainerProps) {
   return (
-    <WiderContainer className="grid grid-cols-1 gap-20 xl:grid-cols-[1fr_300px] mt-16 bg-background">
+    <WiderContainer className="grid grid-cols-1 gap-20 xl:grid-cols-[200px_1fr_200px] mt-16 bg-background font-serif">
+      <div className="hidden xl:block">
+        <NoteList activeNoteId={article.id} />
+      </div>
       <div>
-        <article className="prose dark:prose-invert note-container">
+        <article className="prose dark:prose-invert">
           <div className="p-6 border-2 border-dashed rounded-xl border-primary/30 shadow-[0_5px_15px_rgba(var(--color-yume-blue-200),0.2)] dark:shadow-[0_5px_15px_rgba(var(--color-yume-blue-700),0.2)] relative">
             <Title title={article.title} />
             <div className="flex flex-col flex-center gap-2 mb-8 pb-4 border-b border-dotted border-primary/20">
@@ -69,7 +72,6 @@ export function NoteContainer({ article }: NoteContainerProps) {
       </div>
       <div className="hidden xl:block">
         <TableOfContents />
-        <NoteList activeNoteId={article.id} />
       </div>
     </WiderContainer>
   )

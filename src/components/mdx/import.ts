@@ -1,6 +1,7 @@
 'server only'
 
 import prisma from '@/db/prisma'
+import dayjs from 'dayjs'
 import { getMDXData } from './posts-utils'
 
 interface ImportOptions {
@@ -56,6 +57,8 @@ export async function importMDXFiles({ sourceDir }: ImportOptions) {
           published: metadata.published ?? true,
           content: post.content,
           mdxPath: metadata.filePath ?? '',
+          createdAt: metadata.createdAt ? dayjs(metadata.createdAt).toDate() : new Date(),
+          updatedAt: metadata.updatedAt ? dayjs(metadata.updatedAt).toDate() : new Date(),
           category: {
             connectOrCreate: {
               where: { name: metadata.category || '未分类' },
