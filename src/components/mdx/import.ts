@@ -7,6 +7,23 @@ interface ImportOptions {
   sourceDir: string
 }
 
+// 根据文件路径确定文章类型
+function determineArticleType(filePath: string | undefined) {
+  if (!filePath)
+    return 'DRAFT'
+
+  const normalizedPath = filePath.toLowerCase()
+
+  if (normalizedPath.includes('/blogs/'))
+    return 'BLOG'
+  if (normalizedPath.includes('/drafts/'))
+    return 'DRAFT'
+  if (normalizedPath.includes('/notes/'))
+    return 'NOTE'
+
+  return 'BLOG' // 默认类型
+}
+
 export async function importMDXFiles({ sourceDir }: ImportOptions) {
   const posts = await getMDXData(sourceDir)
 
@@ -23,6 +40,9 @@ export async function importMDXFiles({ sourceDir }: ImportOptions) {
       continue
     }
 
+    // 根据文件路径确定文章类型
+    const articleType = determineArticleType(metadata.filePath)
+
     // 使用事务确保数据一致性
     await prisma.$transaction(async (tx) => {
       // 创建文章
@@ -32,14 +52,14 @@ export async function importMDXFiles({ sourceDir }: ImportOptions) {
           title: metadata.title,
           description: metadata.description,
           cover: metadata.cover,
-          type: 'BLOG',
+          type: articleType,
           published: metadata.published ?? true,
           content: post.content,
           mdxPath: metadata.filePath ?? '',
           category: {
             connectOrCreate: {
-              where: { name: metadata.category },
-              create: { name: metadata.category },
+              where: { name: metadata.category || '未分类' },
+              create: { name: metadata.category || '未分类' },
             },
           },
           tags: {

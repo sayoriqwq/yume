@@ -1,7 +1,7 @@
 'use server'
 
 import prisma from '@/db/prisma'
-import { PrismaClientKnownRequestError } from '@/generated/runtime/library'
+import { errorLogger } from '@/lib/error-handler'
 import { validateEmailAddress } from '@/lib/validate'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
@@ -44,14 +44,16 @@ export async function createSubscriber(_currentState: SubscribeState, formData: 
     }
   }
   catch (error) {
-    if (error instanceof PrismaClientKnownRequestError && error.code === 'P2002') {
+    // 使用属性检查而不是instanceof，更可靠地检测Prisma错误
+    // 在Next.js中，特别是服务器组件/Server Actions中，错误实例的类型检查会出现问题。这是因为错误在跨模块边界或序列化过程中可能会丢失其原始类型信息。
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
       return {
         success: false,
         message: '已经订阅过了',
       }
     }
 
-    console.error(error)
+    errorLogger(error)
     return { success: false, message: `订阅失败了! 原因:${error}` }
   }
 }

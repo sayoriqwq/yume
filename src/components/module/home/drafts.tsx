@@ -72,7 +72,7 @@ export function Drafts() {
     <div className="flex flex-col gap-10">
       <div className="flex-between">
         <H1>Drafts</H1>
-        <ReadMore link="/drafts" />
+        <ReadMore link="/posts/draft" />
       </div>
       {renderContent()}
     </div>
