@@ -1,0 +1,53 @@
+@import 'tailwindcss';
+/* https://x.com/n_seitan/status/1951138178934374724 */
+
+/* for yume */
+:root {
+  --palette-blue-dark: oklch(0.8907 0.0666 230.05);
+  --palette-blue-light: oklch(0.9375 0.0317 246.7);
+  --palette-pink-dark: oklch(0.883 0.0748 348.18);
+  --palette-pink-light: oklch(0.936 0.0339 4.15);
+}
+
+/* for blog */
+/* https://x.com/n_seitan/status/1965349093489999955/photo/1 */
+:root {
+  --palette-wave-1: oklch(0.9134 0.0353 214.5);
+  --palette-wave-2: oklch(0.8325 0.0611 220.44);
+  --palette-wave-3: oklch(0.8552 0.0345 222.68);
+  --palette-wave-4: oklch(0.719 0.0587 248.65);
+}
+
+/* https://x.com/n_seitan/status/1966097783729041862/photo/1 */
+.dark {
+  /* 应该反着 */
+  --palette-wave-4: oklch(0.328 0.0748 243.75);
+  --palette-wave-3: oklch(0.5729 0.145 246.8);
+  --palette-wave-2: oklch(0.3217 0.0427 256.87);
+  --palette-wave-1: oklch(0.1651 0.0381 240.36);
+}
+
+@theme {
+  --color-blue-dark: var(--palette-blue-dark);
+  --color-blue-light: var(--palette-blue-light);
+  --color-pink-dark: var(--palette-pink-dark);
+  --color-pink-light: var(--palette-pink-light);
+
+  --color-wave-1: var(--palette-wave-1);
+  --color-wave-2: var(--palette-wave-2);
+  --color-wave-3: var(--palette-wave-3);
+  --color-wave-4: var(--palette-wave-4);
+}
+
+@theme {
+  --gradient-wave:
+    linear-gradient(
+      to bottom,
+      color-mix(in oklch, var(--color-wave-1) 60%, var(--color-wave-2) 40%) 0%,
+      transparent 100%
+    );
+}
+
+@utility bg-gradient-wave {
+  background-image: var(--gradient-wave);
+}

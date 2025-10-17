@@ -1,10 +1,9 @@
 'use server'
 
-import prisma from '@/db/prisma'
-import { errorLogger } from '@/lib/error-handler'
-import { validateEmailAddress } from '@/lib/validate'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
+import prisma from '@/db/prisma'
+import { validateEmailAddress } from '@/lib/validate'
 
 const FormSchema = z.object({
   email: z.string().email({
@@ -53,7 +52,6 @@ export async function createSubscriber(_currentState: SubscribeState, formData: 
       }
     }
 
-    errorLogger(error)
     return { success: false, message: `订阅失败了! 原因:${error}` }
   }
 }

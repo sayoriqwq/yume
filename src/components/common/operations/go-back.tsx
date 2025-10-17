@@ -1,79 +1,61 @@
 'use client'
 
-import { Button, buttonVariants } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
-import { ChevronLeft } from 'lucide-react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import type { MouseEvent } from 'react'
 
-interface GoBackProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  href?: string
+import { usePathname, useRouter } from 'next/navigation'
+import { cn } from '@/lib/utils'
+
+export interface BackProps extends Omit<ButtonProps, 'asChild'> {
+  label?: string
   fallbackHref?: string
-  asLink?: boolean
-  text?: string
-  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link'
 }
 
-// 返回按钮组件
-export const GoBack = function GoBack({ ref, href, fallbackHref = '/', asLink = false, text = '返回', className, variant = 'ghost', ...props }: GoBackProps & { ref?: React.RefObject<HTMLButtonElement | null> }) {
+export function Back({
+  className,
+  label = 'back',
+  fallbackHref = '/',
+  variant = 'secondary',
+  size = 'sm',
+  onClick,
+  ...rest
+}: BackProps) {
   const router = useRouter()
+  const pathname = usePathname()
 
-  const handleGoBack = () => {
-    if (window.history.length > 1) {
+  if (pathname === '/')
+    return null
+
+  const handleBack = () => {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
       router.back()
+      return
     }
-    else if (href) {
-      router.push(href)
-    }
-    else {
+
+    if (fallbackHref) {
       router.push(fallbackHref)
     }
   }
 
-  if (asLink && href) {
-    return (
-      <Link
-        href={href}
-        className={cn(
-          buttonVariants({ variant }),
-          'gap-2 items-center',
-          className,
-        )}
-      >
-        <ChevronLeft className="h-4 w-4" />
-        {text}
-      </Link>
-    )
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+    onClick?.(event)
+    if (event.defaultPrevented)
+      return
+
+    handleBack()
   }
 
   return (
     <Button
-      ref={ref}
+      type="button"
       variant={variant}
-      className={cn('gap-2', className)}
-      onClick={handleGoBack}
-      {...props}
+      size={size}
+      className={cn('gap-2 w-fit', className)}
+      aria-label={label}
+      onClick={handleClick}
+      {...rest}
     >
-      <ChevronLeft className="h-4 w-4" />
-      {text}
+      <span aria-hidden className="i-mingcute-arrow-left-line text-lg" />
+      <span>{label}</span>
     </Button>
   )
-}
-
-// 使用 hook 提供返回功能
-export function useGoBack() {
-  const router = useRouter()
-
-  const goBack = (fallbackHref = '/') => {
-    if (window.history.length > 1) {
-      router.back()
-      return true
-    }
-    else {
-      router.push(fallbackHref)
-      return false
-    }
-  }
-
-  return { goBack }
 }

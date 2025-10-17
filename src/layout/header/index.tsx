@@ -1,16 +1,10 @@
 'use client'
 
 /*
-
 spotlight code by Innei
-
 reference: https://github.com/Innei/Shiro/blob/8481a63718c4aee2a850e4ebd1148ee5b2d62bce/src/components/layout/header/internal/HeaderContent.tsx
-
 */
 
-import { headerAtom } from '@/atoms/header'
-import { useScrollbarPresence } from '@/hooks/useScrollBarPresence'
-import { cn } from '@/lib/utils'
 import {
   AnimatePresence,
   motion,
@@ -21,6 +15,9 @@ import {
 } from 'framer-motion'
 import { useAtom } from 'jotai'
 import { useCallback } from 'react'
+import { useScrollbarPresence } from '@/hooks/useScrollBarPresence'
+import { cn } from '@/lib/utils'
+import { headerAtom } from './atoms/header'
 import { CenterNavs } from './center-navs'
 import { Logo } from './logo'
 import { Operations } from './operations'

@@ -1,11 +1,11 @@
 :root {
-  --base-spotlight: 76.527% 0.14271 166.19; /*   --color-yume-green-500: oklch(76.527% 0.14271 166.19); */
   --spotlight-color: oklch(var(--base-spotlight) / 0.2);
   --spotlight-foreground: var(--color-yume-green-600);
+  --shiki-code-linenumber: rgba(115,138,148,.4)
 }
 
 .dark {
-  --base-spotlight: 83.377% 0.10561 169.98; /*   --color-yume-green-300: oklch(83.377% 0.10561 169.98); */
+  --base-spotlight: 83.377% 0.10561 169.98;
   --spotlight-color: oklch(var(--base-spotlight) / 0.2);
   --spotlight-foreground: var(--color-yume-green-400);
 }

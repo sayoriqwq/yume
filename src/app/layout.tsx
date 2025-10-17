@@ -1,6 +1,9 @@
-import { CommandSheet } from '@/components/common/command-sheet'
-import { Providers } from '@/providers/providers'
 import { Toaster } from 'react-hot-toast'
+import { CommandSheet } from '@/components/common/command-sheet'
+import { SearchModal } from '@/features/search/search-modal'
+import { Footer } from '@/layout/footer'
+import { Header } from '@/layout/header'
+import { Providers } from '@/providers/providers'
 import '@/styles/index.css'
 
 export default function RootLayout({
@@ -16,8 +19,11 @@ export default function RootLayout({
     >
       <body>
         <Providers>
+          <Header />
           {children}
+          <Footer />
         </Providers>
+        <SearchModal />
         <Toaster position="top-center" />
         <CommandSheet />
       </body>

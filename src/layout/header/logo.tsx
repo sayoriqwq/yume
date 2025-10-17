@@ -1,10 +1,10 @@
 'use client'
 
-import { headerSelectedAtom } from '@/atoms/header'
-import { cn } from '@/lib/utils'
 import { useAtom } from 'jotai'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { cn } from '@/lib/utils'
+import { headerSelectedAtom } from './atoms/header'
 
 export function Logo({ text, className }: { text?: string, className?: string }) {
   const [_selected, setSelected] = useAtom(headerSelectedAtom)

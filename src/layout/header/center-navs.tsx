@@ -1,34 +1,33 @@
 'use client'
 
-import type { HeaderTabs } from '@/atoms/header'
-import { headerSelectedAtom } from '@/atoms/header'
-import { cn } from '@/lib/utils'
+import type { HeaderTabs } from './atoms/header'
 import { useAtom } from 'jotai'
-import { BookText, Link2, LoaderCircle, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
+import { cn } from '@/lib/utils'
+import { headerSelectedAtom } from './atoms/header'
 
 const navs = [
   {
     name: '博客',
     href: '/posts',
-    icon: BookText,
+    icon: <span className="i-mingcute-book-2-fill size-4"></span>,
   },
   {
     name: '朋友',
     href: '/friend',
-    icon: Link2,
+    icon: <span className="i-mingcute-link-2-fill size-4"></span>,
   },
   {
     name: '关于',
     href: '/about',
-    icon: LoaderCircle,
+    icon: <span className="i-mingcute-loading-3-fill size-4"></span>,
   },
   {
     name: '留言',
     href: '/message',
-    icon: MessageCircle,
+    icon: <span className="i-mingcute-message-1-fill size-4"></span>,
   },
 ]
 
@@ -62,7 +61,7 @@ export function CenterNavs() {
               selected === nav.href && 'w-4 scale-100 opacity-100',
             )}
           >
-            <nav.icon className="size-4" />
+            {nav.icon}
           </div>
           <span className="relative z-10">{nav.name}</span>
         </Link>

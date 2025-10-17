@@ -2,11 +2,8 @@
 
 @plugin 'tailwindcss-animate';
 @plugin '@tailwindcss/typography';
-@plugin 'tailwindcss-motion';
 @plugin 'tailwind-scrollbar';
 @plugin '@egoist/tailwindcss-icons';
-
-@config '../../tailwind.config.ts';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -206,9 +203,5 @@
 
   .flex-between {
     @apply flex items-center justify-between;
-  }
-
-  .section-gap {
-    @apply mb-32;
   }
 }

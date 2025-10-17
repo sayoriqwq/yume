@@ -1,105 +1,16 @@
-.prose {
-  @apply max-w-none text-foreground;
-}
-
-/* heading with a */
-.prose .link-anchor {
-  @apply text-primary hover:text-primary relative no-underline;
-}
-
-.prose .link-anchor::before {
-  content: '# ';
-  opacity: 0.5;
-  transition: opacity 0.2s ease;
-}
-
-.prose .link-anchor::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -2px;
-  width: 0;
-  height: 2px;
-  background-color: currentColor;
-  transition: width 0.2s ease-in-out;
-}
-
-.prose .link-anchor:hover::before {
-  opacity: 1;
-}
-
-.prose .link-anchor:hover::after {
-  width: 100%;
-}
-
-/* https://ui.shadcn.com/docs/components/typography */
-
-/* headings */
-
-.prose h1 {
-  @apply text-4xl;
-}
-
-/* other element */
-
-.prose p {
-  @apply leading-7 text-lg [&:not(:first-child)]:mt-6;
-}
-
-.prose blockquote {
-  @apply mt-6 border-l-2 pl-6 italic;
-}
-
-/* code */
-
-/* inline code */
-.prose :not(pre) > code::before {
-  content: '';
-}
-
-.prose :not(pre) > code::after {
-  content: '';
-}
-
 .prose :not(pre) > code {
-  @apply px-2 py-1 bg-card rounded-md;
+  background-color: color-mix(in oklab, var(--color-background-secondary) 80%, transparent);
+;
+  border-radius: var(--radius-xl);
+  font-weight: 400;
+  font-family: var(--font-mono);
+  padding: 4px 12px;
 }
 
-/* code block */
-/* line number */
-code[data-line-numbers] {
-  counter-reset: line;
+code::after {
+  content: "";
 }
 
-code[data-line-numbers] > [data-line]::before {
-  counter-increment: line;
-  content: counter(line);
-
-  @apply inline-block w-4 mr-8 text-right text-muted-foreground text-sm select-none;
-}
-
-/* shiki code highlight */
-
-[data-theme='light'] code[data-theme],
-[data-theme='light'] code[data-theme] span {
-  color: var(--shiki-light);
-  background-color: var(--shiki-light-bg);
-}
-
-[data-theme='light'] pre[data-theme],
-[data-theme='light'] pre[data-theme] span {
-  background-color: var(--shiki-light-bg);
-}
-
-/* 深色主题样式 */
-
-[data-theme='dark'] code[data-theme],
-[data-theme='dark'] code[data-theme] span {
-  color: var(--shiki-dark);
-  background-color: var(--shiki-dark-bg);
-}
-
-[data-theme='dark'] pre[data-theme],
-[data-theme='dark'] pre[data-theme] span {
-  background-color: var(--shiki-dark-bg);
+code::before {
+  content: "";
 }
