@@ -28,7 +28,7 @@ const posts = {
       updatedAt: s.isodate().optional(),
       tags: s.array(s.string()).max(10).default([]),
       metadata: s.metadata(),
-      cover: s.string().optional(),
+      cover: s.string().url().optional(),
       code: s.mdx(),
       tocEntry: s.toc(),
     })
@@ -41,7 +41,19 @@ const tags = {
   schema: s.object({
     title: s.string().max(40),
     slug: s.slug('tag'),
-    description: s.string().max(160).optional(),
+    description: s.string().max(50).optional(),
+  }),
+} satisfies Collection
+
+const friends = {
+  name: 'Friend',
+  pattern: 'friends/*.json',
+  schema: s.object({
+    nickname: s.string().max(20),
+    siteName: s.string().max(20),
+    avatar: s.string().url(),
+    link: s.string().url(),
+    description: s.string().max(100).optional(),
   }),
 } satisfies Collection
 
@@ -49,6 +61,7 @@ const config = {
   collections: {
     posts,
     tags,
+    friends,
   },
   mdx: {
     rehypePlugins: [

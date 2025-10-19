@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils'
 
 export function PostsGrid({ posts }: { posts: Post[] }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2">
+    <div className="grid grid-cols-1 lg:grid-cols-2">
       {posts.map(post => (
         <HoverBg key={post.slug}>
           <ScrollToShow y={40}>
@@ -37,7 +37,7 @@ function PostCard({ post, className }: { post: Post } & PropsWithCC) {
       )}
     >
       <div className="flex flex-col gap-2 px-2">
-        <h3 className="text-foreground group-hover:text-accent-foreground line-clamp-2 text-xl font-semibold transition-colors">
+        <h3 className="text-foreground group-hover:text-accent-foreground line-clamp-1 text-ellipsis text-xl font-semibold transition-colors" title={post.title}>
           {post.title}
         </h3>
         <p className="text-muted-foreground mt-1 group-hover:text-accent-foreground/90 transition-colors">
@@ -46,7 +46,7 @@ function PostCard({ post, className }: { post: Post } & PropsWithCC) {
         <div className="flex flex-wrap items-center gap-2 mt-2">
           {post.tags?.map((tag) => {
             return (
-              <span key={tag} className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-md">
+              <span key={tag} className="text-sm bg-muted text-muted-foreground px-2 py-1 rounded-md">
                 {tag}
               </span>
             )

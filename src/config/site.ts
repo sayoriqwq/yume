@@ -8,11 +8,12 @@ export const siteConfig = {
   links: {
     github: 'https://github.com/qianmengqwq',
     email: 'mailto:2531600563@qq.com',
+    rss: '/feed.xml',
   },
-  rss: '/feed.xml',
   keywords: ['frontend', 'Next.js', 'Blog'],
   from: 2024,
   to: 2025,
+  imgAssetsDomain: 'https://r2.sayoriqwq.com',
 }
 
 export type SiteConfig = typeof siteConfig

@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { useAtom } from 'jotai'
 
 import { useMemo } from 'react'
+import { Separator } from '@/components/ui/separator'
 import { outlineRefsAtom, sectionsAtom, visibleIdsAtom } from '../atoms/toc'
 import { useRegisterHeading } from '../atoms/use-register'
 import { useVisibleSections } from '../atoms/use-visible-sections'
@@ -62,7 +63,7 @@ export function TocView({ flat, minDepth }: TocViewProps) {
     <aside className="relative mt-4 text-sm">
       <div className="mb-4 font-semibold">目录</div>
       <div className="relative pl-3">
-        <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-separator" />
+        <Separator />
         <motion.div
           className="absolute left-0 w-[2px] bg-accent"
           layout

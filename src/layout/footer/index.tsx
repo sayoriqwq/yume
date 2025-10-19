@@ -1,5 +1,7 @@
 import Link from 'next/link'
 import { SubscribeModal } from '@/components/common/operations/subscribe/modal'
+import { socialIconSet } from '@/components/icon/social'
+import { Separator } from '@/components/ui/separator'
 import { siteConfig } from '@/config/site'
 import { NormalContainer } from '../container/Normal'
 
@@ -11,22 +13,23 @@ interface FooterLink {
 const links: FooterLink[] = [
   {
     href: siteConfig.links.github,
-    iconClass: 'i-mingcute-github-2-line',
+    iconClass: socialIconSet.github.iconClass,
   },
   {
     href: siteConfig.links.email,
-    iconClass: 'i-mingcute-mail-line',
+    iconClass: socialIconSet.email.iconClass,
   },
   {
-    href: siteConfig.rss,
-    iconClass: 'i-mingcute-rss-line',
+    href: siteConfig.links.rss,
+    iconClass: socialIconSet.rss.iconClass,
   },
 ]
 
 export function Footer() {
   return (
     <NormalContainer className="py-0 max-w-full">
-      <footer className="bg-background/80 flex-between z-50 w-full border-t px-8 py-4 backdrop-blur-sm">
+      <Separator />
+      <footer className="flex-between z-50 w-full px-8 py-4">
         <div className="text-md">
           <span>© 2024~2025 sayoriqwq.</span>
         </div>

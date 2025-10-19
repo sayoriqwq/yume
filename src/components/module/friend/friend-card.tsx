@@ -1,10 +1,10 @@
-import type { FriendLink } from '@/generated'
+import type { Friend } from '#site/content'
+import Link from 'next/link'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import Link from 'next/link'
 
 interface FriendCardProps {
-  friend: FriendLink
+  friend: Friend
 }
 
 export function FriendCard({ friend }: FriendCardProps) {
@@ -25,7 +25,7 @@ export function FriendCard({ friend }: FriendCardProps) {
               </Avatar>
             </Link>
           </TooltipTrigger>
-          <TooltipContent side="right" sideOffset={-25}>
+          <TooltipContent side="right" sideOffset={20}>
             前往
             {' '}
             <Link className="text-primary" href={friend.link} target="_blank">{friend.siteName}</Link>

@@ -1,8 +1,8 @@
 // https://github.com/vercel/satori/issues/660
 
 import type { NextRequest } from 'next/server'
-import { siteConfig } from '@/config/site'
 import { ImageResponse } from 'next/og'
+import { siteConfig } from '@/config/site'
 
 // 字体文件
 export const runtime = 'edge'

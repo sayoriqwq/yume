@@ -1,9 +1,6 @@
 'use server'
 
 import type { MessageState } from './type'
-import { MESSAGE_FAKE_ARTICLE_ID } from '@/constants/defaults'
-import prisma from '@/db/prisma'
-import { currentUser } from '@clerk/nextjs/server'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 
@@ -12,7 +9,6 @@ const MessageSchema = z.object({
 })
 
 export async function createMessage(formData: FormData): Promise<MessageState> {
-  const user = await currentUser()
 
   if (!user) {
     return {

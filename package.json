@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.893.0",
+    "@hookform/resolvers": "^5.2.2",
     "@pastel-palette/tailwindcss": "1.0.0-canary.1",
     "@prisma/client": "^6.17.1",
     "@prisma/extension-accelerate": "^2.0.2",
@@ -48,6 +49,7 @@
     "rc-modal-sheet": "^1.0.2",
     "react": "19.1.1",
     "react-dom": "19.1.1",
+    "react-hook-form": "^7.65.0",
     "react-hot-toast": "^2.6.0",
     "rehype-autolink-headings": "^7.1.0",
     "rehype-slug": "^6.0.0",

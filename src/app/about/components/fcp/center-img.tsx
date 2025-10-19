@@ -2,6 +2,7 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import { useTheme } from 'next-themes'
 import Image from 'next/image'
 import { useRef } from 'react'
+import { buildImgSrc } from '@/lib/utils'
 import { IMG_PADDING } from './constants/page-config'
 
 export function CenterImg() {
@@ -28,7 +29,7 @@ export function CenterImg() {
     return (
       <>
         <Image
-          src={isDarkMode ? 'https://s3-yume.s3.ap-northeast-1.amazonaws.com/bg-dark.webp' : 'https://s3-yume.s3.ap-northeast-1.amazonaws.com/bg-light.webp'}
+          src={isDarkMode ? buildImgSrc('bg-dark') : buildImgSrc('bg-light')}
           alt="Background Image"
           fill
           priority

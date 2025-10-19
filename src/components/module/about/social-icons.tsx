@@ -1,26 +1,10 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { socialIconSet } from '@/components/icon/social'
 import { siteConfig } from '@/config/site'
 
 type IconName = keyof typeof siteConfig.links
-
-interface Icon {
-  name: IconName
-  Icon: React.JSX.Element
-}
-
-const BRAND_COLORS: Record<IconName, string> = {
-  github: '#24292e',
-  email: '#EA4335',
-}
-
-const iconSet: Icon[] = [
-  {
-    name: 'github',
-    Icon: <span className="i-mingcute-github-line size-6"></span>,
-  },
-]
 
 const iconAnimation = {
   whileHover: {
@@ -41,12 +25,12 @@ const iconAnimation = {
 export function SocialIcons() {
   return (
     <motion.div>
-      <div className="flex-center space-x-4">
-        {iconSet.map(({ name, Icon }) => {
-          const link = siteConfig.links[name]
+      <div className="flex items-center space-x-4">
+        {Object.entries(socialIconSet).map(([name, { iconClass, bgColor }]) => {
+          const link = siteConfig.links[name as IconName]
           if (!link)
             return null
-          const backgroundColor = BRAND_COLORS[name]
+          const backgroundColor = bgColor
 
           return (
             <motion.a
@@ -54,12 +38,12 @@ export function SocialIcons() {
               target="_blank"
               rel="noreferrer"
               href={link}
-              className="flex-center size-12 rounded-full p-2 text-white"
+              className="flex-center size-10 rounded-full p-2 text-white"
               {...iconAnimation}
               style={{ backgroundColor }}
               aria-label={name}
             >
-              {Icon}
+              <span className={`size-5 ${iconClass}`} aria-hidden="true" />
             </motion.a>
           )
         })}

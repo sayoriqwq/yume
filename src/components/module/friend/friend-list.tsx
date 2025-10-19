@@ -1,8 +1,8 @@
-import type { FriendLink } from '@/generated'
+import type { Friend } from '#site/content'
 import { FriendCard } from './friend-card'
 
 interface FriendListProps {
-  friends: FriendLink[]
+  friends: Friend[]
 }
 
 export function FriendList({ friends }: FriendListProps) {

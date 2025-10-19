@@ -1,22 +1,24 @@
 'use client'
 
-import type * as z from 'zod'
-import { Button } from '@/components/ui/button'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import type { FriendLinkFormValues } from './schema'
 
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { createFriendLinkSchema } from '@/db/site/schema'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
+
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
+import { Button } from '@/components/ui/button'
+import { Field, FieldContent, FieldError, FieldLabel } from '@/components/ui/field'
+import { Form, FormField } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+
 import { submitFriendLinkAction } from './action'
+import { friendLinkFormResolver } from './schema'
 
 export function ApplyForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const form = useForm<z.infer<typeof createFriendLinkSchema>>({
-    resolver: zodResolver(createFriendLinkSchema),
+  const form = useForm<FriendLinkFormValues>({
+    resolver: friendLinkFormResolver,
     defaultValues: {
       nickname: '',
       siteName: '',
@@ -26,7 +28,7 @@ export function ApplyForm() {
     },
   })
 
-  async function onSubmit(values: z.infer<typeof createFriendLinkSchema>) {
+  async function onSubmit(values: FriendLinkFormValues) {
     try {
       setIsSubmitting(true)
 
@@ -55,74 +57,98 @@ export function ApplyForm() {
         <FormField
           control={form.control}
           name="nickname"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>昵称</FormLabel>
-              <FormControl>
-                <Input placeholder="昵称" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+          render={({ field, fieldState }) => (
+            <Field data-invalid={!!fieldState.error}>
+              <FieldLabel htmlFor="nickname">昵称</FieldLabel>
+              <FieldContent>
+                <Input
+                  id="nickname"
+                  placeholder="昵称"
+                  aria-invalid={!!fieldState.error}
+                  {...field}
+                />
+                <FieldError errors={fieldState.error ? [fieldState.error] : undefined} />
+              </FieldContent>
+            </Field>
           )}
         />
 
         <FormField
           control={form.control}
           name="siteName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>网站名称</FormLabel>
-              <FormControl>
-                <Input placeholder="你的网站名称" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+          render={({ field, fieldState }) => (
+            <Field data-invalid={!!fieldState.error}>
+              <FieldLabel htmlFor="siteName">网站名称</FieldLabel>
+              <FieldContent>
+                <Input
+                  id="siteName"
+                  placeholder="你的网站名称"
+                  aria-invalid={!!fieldState.error}
+                  {...field}
+                />
+                <FieldError errors={fieldState.error ? [fieldState.error] : undefined} />
+              </FieldContent>
+            </Field>
           )}
         />
 
         <FormField
           control={form.control}
           name="avatar"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>头像链接</FormLabel>
-              <FormControl>
-                <Input type="url" placeholder="你的头像链接" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+          render={({ field, fieldState }) => (
+            <Field data-invalid={!!fieldState.error}>
+              <FieldLabel htmlFor="avatar">头像链接</FieldLabel>
+              <FieldContent>
+                <Input
+                  id="avatar"
+                  type="url"
+                  placeholder="你的头像链接"
+                  aria-invalid={!!fieldState.error}
+                  {...field}
+                />
+                <FieldError errors={fieldState.error ? [fieldState.error] : undefined} />
+              </FieldContent>
+            </Field>
           )}
         />
 
         <FormField
           control={form.control}
           name="link"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>网站链接</FormLabel>
-              <FormControl>
-                <Input type="url" placeholder="你的网站地址" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+          render={({ field, fieldState }) => (
+            <Field data-invalid={!!fieldState.error}>
+              <FieldLabel htmlFor="link">网站链接</FieldLabel>
+              <FieldContent>
+                <Input
+                  id="link"
+                  type="url"
+                  placeholder="你的网站地址"
+                  aria-invalid={!!fieldState.error}
+                  {...field}
+                />
+                <FieldError errors={fieldState.error ? [fieldState.error] : undefined} />
+              </FieldContent>
+            </Field>
           )}
         />
 
         <FormField
           control={form.control}
           name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>描述</FormLabel>
-              <FormControl>
+          render={({ field, fieldState }) => (
+            <Field data-invalid={!!fieldState.error}>
+              <FieldLabel htmlFor="description">描述</FieldLabel>
+              <FieldContent>
                 <Textarea
+                  id="description"
                   placeholder="一些关于你的额外信息"
                   className="resize-none"
+                  aria-invalid={!!fieldState.error}
                   {...field}
                 />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+                <FieldError errors={fieldState.error ? [fieldState.error] : undefined} />
+              </FieldContent>
+            </Field>
           )}
         />
 

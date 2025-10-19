@@ -1,26 +1,27 @@
 'use server'
 
-import type { z } from 'zod'
-import { createFriendLinkSchema } from '@/db/site/schema'
-import { createFriendLink } from '@/db/site/service'
-import { errorLogger } from '@/lib/error-handler'
+import type { FriendLinkFormValues, FriendLinkPayload } from './schema'
+import { friendLinkFormSchema, normalizeFriendLink } from './schema'
 
-export async function submitFriendLinkAction(data: z.infer<typeof createFriendLinkSchema>) {
-  try {
-    const validatedData = createFriendLinkSchema.parse(data)
+export async function submitFriendLinkAction(data: FriendLinkFormValues) {
+  const parsed = friendLinkFormSchema.safeParse(data)
 
-    const result = await createFriendLink(validatedData)
+  if (!parsed.success) {
+    const message = parsed.error.issues[0]?.message ?? '提交申请失败，请检查填写内容'
 
-    return {
-      success: true,
-      data: result,
-    }
-  }
-  catch (error) {
-    errorLogger(error)
     return {
       success: false,
-      error: '提交申请失败，请稍后再试',
-    }
+      error: message,
+    } as const
   }
+
+  const payload: FriendLinkPayload = normalizeFriendLink(parsed.data)
+
+  // TODO: Persist friend link application (e.g., database, queue, notification)
+  console.warn('好友申请待处理', payload)
+
+  return {
+    success: true,
+    data: payload,
+  } as const
 }

@@ -51,8 +51,8 @@ export function Overlay() {
           <p className="text-3xl tracking-wide">
             <Typewriter
               words={[
-                '欢迎来到我的小站',
-                'a place to share your dreams',
+                'some fragments about life',
+                'sad and bad',
               ]}
               typingSpeed={150}
               deletingSpeed={100}

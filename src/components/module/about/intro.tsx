@@ -1,22 +1,25 @@
+import Link from 'next/link'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { siteConfig } from '@/config/site'
-import Link from 'next/link'
 
 export function Intro() {
   return (
-    <section className="flex-center mt-10 flex-col gap-2 text-center font-sans font-bold">
+    <section className="flex-center mt-10 flex-col gap-2 text-center font-sans">
       <Link href="/about">
         <Avatar className="size-28 transition duration-300 ring ring-muted hover:ring-2 hover:ring-ring">
           <AvatarImage src={siteConfig.avatar} />
           <AvatarFallback>Ciallo~</AvatarFallback>
         </Avatar>
       </Link>
-      <p className="break-words text-2xl">
+      <p className="break-words text-2xl font-bold">
         <span className=""> sayori</span>
         <span className="text-accent">qwq</span>
       </p>
-      <p className="text-md break-words text-muted-foreground">
-        Student | Front-end Developer
+      <p className="break-words text-muted-foreground">
+        A Frontend Developer
+      </p>
+      <p className="break-words text-muted-foreground">
+        coding with 💤
       </p>
     </section>
   )

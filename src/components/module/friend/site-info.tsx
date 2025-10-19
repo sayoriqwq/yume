@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
-import { CustomMDX } from '@/components/mdx/mdx'
+import { MDXContent } from '@/features/mdx/mdx-content'
 
 export async function SiteInfo() {
   async function getSiteInfo() {
@@ -13,7 +13,7 @@ export async function SiteInfo() {
   const content = await getSiteInfo()
   return (
     <div className="prose dark:prose-invert max-w-none">
-      <CustomMDX source={content} />
+      <MDXContent code={content} />
     </div>
   )
 }
