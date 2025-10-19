@@ -13,8 +13,8 @@ export function useScrollbarPresence() {
     const calculateScrollbarWidth = () => {
       const htmlElement = document.documentElement
       const hasCustomScrollbar
-          = htmlElement.className.includes('scrollbar-thin')
-            || htmlElement.className.includes('scrollbar-')
+        = htmlElement.className.includes('scrollbar-thin')
+          || htmlElement.className.includes('scrollbar-')
 
       // 如果有自定义滚动条，使用对应的宽度
       if (hasCustomScrollbar) {

@@ -1,5 +1,7 @@
 'use client'
 
+import { useActionState, useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -9,18 +11,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-
 import { Input } from '@/components/ui/input'
-import { useUser } from '@clerk/nextjs'
-import { Loader2 } from 'lucide-react'
-import { useActionState, useEffect, useState } from 'react'
-import toast from 'react-hot-toast'
 import { createSubscriber } from './action'
 
 export function SubscribeModal() {
   const [isOpen, setIsOpen] = useState(false)
-  const { user } = useUser()
-  const email = user?.emailAddresses[0]?.emailAddress || ''
 
   const [state, formAction, isPending] = useActionState(createSubscriber, { message: '', success: false })
 
@@ -52,14 +47,13 @@ export function SubscribeModal() {
             type="email"
             name="email"
             id="email"
-            defaultValue={email}
           />
           <Button
             type="submit"
             disabled={isPending}
           >
             {isPending
-              ? <Loader2 className="size-5 animate-spin" />
+              ? <span aria-hidden className="i-mingcute-loading-3-line size-5 animate-spin" />
               : '订阅'}
           </Button>
         </form>

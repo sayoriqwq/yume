@@ -1,6 +1,6 @@
-import { cn } from '@/lib/utils'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import { cn } from '@/lib/utils'
 import 'dayjs/locale/zh-cn'
 
 dayjs.extend(relativeTime)
@@ -15,14 +15,14 @@ const pattern = 'YYYY-MM-DD'
 
 export function RelativeTime({ date, className }: TimeProps) {
   return (
-    <time className={cn('time', className)} dateTime={date?.toString()}>
+    <time className={cn('whitespace-nowrap', className)} dateTime={date?.toString()}>
       {dayjs().to(dayjs(date))}
     </time>
   )
 }
 export function NormalTime({ date, className }: TimeProps) {
   return (
-    <time className={cn('time', className)} dateTime={date?.toString()}>
+    <time className={cn('whitespace-nowrap', className)} dateTime={date?.toString()}>
       {dayjs(date).format(pattern)}
     </time>
   )

@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { useRef } from 'react'
 import { cn } from '@/lib/utils'
-import { useRegisterOutline } from './atoms/use-register'
+import { useRegisterOutline } from '../atoms/use-register'
 
 interface OutlineItemProps {
   id: string

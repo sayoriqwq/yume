@@ -1,8 +1,7 @@
-import { Typewriter } from '@/components/common/type-writer'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useLenis } from 'lenis/react'
-import { ArrowDown } from 'lucide-react'
 import { useRef } from 'react'
+import { Typewriter } from '@/components/common/type-writer'
 
 function ArrowToNext() {
   const lenis = useLenis()
@@ -22,7 +21,7 @@ function ArrowToNext() {
         ease: 'easeInOut',
       }}
     >
-      <ArrowDown />
+      <span aria-hidden className="i-mingcute-arrow-down-line size-6" />
     </motion.button>
   )
 }

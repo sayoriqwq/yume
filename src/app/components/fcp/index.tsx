@@ -1,7 +1,7 @@
 'use client'
 
-import { IMG_PADDING } from '@/constants/page-config'
 import { CenterImg } from './center-img'
+import { IMG_PADDING } from './constants/page-config'
 import { Overlay } from './overlay'
 
 export function Fcp() {

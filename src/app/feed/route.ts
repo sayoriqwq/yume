@@ -1,6 +1,6 @@
-import { getAllPosts } from '@/components/mdx/posts-utils'
-import { siteConfig } from '@/config/site'
 import RSS from 'rss'
+import { siteConfig } from '@/config/site'
+import { getAllPosts } from '@/data/post'
 
 export async function GET() {
   const feed = new RSS({
@@ -15,25 +15,20 @@ export async function GET() {
     generator: 'Next.js',
   })
 
-  const allPosts = (await getAllPosts())
-    .filter(post => post.metadata.published !== false)
-    .sort((a, b) => {
-      return new Date(b.metadata.createdAt).getTime() - new Date(a.metadata.createdAt).getTime()
-    })
+  const allPosts = getAllPosts()
 
   allPosts.forEach((post) => {
-    const { metadata } = post
-    const url = `${siteConfig.url}/posts/${metadata.category}/${metadata.slug}`
+    const url = `${siteConfig.url}/posts/${post.slug}`
 
     feed.item({
-      title: metadata.title,
-      description: metadata.description || '',
+      title: post.title,
+      description: post.description || '',
       url,
       guid: url,
-      categories: metadata.tags || [],
-      date: new Date(metadata.createdAt),
-      enclosure: metadata.cover
-        ? { url: metadata.cover, type: 'image/jpeg' }
+      categories: post.tags || [],
+      date: new Date(post.createdAt),
+      enclosure: post.cover
+        ? { url: post.cover, type: 'image/webp' }
         : undefined,
       author: siteConfig.author,
     })

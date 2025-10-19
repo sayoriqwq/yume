@@ -15,7 +15,7 @@ import {
 } from 'framer-motion'
 import { useAtom } from 'jotai'
 import { useCallback } from 'react'
-import { useScrollbarPresence } from '@/hooks/useScrollBarPresence'
+import { useScrollbarPresence } from '@/hooks/use-scroll-bar-presence'
 import { cn } from '@/lib/utils'
 import { headerAtom } from './atoms/header'
 import { CenterNavs } from './center-navs'
@@ -64,8 +64,8 @@ export function Header() {
             'rounded-full inset-shadow-lg',
             'backdrop-blur-xl',
             'backdrop-saturate-150',
-            'border',
             'group',
+            'border border-border',
             'pointer-events-auto',
           )}
           onMouseMove={handleMouseMove}

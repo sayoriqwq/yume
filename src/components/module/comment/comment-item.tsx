@@ -1,6 +1,12 @@
 'use client'
 
 import type { CommentWithAuthor } from '@/types/comment'
+import { useUser } from '@clerk/nextjs'
+import Image from 'next/image'
+import { usePathname } from 'next/navigation'
+import { useModalStack } from 'rc-modal-sheet'
+import { memo, useCallback, useState, useTransition } from 'react'
+import { toast } from 'react-hot-toast'
 import { toggleLike } from '@/components/common/operations/like/action'
 // 导入点赞组件和类型
 import { RelativeTime } from '@/components/common/time'
@@ -9,13 +15,6 @@ import { Textarea } from '@/components/ui/textarea'
 import { siteConfig } from '@/config/site'
 import { cn } from '@/lib/utils'
 import { LikeableType } from '@/types'
-import { useUser } from '@clerk/nextjs'
-import { Heart } from 'lucide-react'
-import Image from 'next/image'
-import { usePathname } from 'next/navigation'
-import { useModalStack } from 'rc-modal-sheet'
-import { memo, useCallback, useState, useTransition } from 'react'
-import { toast } from 'react-hot-toast'
 
 interface Props {
   comment: CommentWithAuthor
@@ -125,10 +124,11 @@ export const CommentItem = memo(function CommentItem({ comment, onDelete, onRepl
                   )}
                   aria-label={isLiked ? '取消点赞' : '点赞'}
                 >
-                  <Heart
+                  <span
+                    aria-hidden
                     className={cn(
                       'size-4',
-                      isLiked && 'fill-rose-500',
+                      isLiked ? 'i-mingcute-heart-fill' : 'i-mingcute-heart-line',
                     )}
                   />
                   <span className={cn(

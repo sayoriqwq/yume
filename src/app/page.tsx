@@ -1,5 +1,5 @@
-import { Fcp } from '@/components/module/home/fcp'
-import { LatestPosts } from '@/components/module/home/latest-posts'
+import { Fcp } from '@/app/components/fcp'
+import { LatestPosts } from '@/app/components/latest-posts'
 
 export default function Home() {
   return (

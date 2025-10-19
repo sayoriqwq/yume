@@ -2,7 +2,7 @@
 
 import { useAtomValue, useSetAtom } from 'jotai'
 import { useCallback, useEffect, useLayoutEffect, useRef } from 'react'
-import { headingRefsAtom, sectionsAtom, setVisibleIdsAtom } from '@/atoms/toc/toc'
+import { headingRefsAtom, sectionsAtom, setVisibleIdsAtom } from './toc'
 
 export function useVisibleSections() {
   const sections = useAtomValue(sectionsAtom)

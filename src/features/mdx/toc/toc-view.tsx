@@ -1,14 +1,14 @@
 'use client'
 
+import type { TocFlatItem } from '../types'
 import { motion } from 'framer-motion'
 import { useAtom } from 'jotai'
-import { useMemo } from 'react'
 
-import { OutlineItem } from '../outline-item'
-import { sectionsAtom, visibleIdsAtom, outlineRefsAtom } from '../atoms/toc'
+import { useMemo } from 'react'
+import { outlineRefsAtom, sectionsAtom, visibleIdsAtom } from '../atoms/toc'
 import { useRegisterHeading } from '../atoms/use-register'
 import { useVisibleSections } from '../atoms/use-visible-sections'
-import type { TocFlatItem } from '../types'
+import { OutlineItem } from './outline-item'
 
 interface TocViewProps {
   flat: TocFlatItem[]
@@ -16,6 +16,9 @@ interface TocViewProps {
 }
 
 export function TocView({ flat, minDepth }: TocViewProps) {
+  if (flat.length === 0) {
+    return null
+  }
   const [sections, setSections] = useAtom(sectionsAtom)
   // 初始化
   useMemo(() => {

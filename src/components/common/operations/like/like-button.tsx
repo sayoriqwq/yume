@@ -1,16 +1,15 @@
 'use client'
 
 import type { LikeStatus } from '@/types/like'
-import { getLikeStatus, toggleLike } from '@/components/common/operations/like/action'
-import { errorLogger, errorToaster } from '@/lib/error-handler'
-import { cn } from '@/lib/utils'
-import { LikeableType } from '@/types/like'
 import { useUser } from '@clerk/nextjs'
-import { Heart } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { useTransition } from 'react'
 import { toast } from 'react-hot-toast'
 import useSWR from 'swr'
+import { getLikeStatus, toggleLike } from '@/components/common/operations/like/action'
+import { errorLogger, errorToaster } from '@/lib/error-handler'
+import { cn } from '@/lib/utils'
+import { LikeableType } from '@/types/like'
 
 interface LikeButtonProps {
   targetId: number
@@ -104,10 +103,11 @@ export function LikeButton({
       )}
       aria-label={isLiked ? '取消点赞' : '点赞'}
     >
-      <Heart
+      <span
+        aria-hidden
         className={cn(
           'size-5',
-          isLiked && 'fill-rose-500',
+          isLiked ? 'i-mingcute-heart-fill' : 'i-mingcute-heart-line',
         )}
       />
       <span className={cn(

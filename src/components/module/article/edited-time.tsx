@@ -5,7 +5,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { ClockIcon } from 'lucide-react'
 
 interface EditedTimeProps {
   createdAt: Date | string
@@ -19,7 +18,7 @@ export function EditedTime({ createdAt, updatedAt, className }: EditedTimeProps)
 
   return (
     <div className="flex items-center gap-1.5">
-      <ClockIcon className="size-4 text-muted-foreground" />
+      <span aria-hidden className="i-mingcute-time-line size-4 text-muted-foreground" />
 
       {isEdited
         ? (

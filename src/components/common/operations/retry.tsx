@@ -1,9 +1,8 @@
 'use client'
 
+import * as React from 'react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { RefreshCw } from 'lucide-react'
-import * as React from 'react'
 
 interface RetryButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   onRetry: () => void
@@ -12,7 +11,7 @@ interface RetryButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>
   variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link'
 }
 
-export const RetryButton = function RetryButton({ ref, onRetry, loading = false, text = '重试', className, variant = 'outline', ...props }: RetryButtonProps & { ref?: React.RefObject<HTMLButtonElement | null> }) {
+export function RetryButton({ ref, onRetry, loading = false, text = '重试', className, variant = 'outline', ...props }: RetryButtonProps & { ref?: React.RefObject<HTMLButtonElement | null> }) {
   return (
     <Button
       ref={ref}
@@ -22,7 +21,12 @@ export const RetryButton = function RetryButton({ ref, onRetry, loading = false,
       disabled={loading}
       {...props}
     >
-      <RefreshCw className={cn('h-4 w-4', { 'animate-spin': loading })} />
+      <span
+        aria-hidden
+        className={cn('i-mingcute-refresh-2-line h-4 w-4', {
+          'animate-spin': loading,
+        })}
+      />
       {text}
     </Button>
   )

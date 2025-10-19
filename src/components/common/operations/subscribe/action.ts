@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
-import prisma from '@/db/prisma'
+// import prisma from '@/db/prisma'
 import { validateEmailAddress } from '@/lib/validate'
 
 const FormSchema = z.object({
@@ -30,12 +30,12 @@ export async function createSubscriber(_currentState: SubscribeState, formData: 
     }
   }
 
-  const email = validatedField.data.email
+  //   const email = validatedField.data.email
 
   try {
-    await prisma.subscriber.create({
-      data: { email },
-    })
+    // await prisma.subscriber.create({
+    //   data: { email },
+    // })
     revalidatePath('/')
     return {
       success: true,

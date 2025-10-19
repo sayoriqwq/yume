@@ -1,10 +1,9 @@
 'use client'
 
-import { useMounted } from '@/hooks/useMounted'
-import { cn } from '@/lib/utils'
-import { CheckIcon, Share2Icon } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useMounted } from '@/hooks/use-mounted'
+import { cn } from '@/lib/utils'
 
 interface ShareButtonProps {
   title: string
@@ -78,8 +77,8 @@ export function ShareButton({ title, text, className }: ShareButtonProps) {
       disabled={!mounted} // 在客户端挂载前禁用按钮
     >
       {copied
-        ? (<CheckIcon className="mr-2 h-4 w-4" />)
-        : (<Share2Icon className="mr-2 h-4 w-4" />)}
+        ? (<span aria-hidden className="i-mingcute-check-line mr-2 h-4 w-4" />)
+        : (<span aria-hidden className="i-mingcute-share-forward-line mr-2 h-4 w-4" />)}
     </button>
   )
 }

@@ -1,9 +1,7 @@
 'use client'
 
 import type { PropsWithChildren } from 'react'
-import process from 'process'
-import { zhCN } from '@clerk/localizations'
-import { ClerkProvider } from '@clerk/nextjs'
+import process from 'node:process'
 import { motion } from 'framer-motion'
 import { ModalStackContainer } from 'rc-modal-sheet'
 import { FontProvider } from './font-provider'
@@ -21,11 +19,9 @@ export function Providers({ children }: PropsWithChildren) {
       <SWRProvider>
         <LenisProvider>
           <FontProvider>
-            <ClerkProvider localization={zhCN} publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
-              <ModalStackContainer m={motion}>
-                {children}
-              </ModalStackContainer>
-            </ClerkProvider>
+            <ModalStackContainer m={motion}>
+              {children}
+            </ModalStackContainer>
           </FontProvider>
         </LenisProvider>
       </SWRProvider>

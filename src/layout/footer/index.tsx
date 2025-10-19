@@ -1,27 +1,25 @@
-import type { LucideIcon } from 'lucide-react'
+import Link from 'next/link'
 import { SubscribeModal } from '@/components/common/operations/subscribe/modal'
 import { siteConfig } from '@/config/site'
-import { Github, Mail, Rss } from 'lucide-react'
-import Link from 'next/link'
 import { NormalContainer } from '../container/Normal'
 
 interface FooterLink {
   href: string
-  icon: LucideIcon
+  iconClass: string
 }
 
 const links: FooterLink[] = [
   {
     href: siteConfig.links.github,
-    icon: Github,
+    iconClass: 'i-mingcute-github-2-line',
   },
   {
     href: siteConfig.links.email,
-    icon: Mail,
+    iconClass: 'i-mingcute-mail-line',
   },
   {
     href: siteConfig.rss,
-    icon: Rss,
+    iconClass: 'i-mingcute-rss-line',
   },
 ]
 
@@ -33,14 +31,14 @@ export function Footer() {
           <span>© 2024~2025 sayoriqwq.</span>
         </div>
         <div className="flex items-center gap-4">
-          {links.map(({ href, icon: Icon }) => (
+          {links.map(({ href, iconClass }) => (
             <Link
               key={href}
               href={href}
               className="text-muted-foreground hover:text-accent transition-colors duration-300"
               target="_blank"
             >
-              <Icon className="size-6" />
+              <span className={`size-6 ${iconClass}`} aria-hidden="true" />
             </Link>
           ))}
           <SubscribeModal />

@@ -1,8 +1,8 @@
-import { IMG_PADDING } from '@/constants/page-config'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useTheme } from 'next-themes'
 import Image from 'next/image'
 import { useRef } from 'react'
+import { IMG_PADDING } from './constants/page-config'
 
 export function CenterImg() {
   const { resolvedTheme } = useTheme()

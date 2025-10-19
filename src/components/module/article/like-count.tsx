@@ -1,5 +1,4 @@
 import { cn } from '@/lib/utils'
-import { HeartIcon } from 'lucide-react'
 
 interface LikeCountProps {
   count: number
@@ -9,7 +8,7 @@ interface LikeCountProps {
 export function LikeCount({ count, className }: LikeCountProps) {
   return (
     <span className={cn('flex-center gap-1', className)}>
-      <HeartIcon className="size-3" />
+      <span aria-hidden className="i-mingcute-heart-line size-3" />
       {' '}
       {count.toString()}
     </span>

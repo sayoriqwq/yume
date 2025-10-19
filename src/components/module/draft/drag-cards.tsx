@@ -2,13 +2,12 @@
 
 import type { ArticlesResponse } from '@/app/api/articles/route'
 import type { Draft } from '@/types/article/article'
-import { Button } from '@/components/ui/button'
-import { formatArticle } from '@/types/article/format'
 import { motion } from 'framer-motion'
-import { Info, LayoutGrid, Move } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 import { useRef, useState } from 'react'
 import useSWR from 'swr'
+import { Button } from '@/components/ui/button'
+import { formatArticle } from '@/types/article/format'
 import { DraftCard } from './draft-card'
 import { DraftDragCard } from './drag-card'
 
@@ -107,7 +106,7 @@ export function DraftDragCards() {
   if (drafts.length === 0) {
     return (
       <div className="flex h-[500px] w-full items-center justify-center flex-col gap-4">
-        <Info className="h-12 w-12 text-muted-foreground opacity-50" />
+        <span aria-hidden className="i-mingcute-information-line h-12 w-12 text-muted-foreground opacity-50" />
         <div className="text-lg text-muted-foreground">暂无短文</div>
       </div>
     )
@@ -127,14 +126,14 @@ export function DraftDragCards() {
             size="icon"
             onClick={() => updateMode('grid')}
           >
-            <LayoutGrid className="size-4" />
+            <span aria-hidden className="i-mingcute-layout-6-line size-4" />
           </Button>
           <Button
             variant={viewMode === 'drag' ? 'default' : 'outline'}
             size="icon"
             onClick={() => updateMode('drag')}
           >
-            <Move className="size-4" />
+            <span aria-hidden className="i-mingcute-drag-move-line size-4" />
           </Button>
         </div>
       </div>

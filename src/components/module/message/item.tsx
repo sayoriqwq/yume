@@ -1,6 +1,9 @@
 'use client'
 
 import type { OptimisticMessage } from '@/components/module/message/type'
+import { useUser } from '@clerk/nextjs'
+import Image from 'next/image'
+import { useState } from 'react'
 import { RelativeTime } from '@/components/common/time'
 import { Button } from '@/components/ui/button'
 import {
@@ -12,10 +15,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { siteConfig } from '@/config/site'
-import { useUser } from '@clerk/nextjs'
-import { Loader2, Trash2 } from 'lucide-react'
-import Image from 'next/image'
-import { useState } from 'react'
 
 interface Props {
   message: OptimisticMessage
@@ -61,11 +60,13 @@ export function MessageItem({ message, onDelete }: Props) {
                     className="absolute inset-0 flex-center backdrop-blur-[1px] bg-background/10 rounded-xl opacity-0 transition-opacity hover:opacity-100"
                     aria-label="删除消息"
                   >
-                    <Trash2 className="text-foreground size-6 cursor-pointer" />
+                    <span aria-hidden className="i-mingcute-delete-2-line text-foreground size-6 cursor-pointer" />
                   </button>
                 )}
               </p>
-              {message?.isSending && <Loader2 className="size-5 animate-spin" />}
+              {message?.isSending && (
+                <span aria-hidden className="i-mingcute-loading-3-line size-5 animate-spin" />
+              )}
             </div>
           </div>
         </div>

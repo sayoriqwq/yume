@@ -1,5 +1,5 @@
 import type { RefObject } from 'react'
-import type { TocFlatItem } from '@/types/toc'
+import type { TocFlatItem } from '../types'
 import { atom } from 'jotai'
 
 export const sectionsAtom = atom<TocFlatItem[]>([])
